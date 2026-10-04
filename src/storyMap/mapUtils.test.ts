@@ -464,8 +464,8 @@ describe('content region bounds recording (bounds WYSIWYG)', () => {
     const [w, s, e, n] = CAMERA_BOUNDS;
     const lngRange = e - w;
     const contentRange = lngRange * CONTENT_REGION_FRACTION;
-    const expectBoundsCloseTo = (actual, expected) =>
-      actual.forEach((value, index) => {
+    const expectBoundsCloseTo = (actual: number[], expected: number[]) =>
+      actual.forEach((value: number, index: number) => {
         expect(value).toBeCloseTo(expected[index], 8);
       });
 

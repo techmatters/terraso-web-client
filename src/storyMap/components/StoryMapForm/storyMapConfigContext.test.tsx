@@ -428,7 +428,7 @@ describe('structural sharing: unchanged data keeps its identity', () => {
                 southWest: { lat: 0, lng: 0 },
               },
             },
-          } as MapLayerConfig,
+          } as unknown as MapLayerConfig,
         },
         chapters: [
           { id: 'chapter-1', mapLayers: [{ layerId: 'fitted' }] },
@@ -461,15 +461,15 @@ describe('structural sharing: unchanged data keeps its identity', () => {
     });
 
     const after = getActions().getConfig();
+    const boundsOf = (config: StoryMapConfig) =>
+      (
+        config.dataLayers?.fitted as unknown as {
+          viewportConfig?: { bounds?: unknown };
+        }
+      )?.viewportConfig?.bounds;
     expect(after).not.toBe(before);
     expect(after.dataLayers).toBe(before.dataLayers);
     expect(after.dataLayers?.fitted).toBe(before.dataLayers?.fitted);
-    expect(
-      (after.dataLayers?.fitted as unknown as MapLayerConfig)?.viewportConfig
-        ?.bounds
-    ).toBe(
-      (before.dataLayers?.fitted as unknown as MapLayerConfig)?.viewportConfig
-        ?.bounds
-    );
+    expect(boundsOf(after)).toBe(boundsOf(before));
   });
 });

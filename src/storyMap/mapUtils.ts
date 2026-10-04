@@ -190,7 +190,7 @@ export const CONTENT_REGION_FRACTION = 1 / (1 + 2 / 3);
  */
 export const contentRegionPixelRange = (
   width: number,
-  alignment: ChapterAlignment
+  alignment?: ChapterAlignment
 ): [number, number] => {
   if (!alignment || alignment === 'center') {
     return [0, width];
@@ -209,15 +209,18 @@ export const contentRegionPixelRange = (
  */
 export const recordContentRegionBounds = (
   map: mapboxgl.Map,
-  alignment: ChapterAlignment
+  alignment?: ChapterAlignment
 ): MapBounds => {
-  const rawBounds = map.getBounds().toArray();
+  const rawBounds = map.getBounds()?.toArray();
   const container = map.getContainer();
   const width = container?.clientWidth;
   const height = container?.clientHeight;
-  if (!width || !height) {
-    // No layout (e.g. detached container): fall back to the raw camera.
-    return [rawBounds[0][0], rawBounds[0][1], rawBounds[1][0], rawBounds[1][1]];
+  if (!rawBounds || !width || !height) {
+    // No camera/layout (e.g. detached container): fall back to the raw
+    // camera.
+    return rawBounds
+      ? [rawBounds[0][0], rawBounds[0][1], rawBounds[1][0], rawBounds[1][1]]
+      : [0, 0, 0, 0];
   }
   const [x0, x1] = contentRegionPixelRange(width, alignment);
   const southWest = map.unproject([x0, height]);
