@@ -384,3 +384,92 @@ describe('commit contract: pruning runs at the save boundary only', () => {
     expect(saved.dataLayers ?? {}).toEqual({});
   });
 });
+
+describe('structural sharing: unchanged data keeps its identity', () => {
+  test('sanitizeDataLayerConfig is identity-stable for sanitized configs', () => {
+    const layer = {
+      id: 'a',
+      title: 'Layer A',
+      viewportConfig: {
+        bounds: {
+          northEast: { lat: 1, lng: 2 },
+          southWest: { lat: 0, lng: 0 },
+        },
+        baseMapStyle: 'mapbox://styles/mapbox/light-v11',
+      },
+    } as unknown as MapLayerConfig;
+
+    const sanitized = sanitizeDataLayerConfig(layer);
+    const resanitized = sanitizeDataLayerConfig(sanitized);
+
+    // The layer fit effect keys on the bounds object identity: rebuilding
+    // deep-equal objects on every write re-runs the fit (and the camera
+    // recorder saves the fit as the user's camera).
+    expect(resanitized).toBe(sanitized);
+    expect(resanitized.viewportConfig).toBe(sanitized.viewportConfig);
+    expect(resanitized.viewportConfig?.bounds).toBe(
+      sanitized.viewportConfig?.bounds
+    );
+  });
+
+  test('a camera write keeps dataLayers and bounds identity', async () => {
+    const { getActions } = await setupHarness();
+    await act(async () => {
+      getActions().setConfig((config: StoryMapConfig) => ({
+        ...config,
+        dataLayers: {
+          ...config.dataLayers,
+          fitted: {
+            id: 'fitted',
+            title: 'Fitted',
+            viewportConfig: {
+              bounds: {
+                northEast: { lat: 1, lng: 2 },
+                southWest: { lat: 0, lng: 0 },
+              },
+            },
+          } as MapLayerConfig,
+        },
+        chapters: [
+          { id: 'chapter-1', mapLayers: [{ layerId: 'fitted' }] },
+        ] as unknown as StoryMapConfig['chapters'],
+      }));
+    });
+
+    const before = getActions().getConfig();
+
+    // An UNRELATED write (the camera recorder's location write) must not
+    // rebuild the data layer configs.
+    await act(async () => {
+      getActions().setConfig((config: StoryMapConfig) => ({
+        ...config,
+        chapters: config.chapters.map(chapter =>
+          chapter.id === 'chapter-1'
+            ? {
+                ...chapter,
+                location: {
+                  center: { lng: 1, lat: 1 },
+                  zoom: 5,
+                  pitch: 0,
+                  bearing: 0,
+                  bounds: [0, 0, 2, 2],
+                },
+              }
+            : chapter
+        ),
+      }));
+    });
+
+    const after = getActions().getConfig();
+    expect(after).not.toBe(before);
+    expect(after.dataLayers).toBe(before.dataLayers);
+    expect(after.dataLayers?.fitted).toBe(before.dataLayers?.fitted);
+    expect(
+      (after.dataLayers?.fitted as unknown as MapLayerConfig)?.viewportConfig
+        ?.bounds
+    ).toBe(
+      (before.dataLayers?.fitted as unknown as MapLayerConfig)?.viewportConfig
+        ?.bounds
+    );
+  });
+});

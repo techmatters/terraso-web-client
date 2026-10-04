@@ -98,25 +98,32 @@ const sanitizeNested = (value, shape) => {
   if (!_.isPlainObject(value)) {
     return value;
   }
-  if (Array.isArray(shape)) {
-    return _.pick(shape, value);
-  }
-  return Object.keys(shape).reduce(
-    (acc, key) =>
-      value[key] === undefined || value[key] === null
-        ? acc
-        : { ...acc, [key]: sanitizeNested(value[key], shape[key]) },
-    {}
-  );
+  const sanitized = Array.isArray(shape)
+    ? _.pick(shape, value)
+    : Object.keys(shape).reduce(
+        (acc, key) =>
+          value[key] === undefined || value[key] === null
+            ? acc
+            : { ...acc, [key]: sanitizeNested(value[key], shape[key]) },
+        {}
+      );
+  // STRUCTURAL SHARING: an already-sanitized value comes back as the SAME
+  // object. Rebuilding deep-equal objects on every write churns the identity
+  // of nested map layer configs (e.g. `viewportConfig.bounds`), which the
+  // layer fit effect keys on — every write then re-ran the bounds fit.
+  return _.isEqual(sanitized, value) ? value : sanitized;
 };
 
 /**
  * Reduces a data layer entry to the schema-valid stored shape (top-level
  * whitelist + deep sanitization of the nested config fields).
+ *
+ * STRUCTURAL SHARING: returns the input object when the sanitized shape is
+ * deep-equal to it (see {@link sanitizeNested}).
  */
 export const sanitizeDataLayerConfig = mapLayerConfig => {
   const sanitized = _.pick(STORED_DATA_LAYER_FIELDS, mapLayerConfig);
-  return Object.keys(STORED_DATA_LAYER_NESTED_FIELDS).reduce(
+  const withNestedFields = Object.keys(STORED_DATA_LAYER_NESTED_FIELDS).reduce(
     (acc, field) =>
       acc[field] === undefined || acc[field] === null
         ? acc
@@ -129,6 +136,49 @@ export const sanitizeDataLayerConfig = mapLayerConfig => {
           },
     sanitized
   );
+  return _.isEqual(withNestedFields, mapLayerConfig)
+    ? mapLayerConfig
+    : withNestedFields;
+};
+
+/**
+ * `_.mapValues` with structural sharing: returns the input object when every
+ * mapped value is unchanged.
+ */
+const mapValuesShared = (fn, object) => {
+  let changed = false;
+  const result = Object.keys(object).reduce((acc, key) => {
+    const nextValue = fn(object[key]);
+    changed = changed || nextValue !== object[key];
+    acc[key] = nextValue;
+    return acc;
+  }, {});
+  return changed ? result : object;
+};
+
+/**
+ * `_.map` with structural sharing: returns the input array when every mapped
+ * item is unchanged.
+ */
+const mapShared = (fn, array) => {
+  let changed = false;
+  const result = array.map(item => {
+    const nextItem = fn(item);
+    changed = changed || nextItem !== item;
+    return nextItem;
+  });
+  return changed ? result : array;
+};
+
+/**
+ * Spreads `patch` over `target`, returning `target` itself when every patched
+ * value is deep-equal to the one it replaces.
+ */
+const mergeIfChanged = (target, patch) => {
+  const changed = Object.keys(patch).some(
+    key => !_.isEqual(patch[key], target[key])
+  );
+  return changed ? { ...target, ...patch } : target;
 };
 
 /**
@@ -180,7 +230,7 @@ export const syncConfigLayerFields = (nextConfig, previousConfig) => {
       previousTransition
     );
     return Object.keys(derived).length > 0
-      ? { ...transition, ...derived }
+      ? mergeIfChanged(transition, derived)
       : transition;
   };
 
@@ -188,17 +238,19 @@ export const syncConfigLayerFields = (nextConfig, previousConfig) => {
     ...nextConfig,
     ...(nextConfig.dataLayers
       ? {
-          dataLayers: _.mapValues(
+          dataLayers: mapValuesShared(
             sanitizeDataLayerConfig,
             nextConfig.dataLayers
           ),
         }
       : {}),
-    chapters: (nextConfig.chapters ?? []).map(chapter =>
-      syncTransition(
-        chapter,
-        previousConfig?.chapters?.find(({ id }) => id === chapter.id)
-      )
+    chapters: mapShared(
+      chapter =>
+        syncTransition(
+          chapter,
+          previousConfig?.chapters?.find(({ id }) => id === chapter.id)
+        ),
+      nextConfig.chapters ?? []
     ),
     ...(nextConfig.titleTransition
       ? {
