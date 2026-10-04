@@ -1115,6 +1115,7 @@
         "form_configure_chapter_sidebar_section_label": "Configure Chapter sidebar",
         "form_configure_chapter_sidebar_title": "Configure Chapter",
         "form_configure_chapter_sidebar_close": "Close Configure Chapter sidebar",
+        "form_configure_chapter_editing_target": "Editing: {{title}}",
         "view_map_label": "Map",
         "view_chapters_label": "Chapters",
         "view_chapter_label": "Chapter: {{title}}",

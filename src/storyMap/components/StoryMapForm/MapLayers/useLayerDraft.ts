@@ -15,23 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useSelector } from 'terraso-web-client/terrasoApi/store';
 
-import {
-  addMapLayerId,
-  moveMapLayerId,
-  removeMapLayerId,
-  resolveMapLayers,
-} from 'terraso-web-client/storyMap/mapLayerUtils';
 import { fetchDataLayers } from 'terraso-web-client/storyMap/storyMapSlice';
-import {
-  MapLayerConfig,
-  MapLayerDraftRow,
-  MapLayerTransition,
-} from 'terraso-web-client/storyMap/storyMapTypes';
+import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
 export type LayerDraftOptions = {
   storyMapId?: string;
@@ -42,19 +32,18 @@ export type LayerDraftOptions = {
    * host-agnostic.
    */
   fetchEnabled: boolean;
-  /** The transition's `mapLayers` (legacy chapters pass undefined). */
-  mapLayers?: MapLayerTransition[];
-  /** The transition's `dataLayerConfigId` (legacy read fallback). */
-  dataLayerConfigId?: string;
   /** The config's stored `dataLayers` payload. */
   dataLayers?: Record<string, MapLayerConfig>;
 };
 
 /**
- * Ordered layer-id draft for one transition (index 0 = topmost) plus the
- * resolved rows. Pure layer-list state: the draft knows nothing about the
- * derived compat fields (see `syncTransitionLayerFields`) and is written back
- * to the config only by the caller.
+ * The layer INDEX for the layer tree: the fetched layer configs merged with
+ * the stored `dataLayers` payload, plus `resolveLayerConfig`.
+ *
+ * This hook owns NO layer-list state — the active transition's `mapLayers`
+ * (the config) is the single source of truth for a step's ordered layer
+ * list; hosts derive their rows from it and write through `updateTransition`
+ * (immediate apply).
  */
 // Stable empty payload: a destructuring default of `{}` would mint a new
 // object every render (legacy configs have no `dataLayers`), churning every
@@ -66,8 +55,6 @@ export const useLayerDraft = ({
   storyMapId,
   email,
   fetchEnabled,
-  mapLayers,
-  dataLayerConfigId,
   dataLayers: configDataLayers = EMPTY_DATA_LAYERS,
 }: LayerDraftOptions) => {
   useFetchData(
@@ -132,46 +119,11 @@ export const useLayerDraft = ({
     [layerConfigsById]
   );
 
-  // Ordered draft layer ids for this transition (index 0 = topmost).
-  const [draftLayerIds, setDraftLayerIds] = useState<string[]>(() =>
-    resolveMapLayers({ mapLayers, dataLayerConfigId }).map(
-      ({ layerId }) => layerId
-    )
-  );
-
-  // ONE row array for render → reorder → confirm. Rows keep dangling refs
-  // (config null) — unknown data is never silently dropped.
-  const draftRows = useMemo<MapLayerDraftRow[]>(
-    () =>
-      draftLayerIds.map(layerId => ({
-        layerId,
-        config: resolveLayerConfig(layerId) ?? null,
-      })),
-    [draftLayerIds, resolveLayerConfig]
-  );
-
-  const draftMapLayerConfigs = useMemo(
-    () =>
-      draftRows
-        .map(({ config: mapLayerConfig }) => mapLayerConfig)
-        .filter((mapLayerConfig): mapLayerConfig is MapLayerConfig =>
-          Boolean(mapLayerConfig)
-        ),
-    [draftRows]
-  );
-
   return {
-    draftLayerIds,
-    setDraftLayerIds,
-    draftRows,
-    draftMapLayerConfigs,
     layerConfigsById,
     resolveLayerConfig,
     fetchedMapLayers,
     fetching,
     error,
-    addMapLayerId,
-    removeMapLayerId,
-    moveMapLayerId,
   };
 };

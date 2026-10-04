@@ -1119,6 +1119,7 @@
         "form_configure_chapter_sidebar_section_label": "Barra lateral Configurar capítulo",
         "form_configure_chapter_sidebar_title": "Configurar capítulo",
         "form_configure_chapter_sidebar_close": "Cerrar la barra lateral Configurar capítulo",
+        "form_configure_chapter_editing_target": "Editando: {{title}}",
         "view_map_label": "Mapa",
         "view_chapters_label": "Capítulos",
         "view_chapter_label": "Capítulo: {{title}}",

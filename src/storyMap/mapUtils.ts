@@ -49,6 +49,8 @@ const DEFAULT_ASSUMED_CLIENT_HEIGHT = 600;
 
 const ROTATION_DURATION = 30000;
 
+const GENERATED_LAYER_SUFFIXES = Object.values(LAYER_TYPES);
+
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
     return [];
@@ -56,7 +58,15 @@ const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
 
   const layerType = map.getLayer(layer)?.type;
   if (!layerType) {
-    logger.warn(`Layer ${layer} not found`);
+    // Generated data-layer sublayer ids are visibility CANDIDATES (they are
+    // not necessarily on the map: the source may still be loading, or the
+    // layer was removed) — missing ones are skipped silently instead of
+    // spamming a warning per transition per published map.
+    if (
+      !GENERATED_LAYER_SUFFIXES.some(suffix => layer.endsWith(`-${suffix}`))
+    ) {
+      logger.warn(`Layer ${layer} not found`);
+    }
     return null;
   }
   return LAYER_PAINT_TYPES[layerType as LayerPaintType];
@@ -120,7 +130,7 @@ const adjustBoundsForAlignment = (
  * Add padding area to bounds for display based on alignment
  * Expands the bounds to account for the chapter panel
  */
-const expandBoundsForDisplay = (
+export const expandBoundsForDisplay = (
   bounds: MapBounds,
   alignment: ChapterAlignment
 ): MapBounds => {
@@ -141,6 +151,61 @@ const expandBoundsForDisplay = (
   }
 
   return bounds;
+};
+
+/**
+ * Bounds recording (editor side) is the exact inverse of
+ * {@link expandBoundsForDisplay} (viewer side): the recorder stores the
+ * CONTENT REGION — the strip of the map container the chapter panel leaves
+ * uncovered under the viewer's expansion assumption — so the viewer
+ * re-expands it to exactly the camera the user framed.
+ *
+ * The expansion above turns a recorded lng range `r` into `(1 + 2/3) * r`,
+ * so the content strip is `1 / (1 + 2/3)` of the container width.
+ */
+export const CONTENT_REGION_FRACTION = 1 / (1 + 2 / 3);
+
+/**
+ * Pixel x-range of the content region (uncovered strip) of a map container
+ * with the given width, per chapter alignment. The chapter panel covers the
+ * opposite side; 'center' panels overlap the middle and are not compensated
+ * (the viewer does not expand centered bounds either).
+ */
+export const contentRegionPixelRange = (
+  width: number,
+  alignment: ChapterAlignment
+): [number, number] => {
+  if (!alignment || alignment === 'center') {
+    return [0, width];
+  }
+  const contentWidth = width * CONTENT_REGION_FRACTION;
+  return alignment === 'left'
+    ? [width - contentWidth, width]
+    : [0, contentWidth];
+};
+
+/**
+ * The bounds to RECORD for a map position: the content region of the map
+ * container at record time (mapbox `unproject` on the strip's corners), not
+ * the raw camera bounds. Recording the raw camera makes the viewer display
+ * the framing ~`1 + 2/3` times zoomed out for left/right chapters.
+ */
+export const recordContentRegionBounds = (
+  map: mapboxgl.Map,
+  alignment: ChapterAlignment
+): MapBounds => {
+  const rawBounds = map.getBounds().toArray();
+  const container = map.getContainer();
+  const width = container?.clientWidth;
+  const height = container?.clientHeight;
+  if (!width || !height) {
+    // No layout (e.g. detached container): fall back to the raw camera.
+    return [rawBounds[0][0], rawBounds[0][1], rawBounds[1][0], rawBounds[1][1]];
+  }
+  const [x0, x1] = contentRegionPixelRange(width, alignment);
+  const southWest = map.unproject([x0, height]);
+  const northEast = map.unproject([x1, 0]);
+  return [southWest.lng, southWest.lat, northEast.lng, northEast.lat];
 };
 
 /**
@@ -181,7 +246,8 @@ const startCameraTransition = (
   map: mapboxgl.Map,
   isMobile: boolean,
   mapDimensions: { height: number; width: number },
-  transition: ChapterConfig | Transition
+  transition: ChapterConfig | Transition,
+  allowRotation: boolean
 ) => {
   if (transition.location && !_.isEmpty(transition.location)) {
     const alignment =
@@ -206,7 +272,10 @@ const startCameraTransition = (
     });
   }
 
-  if (transition.rotateAnimation) {
+  // Rotation is a PLAYBACK feature: a pending 30s rotateTo would otherwise
+  // keep moving the editor map (and record a flipped bearing onto the step
+  // being configured). Never rotate outside the viewer.
+  if (transition.rotateAnimation && allowRotation) {
     map.once('moveend', () => {
       const rotateNumber = map.getBearing();
       map.rotateTo(rotateNumber + 180, {
@@ -369,6 +438,8 @@ export type StartTransitionOptions = {
    * z-ordering still run — only the camera move is skipped.
    */
   suspendCamera?: boolean;
+  /** Playback-only camera rotation (see `startCameraTransition`). */
+  allowRotation?: boolean;
 };
 export const startTransition = (
   map: mapboxgl.Map,
@@ -378,6 +449,7 @@ export const startTransition = (
     isMobile,
     mapDimensions,
     suspendCamera,
+    allowRotation = true,
   }: StartTransitionOptions
 ) => {
   const transition = getTransition({
@@ -390,7 +462,13 @@ export const startTransition = (
   }
 
   if (!suspendCamera) {
-    startCameraTransition(map, isMobile, mapDimensions, transition);
+    startCameraTransition(
+      map,
+      isMobile,
+      mapDimensions,
+      transition,
+      allowRotation
+    );
   }
   startLayerTransition(map, chapterId, config);
   startMapLayerOrder(map, transition);

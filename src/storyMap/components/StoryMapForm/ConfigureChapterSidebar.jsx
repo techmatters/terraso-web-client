@@ -156,41 +156,42 @@ export const ConfigureChapterSidebar = ({
   const targetId = activeStepId ?? STORY_MAP_TITLE_ID;
 
   const targetTransition = getTransition({ config, id: targetId });
+  const targetIndex = config.chapters.findIndex(({ id }) => id === targetId);
+  const targetTitle =
+    targetId === STORY_MAP_TITLE_ID
+      ? t('storyMap.form_title_location_dialog_title')
+      : targetTransition?.title ||
+        t('storyMap.outline_no_title', { index: targetIndex + 1 });
 
   // Layer draft + layer index fetch (the hook is host-agnostic; this host is
-  // persistent, so the fetch is enabled while the sidebar is open). The
-  // draft is written back to the config on EVERY mutation — immediate-apply
-  // semantics, there is no confirm step.
-  const {
-    draftLayerIds,
-    setDraftLayerIds,
-    draftRows,
-    layerConfigsById,
-    resolveLayerConfig,
-    fetching,
-    error,
-  } = useLayerDraft({
-    storyMapId: storyMap?.id,
-    email: user?.data?.email,
-    fetchEnabled: open,
-    mapLayers: targetTransition?.mapLayers,
-    dataLayerConfigId: targetTransition?.dataLayerConfigId,
-    dataLayers: config.dataLayers,
-  });
+  // persistent, so the fetch is enabled while the sidebar is open).
+  //
+  // THERE IS NO DRAFT: the config is the single source of truth for the
+  // layer list. Rows are derived from the target transition's `mapLayers` on
+  // every render and every mutation writes through `updateTransition`
+  // (immediate apply — there is no confirm step and no shadow copy to
+  // resynchronize when the edit target changes).
+  const { layerConfigsById, resolveLayerConfig, fetching, error } =
+    useLayerDraft({
+      storyMapId: storyMap?.id,
+      email: user?.data?.email,
+      fetchEnabled: open,
+      dataLayers: config.dataLayers,
+    });
 
-  // Retarget the draft when the active step changes (the hook owns one
-  // transition's draft; a target swap resets it from the new transition).
-  const previousTargetRef = useRef(targetId);
-  useEffect(() => {
-    if (previousTargetRef.current === targetId) {
-      return;
-    }
-    previousTargetRef.current = targetId;
-    const transition = getTransition({ config, id: targetId });
-    setDraftLayerIds(
-      resolveMapLayers(transition).map(({ layerId }) => layerId)
-    );
-  }, [targetId, config, setDraftLayerIds]);
+  const targetLayerIds = useMemo(
+    () => resolveMapLayers(targetTransition).map(({ layerId }) => layerId),
+    [targetTransition]
+  );
+
+  const rows = useMemo(
+    () =>
+      targetLayerIds.map(layerId => ({
+        layerId,
+        config: resolveLayerConfig(layerId) ?? null,
+      })),
+    [targetLayerIds, resolveLayerConfig]
+  );
 
   /**
    * IMMEDIATE-APPLY WRITE: the ordered layer ids replace the active
@@ -201,7 +202,6 @@ export const ConfigureChapterSidebar = ({
    */
   const writeLayerIds = useCallback(
     nextLayerIds => {
-      setDraftLayerIds(nextLayerIds);
       setConfig(currentConfig => {
         const dataLayerConfigs = _.keyBy(
           'id',
@@ -223,39 +223,39 @@ export const ConfigureChapterSidebar = ({
         };
       });
     },
-    [setConfig, setDraftLayerIds, resolveLayerConfig, targetId]
+    [setConfig, resolveLayerConfig, targetId]
   );
 
   const onToggleLayer = useCallback(
     layerId => {
-      const isOn = draftLayerIds.includes(layerId);
+      const isOn = targetLayerIds.includes(layerId);
       if (isOn) {
-        writeLayerIds(removeMapLayerId(draftLayerIds, layerId));
+        writeLayerIds(removeMapLayerId(targetLayerIds, layerId));
         return;
       }
       if (!resolveLayerConfig(layerId)) {
         return;
       }
-      writeLayerIds(addMapLayerId(draftLayerIds, layerId));
-      // The map fits the added layer — a programmatic move that must not be
-      // recorded as a user camera edit.
+      writeLayerIds(addMapLayerId(targetLayerIds, layerId));
+      // The map fits the added layer — a programmatic move that the map
+      // editing session never records as a user camera edit.
       onFitLayerBounds?.(layerId);
     },
-    [draftLayerIds, resolveLayerConfig, writeLayerIds, onFitLayerBounds]
+    [targetLayerIds, resolveLayerConfig, writeLayerIds, onFitLayerBounds]
   );
 
   const onRemoveLayer = useCallback(
     layerId => {
-      writeLayerIds(removeMapLayerId(draftLayerIds, layerId));
+      writeLayerIds(removeMapLayerId(targetLayerIds, layerId));
     },
-    [draftLayerIds, writeLayerIds]
+    [targetLayerIds, writeLayerIds]
   );
 
   const onReorder = useCallback(
     (sourceIndex, destIndex) => {
-      writeLayerIds(moveMapLayerId(draftLayerIds, sourceIndex, destIndex));
+      writeLayerIds(moveMapLayerId(targetLayerIds, sourceIndex, destIndex));
     },
-    [draftLayerIds, writeLayerIds]
+    [targetLayerIds, writeLayerIds]
   );
 
   /**
@@ -269,8 +269,8 @@ export const ConfigureChapterSidebar = ({
    */
   const onCreateLayer = useCallback(
     mapLayerConfig => {
+      const creationTargetId = creationTargetRef.current ?? targetId;
       registerSessionDataLayers([mapLayerConfig.id]);
-      setDraftLayerIds(current => addMapLayerId(current, mapLayerConfig.id));
       setConfig(currentConfig =>
         updateTransition({
           config: {
@@ -280,7 +280,7 @@ export const ConfigureChapterSidebar = ({
               [mapLayerConfig.id]: mapLayerConfig,
             },
           },
-          id: targetId,
+          id: creationTargetId,
           update: transition => ({
             ...transition,
             mapLayers: toMapLayers(
@@ -294,13 +294,7 @@ export const ConfigureChapterSidebar = ({
       );
       onFitLayerBounds?.(mapLayerConfig.id);
     },
-    [
-      setConfig,
-      setDraftLayerIds,
-      registerSessionDataLayers,
-      targetId,
-      onFitLayerBounds,
-    ]
+    [setConfig, registerSessionDataLayers, targetId, onFitLayerBounds]
   );
 
   // While the sidebar is open, the whole window accepts file drops to start
@@ -311,15 +305,20 @@ export const ConfigureChapterSidebar = ({
   // True while CreateMapLayerDialog is open: window drops must never swap the
   // file mid-form.
   const [createFlowActive, setCreateFlowActive] = useState(false);
+  // The create flow can outlive a scroll-spy retarget (the layer panel may
+  // scroll while the dialog is open): a created layer always lands on the
+  // step that was active when the flow STARTED.
+  const creationTargetRef = useRef(targetId);
   const startCreateFlow = useCallback(
     file => {
       if (createFlowActive) {
         return;
       }
+      creationTargetRef.current = targetId;
       setDropError(null);
       setPendingFile(file);
     },
-    [createFlowActive]
+    [createFlowActive, targetId]
   );
   const onRejectFile = useCallback(
     file => {
@@ -373,11 +372,6 @@ export const ConfigureChapterSidebar = ({
     };
   }, [open, startCreateFlow, onRejectFile, createFlowActive]);
 
-  const targetTitle =
-    targetId === STORY_MAP_TITLE_ID
-      ? t('storyMap.form_title_location_dialog_title')
-      : targetTransition?.title;
-
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
       <FormSidebar
@@ -389,6 +383,17 @@ export const ConfigureChapterSidebar = ({
         )}
         closeLabel={t('storyMap.form_configure_chapter_sidebar_close')}
       >
+        {/* The edit target is always visible: edits apply IMMEDIATELY to
+            the step named here (map camera writes included). */}
+        <Typography
+          variant="h4"
+          data-testid="editing-target"
+          sx={{ fontWeight: 'bold' }}
+        >
+          {t('storyMap.form_configure_chapter_editing_target', {
+            title: targetTitle,
+          })}
+        </Typography>
         <Stack spacing={2} sx={{ my: 1, position: 'relative' }}>
           {dragActive && (
             <Box
@@ -414,8 +419,8 @@ export const ConfigureChapterSidebar = ({
           )}
           <AlignmentSettings targetId={targetId} />
           <MapLayersPanel
-            rows={draftRows}
-            activeLayerIds={draftLayerIds}
+            rows={rows}
+            activeLayerIds={targetLayerIds}
             treeLayers={Object.values(layerConfigsById)}
             fetching={fetching}
             error={error}

@@ -45,6 +45,7 @@ import TopBar from 'terraso-web-client/storyMap/components/StoryMapForm/TopBar';
 import TopBarPreview from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarPreview';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import {
+  getTransition,
   isChapterEmpty,
   updateTransition,
 } from 'terraso-web-client/storyMap/storyMapUtils';
@@ -127,11 +128,16 @@ const StoryMapForm = props => {
   const [scrollToChapter, setScrollToChapter] = useState();
   const [rightSidebar, setRightSidebar] = useState(RIGHT_SIDEBAR_CONFIGURE);
   const [isPublishing, setIsPublishing] = useState(false);
-  // Layer bounds fits are programmatic map moves — never user camera edits.
-  // The suppression counter is shared between the fit requester (the
-  // configure sidebar) and the camera recorder on the editor map.
-  const programmaticMoveRef = useRef(0);
-  const [fitBoundsRequest, setFitBoundsRequest] = useState(null);
+  // The map editing session (inside StoryMap) is the ONE owner of the fit
+  // channel: it hands its fit-layer-bounds requester here while mounted.
+  const fitLayerBoundsRequesterRef = useRef(null);
+  // Save serialization: never run two saves concurrently (last-write-wins
+  // races) and never land a stale draft after a newer save/publish.
+  const saveInFlightRef = useRef(null);
+  const lastSavedRevisionRef = useRef(-1);
+  const currentRevisionRef = useRef(0);
+  currentRevisionRef.current = configRevision;
+  const [saveSettleTick, setSaveSettleTick] = useState(0);
 
   const draftAutoSaveSnapshot = useMemo(
     () => ({
@@ -152,6 +158,10 @@ const StoryMapForm = props => {
   const persistSaveOperationWithBufferedChapterEdits = useCallback(
     persistStoryMap => {
       const { config: configToPersist, revision } = flushBufferedChapterEdits();
+      lastSavedRevisionRef.current = Math.max(
+        lastSavedRevisionRef.current,
+        revision
+      );
 
       return persistStoryMap(configToPersist, draftMediaFiles, revision).then(
         () => {
@@ -163,12 +173,38 @@ const StoryMapForm = props => {
   );
 
   const persistDraftAutoSave = useCallback(
-    (configToPersist, revision, mediaFilesToPersist) =>
-      onSaveDraft(configToPersist, mediaFilesToPersist, revision).then(() => {
-        markRevisionSaved(revision);
-      }),
+    (configToPersist, revision, mediaFilesToPersist) => {
+      lastSavedRevisionRef.current = Math.max(
+        lastSavedRevisionRef.current,
+        revision
+      );
+      return onSaveDraft(configToPersist, mediaFilesToPersist, revision).then(
+        () => {
+          markRevisionSaved(revision);
+        }
+      );
+    },
     [markRevisionSaved, onSaveDraft]
   );
+
+  // ONE save at a time: concurrent saves resolve last-write-wins on the
+  // backend. User-initiated saves QUEUE behind the in-flight one (they read
+  // the LATEST config when they run); autosaves are skipped upstream and
+  // retried when the in-flight save settles (see `saveSettleTick`).
+  const runSave = useCallback(saveOperation => {
+    const previous = saveInFlightRef.current ?? Promise.resolve();
+    const inFlight = previous.then(saveOperation, saveOperation);
+    saveInFlightRef.current = inFlight;
+    inFlight
+      .catch(() => {})
+      .finally(() => {
+        if (saveInFlightRef.current === inFlight) {
+          saveInFlightRef.current = null;
+        }
+        setSaveSettleTick(tick => tick + 1);
+      });
+    return inFlight;
+  }, []);
 
   useEffect(() => {
     const {
@@ -180,12 +216,35 @@ const StoryMapForm = props => {
     if (isPublishing || !hasPendingConfigChanges) {
       return;
     }
-    persistDraftAutoSave(configToPersist, revision, mediaFilesToPersist).catch(
-      error => {
+    if (saveInFlightRef.current) {
+      // A save is in flight — retried when it settles.
+      return;
+    }
+    if (revision <= lastSavedRevisionRef.current) {
+      // Stale draft: a newer revision was already saved or published.
+      return;
+    }
+    if (revision !== currentRevisionRef.current) {
+      // The config moved on while this snapshot was debounced; the pending
+      // snapshot carries the newer state.
+      return;
+    }
+    runSave(() =>
+      persistDraftAutoSave(
+        configToPersist,
+        revision,
+        mediaFilesToPersist
+      ).catch(error => {
         logger.error('Error auto saving story map', error);
-      }
+      })
     );
-  }, [debouncedDraftAutoSaveSnapshot, isPublishing, persistDraftAutoSave]);
+  }, [
+    debouncedDraftAutoSaveSnapshot,
+    isPublishing,
+    persistDraftAutoSave,
+    runSave,
+    saveSettleTick,
+  ]);
 
   const { isBlocked, proceed, cancel } = useNavigationBlocker(
     isDirty,
@@ -275,16 +334,22 @@ const StoryMapForm = props => {
 
     setIsPublishing(true);
 
-    return persistSaveOperationWithBufferedChapterEdits(onPublish).finally(
-      () => {
-        setIsPublishing(false);
-      }
-    );
-  }, [isPublishing, onPublish, persistSaveOperationWithBufferedChapterEdits]);
+    return runSave(() =>
+      persistSaveOperationWithBufferedChapterEdits(onPublish)
+    ).finally(() => {
+      setIsPublishing(false);
+    });
+  }, [
+    isPublishing,
+    onPublish,
+    persistSaveOperationWithBufferedChapterEdits,
+    runSave,
+  ]);
 
   const onSaveDraftWrapper = useCallback(
-    () => persistSaveOperationWithBufferedChapterEdits(onSaveDraft),
-    [onSaveDraft, persistSaveOperationWithBufferedChapterEdits]
+    () =>
+      runSave(() => persistSaveOperationWithBufferedChapterEdits(onSaveDraft)),
+    [onSaveDraft, persistSaveOperationWithBufferedChapterEdits, runSave]
   );
 
   const closeRightSidebar = useCallback(() => {
@@ -303,27 +368,38 @@ const StoryMapForm = props => {
     );
   }, []);
 
-  const requestFitBounds = useCallback(layerId => {
-    programmaticMoveRef.current += 1;
-    setFitBoundsRequest(current => ({
-      layerId,
-      seq: (current?.seq ?? 0) + 1,
-    }));
+  const onFitLayerBounds = useCallback(requester => {
+    fitLayerBoundsRequesterRef.current = requester;
   }, []);
 
-  // Immediate-apply map camera edits: the recorder on the editor map writes
-  // the USER's moves to the ACTIVE step's location.
+  const requestFitBounds = useCallback(layerId => {
+    fitLayerBoundsRequesterRef.current?.(layerId);
+  }, []);
+
+  // Immediate-apply map camera edits: the map editing session writes the
+  // USER's moves (gesture-terminated only) to the gesture-start target.
   const onMapPositionChange = useCallback(
-    position => {
-      setConfig(config =>
-        updateTransition({
+    (position, targetId) => {
+      setConfig(config => {
+        // The gesture's target can disappear mid-edit (its chapter is
+        // deleted while the map is being dragged): never drop the user's
+        // camera silently — fall back to the title step.
+        const id = getTransition({ config, id: targetId })
+          ? targetId
+          : STORY_MAP_TITLE_ID;
+        if (id !== targetId) {
+          logger.warn(
+            `Map camera write for deleted step ${targetId}: falling back to the title step`
+          );
+        }
+        return updateTransition({
           config,
-          id: currentStepId ?? STORY_MAP_TITLE_ID,
+          id,
           update: transition => ({ ...transition, location: position }),
-        })
-      );
+        });
+      });
     },
-    [setConfig, currentStepId]
+    [setConfig]
   );
 
   const onMapStyleChange = useCallback(
@@ -380,11 +456,13 @@ const StoryMapForm = props => {
           onAdd={onAddChapter}
           onDelete={onDeleteChapter}
           onMoveChapter={onMoveChapter}
+          onSelect={setCurrentStepId}
         />
         <Box sx={{ flex: 1 }}>
           <StoryMap
             config={config}
             onStepChange={setCurrentStepId}
+            activeStepId={currentStepId}
             ChapterComponent={BufferedChapterForm}
             TitleComponent={TitleForm}
             onReady={onMapReady}
@@ -392,8 +470,9 @@ const StoryMapForm = props => {
             mapEditing={rightSidebar === RIGHT_SIDEBAR_CONFIGURE}
             onMapPositionChange={onMapPositionChange}
             onMapStyleChange={onMapStyleChange}
-            programmaticMoveRef={programmaticMoveRef}
-            fitBoundsRequest={fitBoundsRequest}
+            onFitLayerBounds={onFitLayerBounds}
+            // The editor never rotates (playback feature).
+            playRotateAnimation={false}
           />
         </Box>
         {rightSidebar === RIGHT_SIDEBAR_CONFIGURE && (

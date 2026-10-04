@@ -315,6 +315,7 @@ const Map = forwardRef((props, ref) => {
     projection,
     initialLocation: propsInitialLocation,
     interactive = true,
+    disableScrollZoom = false,
     disableRotation = false,
     disablePitch = true,
     hash = false,
@@ -430,7 +431,16 @@ const Map = forwardRef((props, ref) => {
     map.dragPan.enable();
     map.dragRotate.enable();
     map.doubleClickZoom.enable();
-    map.scrollZoom.enable();
+    if (disableScrollZoom) {
+      // The wheel must scroll the content AROUND the map (the story), never
+      // zoom the map: the chapter overlay passes wheel events through to the
+      // map canvas, so scroll-zoom would hijack the story scroll and persist
+      // it as a camera write. Zoom stays available through the map's own
+      // zoom/nav controls and pinch on touch.
+      map.scrollZoom.disable();
+    } else {
+      map.scrollZoom.enable();
+    }
 
     if (disableRotation) {
       // disable map rotation using right click + drag
@@ -443,7 +453,7 @@ const Map = forwardRef((props, ref) => {
     if (disablePitch) {
       map.touchPitch.disable();
     }
-  }, [map, interactive, disableRotation, disablePitch]);
+  }, [map, interactive, disableScrollZoom, disableRotation, disablePitch]);
 
   useEffect(() => {
     if (!map) {

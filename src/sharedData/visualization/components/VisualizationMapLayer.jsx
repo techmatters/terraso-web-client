@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
 import logger from 'terraso-client-shared/monitoring/logger';
@@ -262,20 +262,50 @@ const MapboxLayer = props => {
     sourceName,
   ]);
 
+  // ONE fit per request token. `changeBounds` is a request seq number (or
+  // `true` for "fit whenever the bounds change"): a CONSUMED seq must never
+  // fit again — config writes after a fit re-ran this effect through the
+  // bounds OBJECT identity and re-fit the map (in the story map editor the
+  // camera recorder then saved the FIT as the user's camera). Bounds are
+  // read through a ref and the effect keys on their SCALAR values, so
+  // deep-equal rebuilds cannot re-trigger a fit either.
+  const handledChangeBoundsRef = useRef(null);
+  const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
+  const viewportBoundsRef = useRef(viewportBounds);
+  viewportBoundsRef.current = viewportBounds;
+  const boundsKey = viewportBounds
+    ? [
+        viewportBounds.southWest?.lng,
+        viewportBounds.southWest?.lat,
+        viewportBounds.northEast?.lng,
+        viewportBounds.northEast?.lat,
+      ].join(',')
+    : '';
+
   useEffect(() => {
     if (!map || !changeBounds) {
       return;
     }
 
+    const isRequestToken = typeof changeBounds === 'number';
+    if (isRequestToken) {
+      if (handledChangeBoundsRef.current === changeBounds) {
+        return;
+      }
+      handledChangeBoundsRef.current = changeBounds;
+    } else {
+      handledChangeBoundsRef.current = null;
+    }
+
     let cancelled = false;
 
     const getConfigBounds = () => {
-      const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
-      if (!viewportBounds) {
+      const bounds = viewportBoundsRef.current;
+      if (!bounds) {
         return;
       }
-      const southWest = viewportBounds.southWest;
-      const northEast = viewportBounds.northEast;
+      const southWest = bounds.southWest;
+      const northEast = bounds.northEast;
       if (!southWest || !northEast) {
         return;
       }
@@ -343,14 +373,7 @@ const MapboxLayer = props => {
     return () => {
       cancelled = true;
     };
-  }, [
-    map,
-    visualizationConfig?.viewportConfig?.bounds,
-    useConfigBounds,
-    sourceName,
-    changeBounds,
-    avoidMoveWhenVisible,
-  ]);
+  }, [map, boundsKey, useConfigBounds, sourceName, changeBounds, avoidMoveWhenVisible]);
 
   const layer = useMemo(() => {
     if (!map || (useSvg && !imageSvg)) {

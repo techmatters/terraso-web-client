@@ -22,6 +22,7 @@ import {
   extractAccountMembership,
   extractMembershipInfo,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
+import logger from 'terraso-client-shared/monitoring/logger';
 
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
@@ -91,13 +92,10 @@ export const extractStoryMap = storyMap => ({
  * @returns {ChapterConfig | Transition | undefined}
  */
 export const getTransition = ({ config, id }) => {
-  const isTitle = id === STORY_MAP_TITLE_ID;
-  if (isTitle) {
+  if (id === STORY_MAP_TITLE_ID) {
     return config.titleTransition;
   }
-  const chapterIndex = config.chapters.findIndex(chapter => chapter.id === id);
-  const chapter = config.chapters[chapterIndex];
-  return chapter;
+  return config.chapters.find(chapter => chapter.id === id);
 };
 
 /**
@@ -116,6 +114,17 @@ export const updateTransition = ({ config, id, update }) => {
       ...config,
       titleTransition: update(config.titleTransition ?? {}),
     };
+  }
+  if (!config.chapters.some(chapter => chapter.id === id)) {
+    // SILENT DROPS ARE FORBIDDEN: an unmatched id means the edit target
+    // vanished (e.g. its chapter was deleted while the map was being
+    // dragged). Callers must handle that explicitly (the camera recorder
+    // falls back to the title step); if one slips through, the write is
+    // dropped — loudly.
+    logger.warn(
+      `updateTransition: no step with id ${id} in this story map config`
+    );
+    return config;
   }
   return {
     ...config,
