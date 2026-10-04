@@ -16,7 +16,11 @@
  */
 
 import {
+  CONTENT_REGION_FRACTION,
+  contentRegionPixelRange,
   enforceMapLayerOrder,
+  expandBoundsForDisplay,
+  recordContentRegionBounds,
   startTransition,
 } from 'terraso-web-client/storyMap/mapUtils';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
@@ -344,6 +348,101 @@ describe('startTransition camera suspension', () => {
     runTransition(map, cameraConfig(), 'chapter-1');
 
     expect(map.flyTo).toHaveBeenCalled();
+  });
+});
+
+describe('content region bounds recording (bounds WYSIWYG)', () => {
+  const FRAME = { clientWidth: 1200, clientHeight: 600 };
+  const CAMERA_BOUNDS = [-180, -90, 180, 90];
+
+  // A map whose pixel → lng/lat mapping is LINEAR over the camera bounds
+  // (exactly what the round-trip needs to check).
+  const createLinearMap = (container = FRAME) => {
+    const [w, s, e, n] = CAMERA_BOUNDS;
+    return {
+      getBounds: () => ({
+        toArray: () => [
+          [w, s],
+          [e, n],
+        ],
+      }),
+      getContainer: () => container,
+      unproject: ([x, y]: [number, number]) => ({
+        lng: w + (x / FRAME.clientWidth) * (e - w),
+        lat: n - (y / FRAME.clientHeight) * (n - s),
+      }),
+    } as unknown as Parameters<typeof recordContentRegionBounds>[0];
+  };
+
+  test('content region pixel range covers the uncovered strip per alignment', () => {
+    const contentWidth = FRAME.clientWidth * CONTENT_REGION_FRACTION;
+    expect(contentRegionPixelRange(FRAME.clientWidth, 'left')).toEqual([
+      FRAME.clientWidth - contentWidth,
+      FRAME.clientWidth,
+    ]);
+    expect(contentRegionPixelRange(FRAME.clientWidth, 'right')).toEqual([
+      0,
+      contentWidth,
+    ]);
+    expect(contentRegionPixelRange(FRAME.clientWidth, 'center')).toEqual([
+      0,
+      FRAME.clientWidth,
+    ]);
+    expect(contentRegionPixelRange(FRAME.clientWidth, undefined)).toEqual([
+      0,
+      FRAME.clientWidth,
+    ]);
+  });
+
+  test.each(['left', 'right', 'center'])(
+    'recorded bounds + expandBoundsForDisplay round-trip to the framed region (%s)',
+    alignment => {
+      const recorded = recordContentRegionBounds(
+        createLinearMap(),
+        alignment as 'left' | 'right' | 'center'
+      );
+
+      // The viewer expands the recorded bounds to compensate for the chapter
+      // card: that must reproduce EXACTLY the camera the user framed (a raw
+      // camera recording makes it display ~1.67x zoomed out).
+      const displayed = expandBoundsForDisplay(
+        recorded,
+        alignment as 'left' | 'right' | 'center'
+      );
+      displayed.forEach((value, index) => {
+        expect(value).toBeCloseTo(CAMERA_BOUNDS[index], 8);
+      });
+    }
+  );
+
+  test('the recorded bounds are the uncovered strip, anchored opposite the card', () => {
+    const [w, s, e, n] = CAMERA_BOUNDS;
+    const lngRange = e - w;
+    const contentRange = lngRange * CONTENT_REGION_FRACTION;
+    const expectBoundsCloseTo = (actual, expected) =>
+      actual.forEach((value, index) => {
+        expect(value).toBeCloseTo(expected[index], 8);
+      });
+
+    // Card on the left: the content strip is the EASTERN one.
+    expectBoundsCloseTo(recordContentRegionBounds(createLinearMap(), 'left'), [
+      e - contentRange,
+      s,
+      e,
+      n,
+    ]);
+    // Card on the right: the content strip is the WESTERN one.
+    expectBoundsCloseTo(recordContentRegionBounds(createLinearMap(), 'right'), [
+      w,
+      s,
+      w + contentRange,
+      n,
+    ]);
+  });
+
+  test('falls back to the raw camera bounds without map layout', () => {
+    const map = createLinearMap({ clientWidth: 0, clientHeight: 0 });
+    expect(recordContentRegionBounds(map, 'left')).toEqual(CAMERA_BOUNDS);
   });
 });
 

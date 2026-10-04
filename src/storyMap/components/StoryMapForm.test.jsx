@@ -25,6 +25,7 @@ import {
 } from 'terraso-web-client/tests/utils';
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { when } from 'jest-when';
+import logger from 'terraso-client-shared/monitoring/logger';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { createLoadedMapMock } from 'terraso-web-client/tests/mapboxMock';
 
@@ -2816,6 +2817,480 @@ test('StoryMapForm: alignment buttons in the sidebar write the active chapter al
       .chapters.find(({ id }) => id === 'chapter-1');
     expect(saved.alignment).toBe('left');
   } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Camera attribution and the fit channel (the map editing session).
+// ---------------------------------------------------------------------------
+
+const CAMERA_DRAGGED = {
+  center: { lng: -5, lat: 5 },
+  zoom: 7,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [-6, 4],
+    [-4, 6],
+  ],
+};
+const CAMERA_SEARCHED = {
+  center: { lng: 12, lat: -3 },
+  zoom: 9,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [11, -4],
+    [13, -2],
+  ],
+};
+
+// A map whose fitBounds behaves like the real one: fitBounds({animate:false})
+// fires movestart/move/moveend UNCONDITIONALLY — and re-fires on every call.
+const makeFittingCameraMap = (openValues, fitCamera) => {
+  const map = makeCameraMap(openValues);
+  map.fitBounds = jest.fn(() => {
+    map.moveCameraTo(fitCamera);
+    map.fire('movestart');
+    map.fire('move');
+    map.fire('moveend');
+  });
+  return map;
+};
+
+const dragMapTo = async (map, camera) => {
+  await act(async () => {
+    map.fire('mousedown');
+    map.moveCameraTo(camera);
+    map.fire('move');
+    map.fire('moveend');
+    map.fire('mouseup');
+  });
+};
+
+const toggleTreeLayer = async name => {
+  await waitFor(() => {
+    expect(screen.getByRole('treeitem', { name })).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(screen.getByRole('treeitem', { name }))
+  );
+};
+
+const TitleLocationProbe = ({ testId = 'title-location-probe' }) => {
+  const { config } = useStoryMapConfigDataContext();
+  return (
+    <div
+      data-testid={testId}
+      data-location={JSON.stringify(config.titleTransition?.location ?? null)}
+    />
+  );
+};
+
+const titleLocation = (testId = 'title-location-probe') =>
+  JSON.parse(
+    screen.getByTestId(testId).getAttribute('data-location') ?? 'null'
+  );
+
+const DeleteChapterButton = ({ chapterId }) => {
+  const { setConfig } = useStoryMapConfigActionsContext();
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        setConfig(config => ({
+          ...config,
+          chapters: config.chapters.filter(({ id }) => id !== chapterId),
+        }))
+      }
+    >
+      Delete {chapterId}
+    </button>
+  );
+};
+
+test('StoryMapForm: a layer fit never re-fits and never overwrites the users camera', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeFittingCameraMap(CAMERA_OPEN, CAMERA_FITTED);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Add a layer: ONE fit request → exactly one fit…
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    // …whose own moveend is never recorded as the user's camera.
+    expect(probeChapter().location).toBeNull();
+
+    // The user drags to frame the chapter…
+    await dragMapTo(map, CAMERA_DRAGGED);
+    expect(probeChapter().location.center).toEqual(CAMERA_DRAGGED.center);
+
+    // …and every later write keeps the user's camera: the consumed fit is
+    // never re-run (it used to snap the map back to the layer bounds and the
+    // recorder saved the FIT as the user's camera).
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Align Center' }))
+    );
+    await dragMapTo(map, CAMERA_OPEN);
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: one fit per request — toggling a layer off and on re-fits it', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeFittingCameraMap(CAMERA_OPEN, CAMERA_FITTED);
+    mapboxgl.Map.mockReturnValue(map);
+    // A second layer is ALREADY on the chapter: it is mounted beside the
+    // toggled one and must never be fitted by these writes.
+    const config = {
+      ...BASE_CONFIG,
+      chapters: [
+        {
+          ...BASE_CONFIG.chapters[0],
+          mapLayers: [{ layerId: 'pre-existing' }],
+          dataLayerConfigId: 'pre-existing',
+        },
+        ...BASE_CONFIG.chapters.slice(1),
+      ],
+      dataLayers: {
+        'pre-existing': {
+          id: 'pre-existing',
+          title: 'Pre-existing layer',
+          mapboxTilesetId: 'tileset-pre-existing',
+          mapboxTilesetStatus: TILESET_STATUS_READY,
+          visualizeConfig: {
+            shape: 'circle',
+            opacity: 50,
+            size: 15,
+            color: '#fff',
+          },
+          viewportConfig: {
+            bounds: {
+              northEast: { lat: 10, lng: 20 },
+              southWest: { lat: 0, lng: 10 },
+            },
+          },
+        },
+      },
+    };
+    await setupWithProbe({
+      config,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await toggleTreeLayer('Datalayer title 1');
+    // ONE request → ONE fit (the pre-existing layer is not fitted).
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+
+    // Toggling OFF is not a fit request…
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+
+    // …toggling ON again is a NEW request and fits again.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: a geocoder result after a layer fit IS recorded as the step location', async () => {
+  const io = installIntersectionObserverCapture();
+  const geocoderHandlers = {};
+  MapboxGlGeocoder.mockImplementation(() => ({
+    on: jest.fn((type, handler) => {
+      geocoderHandlers[type] = handler;
+    }),
+  }));
+  try {
+    const map = makeFittingCameraMap(CAMERA_OPEN, CAMERA_FITTED);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(probeChapter().location).toBeNull();
+
+    // The user searches and picks a result: the geocoder flies the map
+    // there — a programmatic move, but deliberate USER intent.
+    await act(async () => {
+      geocoderHandlers.result?.({ result: { place_name: 'Quito' } });
+      map.moveCameraTo(CAMERA_SEARCHED);
+      map.fire('movestart');
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location.center).toEqual(CAMERA_SEARCHED.center);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: the wheel scrolls the story while configuring — no zoom, no location write', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Scroll-zoom is OFF while the map is being positioned: the wheel must
+    // scroll the STORY (the chapter overlay passes wheel events through to
+    // the map canvas). Zoom stays available through the nav controls/pinch.
+    expect(map.scrollZoom.enable).not.toHaveBeenCalled();
+    expect(map.scrollZoom.disable).toHaveBeenCalled();
+
+    // A wheel gesture over the story content never zooms and never writes a
+    // location — not even as a side effect of a later programmatic move.
+    await act(async () => {
+      fireEvent.wheel(document.getElementById('features'));
+      map.fire('wheel');
+    });
+    map.moveCameraTo(CAMERA_FITTED);
+    await act(async () => {
+      map.fire('movestart');
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location).toBeNull();
+  } finally {
+    io.restore();
+  }
+});
+
+const CAMERA_FRAME = { clientWidth: 1200, clientHeight: 600 };
+
+// A camera map WITH map layout: the recorder crops the recorded bounds to
+// the content region of the container (bounds WYSIWYG).
+const makeContentRegionCameraMap = openValues => {
+  const map = makeCameraMap(openValues);
+  const container = document.createElement('div');
+  Object.defineProperties(container, {
+    clientWidth: { value: CAMERA_FRAME.clientWidth },
+    clientHeight: { value: CAMERA_FRAME.clientHeight },
+  });
+  map.getContainer = jest.fn().mockReturnValue(container);
+  const [w, s, e, n] = [-180, -90, 180, 90];
+  map.unproject = jest.fn(([x, y]) => ({
+    lng: w + (x / CAMERA_FRAME.clientWidth) * (e - w),
+    lat: n - (y / CAMERA_FRAME.clientHeight) * (n - s),
+  }));
+  return map;
+};
+
+test('StoryMapForm: the recorded location is the content region, not the raw camera', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeContentRegionCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    const config = {
+      ...BASE_CONFIG,
+      chapters: BASE_CONFIG.chapters.map(chapter =>
+        chapter.id === 'chapter-1' ? { ...chapter, alignment: 'left' } : chapter
+      ),
+    };
+    await setupWithProbe({
+      config,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await dragMapTo(map, CAMERA_OPEN);
+
+    // The chapter card covers the LEFT of the map: the recorded bounds are
+    // the EASTERN content strip, so playback — which expands the recorded
+    // bounds again — reproduces exactly this camera.
+    const recorded = probeChapter().location.bounds;
+    expect(recorded[0]).toBeCloseTo(-36, 6);
+    expect(recorded[1]).toBeCloseTo(-90, 6);
+    expect(recorded[2]).toBeCloseTo(180, 6);
+    expect(recorded[3]).toBeCloseTo(90, 6);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: the recorded location is plain scalars, not mapbox class instances', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await dragMapTo(map, CAMERA_OPEN);
+
+    // A serialized LngLat is never deep-equal to the class instance: the
+    // recorder must normalize at record time (post-save churn fed the
+    // re-fit loop).
+    expect(probeChapter().location).toEqual({
+      center: { lng: CAMERA_OPEN.center.lng, lat: CAMERA_OPEN.center.lat },
+      zoom: CAMERA_OPEN.zoom,
+      pitch: CAMERA_OPEN.pitch,
+      bearing: CAMERA_OPEN.bearing,
+      bounds: [-180, -90, 180, 90],
+    });
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: a drag writes the gesture-start target even when the active step changes mid-drag', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: (
+        <>
+          <ChapterAlignmentProbe chapterId="chapter-1" />
+          <ChapterAlignmentProbe chapterId="chapter-2" testId="probe-2" />
+        </>
+      ),
+    });
+    await io.selectStep('chapter-1');
+
+    await act(async () => {
+      map.fire('mousedown');
+    });
+    // Mid-drag retarget: the scroll-spy moves to another chapter while the
+    // user is still dragging.
+    await io.selectStep('chapter-2');
+    await act(async () => {
+      map.moveCameraTo(CAMERA_DRAGGED);
+      map.fire('move');
+      map.fire('moveend');
+      map.fire('mouseup');
+    });
+
+    // The write lands on the GESTURE-START target; chapter-2 keeps the
+    // location it had before (BASE_CONFIG seeds one).
+    expect(probeChapter().location.center).toEqual(CAMERA_DRAGGED.center);
+    expect(probeChapter('probe-2').location).toEqual({
+      center: { lng: -79.89928261750599, lat: -2.423124847733348 },
+      zoom: 5,
+    });
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: clicking a chapter in the sidebar retargets the map writes before the scroll settles', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-2" testId="probe-2" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Click a chapter in the sidebar: the smooth scroll has NOT settled yet
+    // (the scroll-spy still reports chapter-1), but the edit target is
+    // already the clicked chapter.
+    await act(async () =>
+      fireEvent.click(
+        within(
+          screen.getByRole('navigation', { name: 'Chapters sidebar' })
+        ).getByRole('button', { name: 'Chapter 2' })
+      )
+    );
+    await dragMapTo(map, CAMERA_DRAGGED);
+
+    expect(probeChapter('probe-2').location.center).toEqual(
+      CAMERA_DRAGGED.center
+    );
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: the configure sidebar says which chapter is being edited', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    await setupWithProbe({ config: BASE_CONFIG });
+
+    await io.selectStep('chapter-1');
+    expect(screen.getByTestId('editing-target')).toHaveTextContent(
+      'Editing: Chapter 1'
+    );
+
+    await io.selectStep(STORY_MAP_TITLE_ID);
+    expect(screen.getByTestId('editing-target')).toHaveTextContent(
+      'Editing: Title'
+    );
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: a deleted edit target never silently drops the camera write', async () => {
+  const io = installIntersectionObserverCapture();
+  const warn = jest.spyOn(logger, 'warn').mockImplementation(() => {});
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: (
+        <>
+          <ChapterAlignmentProbe chapterId="chapter-1" />
+          <TitleLocationProbe />
+          <DeleteChapterButton chapterId="chapter-1" />
+        </>
+      ),
+    });
+    await io.selectStep('chapter-1');
+
+    await act(async () => {
+      map.fire('mousedown');
+    });
+    // The target chapter is deleted while the user is dragging.
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Delete chapter-1' }))
+    );
+    await act(async () => {
+      map.moveCameraTo(CAMERA_DRAGGED);
+      map.fire('move');
+      map.fire('moveend');
+      map.fire('mouseup');
+    });
+
+    // No crash, no silent loss: the write falls back to the title step and
+    // the drop is reported.
+    expect(warn).toHaveBeenCalled();
+    expect(titleLocation().center).toEqual(CAMERA_DRAGGED.center);
+  } finally {
+    warn.mockRestore();
     io.restore();
   }
 });

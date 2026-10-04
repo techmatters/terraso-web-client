@@ -247,7 +247,7 @@ test('StoryMapUpdate: Republish tracks an update event', async () => {
   });
 });
 
-test('StoryMapUpdate: stale draft save response does not overwrite newer local edits', async () => {
+test('StoryMapUpdate: saves are serialized and a stale draft save response does not overwrite newer local edits', async () => {
   jest.useFakeTimers();
 
   const firstSave = createDeferred();
@@ -302,20 +302,28 @@ test('StoryMapUpdate: stale draft save response does not overwrite newer local e
     jest.advanceTimersByTime(1500);
   });
 
-  await waitFor(() => {
-    expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  });
+  // Saves are serialized (concurrent saves resolve last-write-wins on the
+  // backend): the second draft save does NOT start while the first is in
+  // flight — it is retried when the in-flight one settles.
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
+  // The STALE save's response lands first (the server echoes "First title")
+  // and must not overwrite the newer local edits.
   await act(async () => {
-    secondSave.resolve(buildSavedStoryMap('Second title'));
+    firstSave.resolve(buildSavedStoryMap('First title'));
   });
 
   await waitFor(() => {
     expect(titleInput).toHaveValue('Second title');
   });
 
+  // …and the retried save persists the newer state.
+  await waitFor(() => {
+    expect(terrasoApi.request).toHaveBeenCalledTimes(2);
+  });
+
   await act(async () => {
-    firstSave.resolve(buildSavedStoryMap('First title'));
+    secondSave.resolve(buildSavedStoryMap('Second title'));
   });
 
   await waitFor(() => {
