@@ -181,6 +181,43 @@ beforeEach(() => {
 });
 
 describe('CreateMapLayerDialog', () => {
+  test('the dialog caption names the chapter', async () => {
+    await setup();
+
+    expect(
+      screen.getByRole('dialog', { name: 'Create a map layer for Chapter 1' })
+    ).toBeInTheDocument();
+  });
+
+  test('the dialog caption falls back to the blank copy without a chapter title', async () => {
+    const onCreate = jest.fn();
+    const onClose = jest.fn();
+    await render(
+      <CreateMapLayerDialog onCreate={onCreate} onClose={onClose} />,
+      {
+        storyMap: { dataLayers: { saving: false, fetching: false, list: [] } },
+      }
+    );
+
+    expect(
+      screen.getByRole('dialog', { name: 'Create a map layer' })
+    ).toBeInTheDocument();
+  });
+
+  test('the bottom confirm button is the labeled, enabled create action', async () => {
+    await setup();
+
+    // The review note "the confirm renders disabled with an empty label" is
+    // NOT reproducible in the product path: the label is the i18n confirm
+    // copy ("Next" — the create dialog is a single-step form; the copy
+    // carries over from the stepped map-config dialog) and the button is
+    // enabled as soon as the form context (trigger) is mounted. An empty or
+    // disabled button here means the label or the form wiring regressed.
+    const confirm = screen.getByRole('button', { name: 'Next' });
+    expect(confirm).toBeEnabled();
+    expect(confirm).toHaveTextContent('Next');
+  });
+
   test('create success calls onCreate with the created layer and closes', async () => {
     const { onCreate, onClose } = await setup();
 

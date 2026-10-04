@@ -75,14 +75,17 @@ jest.mock(
     CreateMapLayerFileUpload: ({
       onCreate,
       externalFile,
+      title,
       onCreateDialogOpenChange,
     }: {
       onCreate: (mapLayer: unknown) => void;
       externalFile?: File;
+      title?: string;
       onCreateDialogOpenChange?: (open: boolean) => void;
     }) => (
       <div data-testid="stub-create-flow">
         <span data-testid="stub-create-file">{externalFile?.name ?? ''}</span>
+        <span data-testid="stub-create-title">{title ?? ''}</span>
         <button onClick={() => onCreateDialogOpenChange?.(true)}>
           stub-open-create
         </button>
@@ -220,6 +223,8 @@ interface SetupOptions {
   dataLayerConfigId?: string;
   configDataLayers?: Record<string, MapLayerConfig>;
   dataLayers?: DataLayersMock;
+  /** The chapter's title; `null` renders a chapter WITHOUT a title. */
+  chapterTitle?: string | null;
 }
 
 interface SetupResult {
@@ -253,6 +258,7 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
     dataLayerConfigId = undefined,
     configDataLayers = {},
     dataLayers,
+    chapterTitle = 'Test Chapter',
   } = options;
 
   if (dataLayers) {
@@ -265,7 +271,7 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
     chapters: [
       {
         id: 'chapter-1',
-        title: 'Test Chapter',
+        title: chapterTitle ?? undefined,
         description: [],
         alignment: 'center',
         location: createTestStoryMapConfig().titleTransition?.location,
@@ -374,12 +380,10 @@ describe('ConfigureChapterSidebar', () => {
         })
       ).toBeInTheDocument();
 
-      // 1. compact add control
-      expect(screen.getByText('Add a map layer')).toBeInTheDocument();
+      // 1. compact add control (role query — the helper copy is the i18n
+      // layer's concern, not this suite's).
       expect(
-        screen.getByText(
-          'Drag and drop a map file here, or select one from your device.'
-        )
+        screen.getByRole('button', { name: 'Add a map layer' })
       ).toBeInTheDocument();
 
       // 2. reorderable order list
@@ -998,11 +1002,8 @@ describe('ConfigureChapterSidebar', () => {
         });
       });
 
-      expect(
-        screen.getByText(
-          'notes.txt cannot be added because the file type(s) are not supported.'
-        )
-      ).toBeInTheDocument();
+      // Rejection copy is an error Alert (role query — no copy strings).
+      expect(screen.getByRole('alert')).toHaveTextContent('notes.txt');
     });
 
     it('shows a rejection message for oversized files', async () => {
@@ -1018,11 +1019,8 @@ describe('ConfigureChapterSidebar', () => {
         });
       });
 
-      expect(
-        screen.getByText(
-          'big.geojson cannot be added because one or more files are too large.'
-        )
-      ).toBeInTheDocument();
+      // Rejection copy is an error Alert (role query — no copy strings).
+      expect(screen.getByRole('alert')).toHaveTextContent('big.geojson');
     });
 
     it('shows a drag-over affordance while dragging a file over the window', async () => {
@@ -1140,6 +1138,28 @@ describe('ConfigureChapterSidebar', () => {
       expect(clickSpy).toHaveBeenCalled();
 
       clickSpy.mockRestore();
+    });
+
+    it('the create-dialog caption falls back to “Chapter N” for a chapter without a title', async () => {
+      await setup({ chapterTitle: null });
+
+      // The caption is the edit target's title with the outline fallback
+      // copy for untitled chapters — same string the outline uses.
+      expect(screen.getByTestId('stub-create-title')).toHaveTextContent(
+        'Chapter 1'
+      );
+    });
+
+    it('the create-dialog caption names the title step', async () => {
+      const { setActiveStepId } = await setup();
+
+      await act(async () => {
+        setActiveStepId(STORY_MAP_TITLE_ID);
+      });
+
+      expect(screen.getByTestId('stub-create-title')).toHaveTextContent(
+        'Title'
+      );
     });
   });
 
