@@ -27,6 +27,8 @@ import {
   LAYER_TYPES,
 } from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import {
+  isChapterOnly,
+  isSideCardAlignment,
   LAYER_PAINT_TYPES,
   LayerPaintType,
   STORY_MAP_TITLE_ID,
@@ -125,7 +127,7 @@ const adjustBoundsForAlignment = (
   bounds: MapBounds,
   alignment: ChapterAlignment
 ): MapBounds => {
-  if (!alignment || alignment === 'center') {
+  if (!isSideCardAlignment(alignment)) {
     return bounds;
   }
 
@@ -135,23 +137,24 @@ const adjustBoundsForAlignment = (
   if (alignment === 'left') {
     // Crop out lefthand 40% - shift west bound eastward
     return [swLng + lngRange * 0.4, swLat, neLng, neLat];
-  } else if (alignment === 'right') {
-    // Crop out righthand 40% - shift east bound westward
-    return [swLng, swLat, neLng - lngRange * 0.4, neLat];
   }
-
-  return bounds;
+  // Crop out righthand 40% - shift east bound westward
+  return [swLng, swLat, neLng - lngRange * 0.4, neLat];
 };
 
 /**
  * Add padding area to bounds for display based on alignment
  * Expands the bounds to account for the chapter panel
+ *
+ * Only side-card alignments (`isSideCardAlignment`) are compensated:
+ * `center` overlaps the middle (never compensated) and the just-modes span
+ * the map (no uncovered strip), so their bounds display as recorded.
  */
 export const expandBoundsForDisplay = (
   bounds: MapBounds,
   alignment: ChapterAlignment
 ): MapBounds => {
-  if (!alignment || alignment === 'center') {
+  if (!isSideCardAlignment(alignment)) {
     return bounds;
   }
 
@@ -162,12 +165,9 @@ export const expandBoundsForDisplay = (
   if (alignment === 'left') {
     // Add area to the left - expand west bound westward
     return [swLng - expansion, swLat, neLng, neLat];
-  } else if (alignment === 'right') {
-    // Add area to the right - expand east bound eastward
-    return [swLng, swLat, neLng + expansion, neLat];
   }
-
-  return bounds;
+  // Add area to the right - expand east bound eastward
+  return [swLng, swLat, neLng + expansion, neLat];
 };
 
 /**
@@ -186,13 +186,14 @@ export const CONTENT_REGION_FRACTION = 1 / (1 + 2 / 3);
  * Pixel x-range of the content region (uncovered strip) of a map container
  * with the given width, per chapter alignment. The chapter panel covers the
  * opposite side; 'center' panels overlap the middle and are not compensated
- * (the viewer does not expand centered bounds either).
+ * (the viewer does not expand centered bounds either), and the just-modes
+ * leave no uncovered strip at all — both record the full map.
  */
 export const contentRegionPixelRange = (
   width: number,
   alignment?: ChapterAlignment
 ): [number, number] => {
-  if (!alignment || alignment === 'center') {
+  if (!isSideCardAlignment(alignment)) {
     return [0, width];
   }
   const contentWidth = width * CONTENT_REGION_FRACTION;
@@ -269,6 +270,14 @@ const startCameraTransition = (
   transition: ChapterConfig | Transition,
   allowRotation: boolean
 ) => {
+  // A `justChapter` chapter covers the map entirely — there is nothing to
+  // look at, so its camera step-transition (and the rotation hand-off with
+  // it) is skipped: the map must not move while it is active. Recording the
+  // location still works in the editor (see MapEditingSession): toggling the
+  // alignment back to a card keeps the configured map location.
+  if ('alignment' in transition && isChapterOnly(transition.alignment)) {
+    return;
+  }
   if (transition.location && !_.isEmpty(transition.location)) {
     const alignment =
       isMobile || !('alignment' in transition)
@@ -314,7 +323,8 @@ const startCameraTransition = (
 const startLayerTransition = (
   map: mapboxgl.Map,
   chapterId: string,
-  config: StoryMapConfig
+  config: StoryMapConfig,
+  allowLayerForcing: boolean
 ) => {
   const steps = [
     { id: STORY_MAP_TITLE_ID, ...config.titleTransition },
@@ -360,6 +370,22 @@ const startLayerTransition = (
   }
 
   const mostRecentLayerConfigs: Record<string, LayerConfig> = {};
+
+  // DISPLAY-SIDE ONLY: a `justChapter` chapter covers the map area, so every
+  // layer visibility candidate is forced off while it is active. The config
+  // (`mapLayers`, the compat events, `dataLayers`) is never touched — the
+  // next step's normal model below restores visibility. Forcing is a
+  // playback feature: the editor's map editing session keeps layers visible
+  // while they are being configured.
+  const currentStep = steps[currentIndex];
+  if (
+    allowLayerForcing &&
+    'alignment' in currentStep &&
+    isChapterOnly(currentStep.alignment)
+  ) {
+    allLayers.forEach(layer => setLayerOpacity(map, { layer, opacity: 0 }));
+    return;
+  }
 
   for (let i = 0; i <= currentIndex; i++) {
     const step = steps[i];
@@ -465,6 +491,13 @@ export type StartTransitionOptions = {
   suspendCamera?: boolean;
   /** Playback-only camera rotation (see `startCameraTransition`). */
   allowRotation?: boolean;
+  /**
+   * Display-side layer forcing: a `justChapter` chapter covers the map, so
+   * all layers are forced off while it is active (see `startLayerTransition`).
+   * The editor's map editing session disables it — layers stay visible and
+   * configurable; the stored config is never affected either way.
+   */
+  allowLayerForcing?: boolean;
 };
 export const startTransition = (
   map: mapboxgl.Map,
@@ -475,6 +508,7 @@ export const startTransition = (
     mapDimensions,
     suspendCamera,
     allowRotation = true,
+    allowLayerForcing = true,
   }: StartTransitionOptions
 ) => {
   const transition = getTransition({
@@ -495,6 +529,6 @@ export const startTransition = (
       allowRotation
     );
   }
-  startLayerTransition(map, chapterId, config);
+  startLayerTransition(map, chapterId, config, allowLayerForcing);
   startMapLayerOrder(map, transition);
 };

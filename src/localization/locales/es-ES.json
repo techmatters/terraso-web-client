@@ -994,6 +994,8 @@
         "form_chapter_alignment_left": "alinear a la izquierda",
         "form_chapter_alignment_center": "Alinear al centro",
         "form_chapter_alignment_right": "Alinear a la derecha",
+        "form_chapter_alignment_just_map": "Solo mapa (sin contenido del capítulo)",
+        "form_chapter_alignment_just_chapter": "Solo capítulo (cubre el mapa)",
         "form_chapter_menu_label": "{{chapterLabel}} menú",
         "form_chapter_move_up": "Mover capítulo hacia arriba",
         "form_chapter_move_down": "Mover capítulo hacia abajo",

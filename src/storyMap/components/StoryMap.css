@@ -143,6 +143,15 @@ footer {
   font-weight: bold;
 }
 
+/* `justChapter` content is centered at a readable max width. This rule
+   mirrors CHAPTER_ONLY_CONTENT_MAX_WIDTH (storyMapConstants.ts) because the
+   `.step-container .step-content` cap above (0,2,0) beats the sx on the
+   content box (0,1,0) — keep both in sync. */
+.step-container.chapter-only .step-content {
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
 .step-container .step-content h4 {
   font-size: 1.5em;
   font-weight: bold;

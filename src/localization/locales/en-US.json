@@ -990,6 +990,8 @@
         "form_chapter_alignment_left": "Align Left",
         "form_chapter_alignment_center": "Align Center",
         "form_chapter_alignment_right": "Align Right",
+        "form_chapter_alignment_just_map": "Map only (no chapter content)",
+        "form_chapter_alignment_just_chapter": "Chapter only (covers the map)",
         "form_chapter_menu_label": "{{chapterLabel}} menu",
         "form_chapter_move_up": "Move Chapter Up",
         "form_chapter_move_down": "Move Chapter Down",

@@ -27,6 +27,9 @@ import useActiveStep from 'terraso-web-client/storyMap/components/useActiveStep'
 import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
 import {
   ALIGNMENTS,
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH,
+  isChapterOnly,
+  isMapOnly,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
@@ -116,11 +119,31 @@ const Embedded = ({ record }) => {
   );
 };
 
-const Chapter = ({ record, active }) => {
+/**
+ * A chapter card. The "just" alignments are RENDER MODES (display-side only —
+ * the config, including content and layers, is never touched):
+ *
+ * - `justMap`: renders NOTHING over the map (no content, no background) but
+ *   keeps its scroll span (100vh / 100cqh when contained); the camera
+ *   transition still runs.
+ * - `justChapter`: a full-width card whose background covers the map area,
+ *   with the content vertically centered and horizontally centered at a
+ *   reasonable max width. Its camera transition is skipped and all map
+ *   layers are forced off while it is active (see `mapUtils.ts` — viewer
+ *   side only).
+ *
+ * The editor's chapter form (`ChapterForm`) deliberately keeps the editable
+ * card for these alignments: the map must stay visible and editable while
+ * configuring (camera recording, layer panel).
+ */
+const Chapter = ({ record, active, isContained }) => {
   const { t } = useTranslation();
+  const mapOnly = isMapOnly(record.alignment);
+  const chapterOnly = isChapterOnly(record.alignment);
   const className = [
     'step-container',
     ALIGNMENTS[record.alignment] || 'centered',
+    ...(chapterOnly ? ['story-theme'] : []),
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
 
@@ -132,33 +155,54 @@ const Chapter = ({ record, active }) => {
       className={className}
       sx={({ breakpoints }) => ({
         [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
+        // The render modes span the full chapter scroll space: 100vh
+        // uncontained, 100cqh when the story map scrolls in its container
+        // (the map is `100cqh` there too).
+        ...(mapOnly || chapterOnly
+          ? { minHeight: isContained ? '100cqh' : '100vh' }
+          : {}),
+        // `justChapter` covers the map area: full width, theme background,
+        // content centered.
+        ...(chapterOnly
+          ? {
+              width: '100%',
+              bgcolor: 'var(--story-theme-background)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }
+          : {}),
       })}
     >
-      <Box
-        className="story-theme step-content"
-        sx={{
-          width: hasVisualMedia ? '50vw' : 'auto',
-        }}
-      >
-        {record.title && (
-          <h3 id={`title-${record.id}`} className="title">
-            {record.title}
-          </h3>
-        )}
-        {record.media &&
-          (record.media.type.startsWith('image') ? (
-            <Image record={record} />
-          ) : record.media.type.startsWith('video') ? (
-            <Video record={record} />
-          ) : record.media.type.startsWith('audio') ? (
-            <Audio record={record} />
-          ) : record.media.type.startsWith('embedded') ? (
-            <Embedded record={record} />
-          ) : null)}
-        {record.description && (
-          <RichTextEditor value={record.description} editable={false} />
-        )}
-      </Box>
+      {!mapOnly && (
+        <Box
+          className="story-theme step-content"
+          sx={{
+            width: chapterOnly ? '100%' : hasVisualMedia ? '50vw' : 'auto',
+            ...(chapterOnly
+              ? { maxWidth: CHAPTER_ONLY_CONTENT_MAX_WIDTH }
+              : {}),
+          }}
+        >
+          {record.title && (
+            <h3 id={`title-${record.id}`} className="title">
+              {record.title}
+            </h3>
+          )}
+          {record.media &&
+            (record.media.type.startsWith('image') ? (
+              <Image record={record} />
+            ) : record.media.type.startsWith('video') ? (
+              <Video record={record} />
+            ) : record.media.type.startsWith('audio') ? (
+              <Audio record={record} />
+            ) : record.media.type.startsWith('embedded') ? (
+              <Embedded record={record} />
+            ) : null)}
+          {record.description && (
+            <RichTextEditor value={record.description} editable={false} />
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
@@ -213,6 +257,7 @@ const MapTransitionController = ({
   layerRevision,
   suspendCamera,
   allowRotation,
+  allowLayerForcing,
 }) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
@@ -228,6 +273,7 @@ const MapTransitionController = ({
       isMobile,
       suspendCamera,
       allowRotation,
+      allowLayerForcing,
     });
   }, [
     map,
@@ -238,6 +284,7 @@ const MapTransitionController = ({
     layerRevision,
     suspendCamera,
     allowRotation,
+    allowLayerForcing,
   ]);
 
   return null;
@@ -465,6 +512,10 @@ const StoryMap = props => {
           layerRevision={layerRevision}
           suspendCamera={mapEditing}
           allowRotation={playRotateAnimation}
+          // Layer forcing is a PLAYBACK/display feature (a justChapter
+          // chapter covers the map): the editing session keeps layers
+          // visible while they are being configured.
+          allowLayerForcing={!mapEditing}
         />
       </Map>
       <Box
@@ -503,6 +554,7 @@ const StoryMap = props => {
             <ChapterComponent
               record={chapter}
               active={currentChapter === chapter.id}
+              isContained={isContained}
             />
           </div>
         ))}

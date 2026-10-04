@@ -22,6 +22,8 @@ import { useSelector } from 'terraso-web-client/terrasoApi/store';
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
+import ArticleIcon from '@mui/icons-material/Article';
+import MapIcon from '@mui/icons-material/Map';
 import {
   Box,
   ButtonGroup,
@@ -100,6 +102,16 @@ const AlignmentSettings = ({ targetId }) => {
         label: t('storyMap.form_chapter_alignment_right'),
         Icon: AlignHorizontalRightIcon,
         value: 'right',
+      },
+      {
+        label: t('storyMap.form_chapter_alignment_just_map'),
+        Icon: MapIcon,
+        value: 'justMap',
+      },
+      {
+        label: t('storyMap.form_chapter_alignment_just_chapter'),
+        Icon: ArticleIcon,
+        value: 'justChapter',
       },
     ],
     [t]

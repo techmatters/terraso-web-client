@@ -114,7 +114,23 @@ export type Transition = {
   onChapterExit?: LayerConfig[];
 };
 
-export type ChapterAlignment = 'left' | 'right' | 'center';
+export type ChapterAlignment =
+  | 'left'
+  | 'right'
+  | 'center'
+  /**
+   * Render mode: the chapter renders NOTHING over the map (no content, no
+   * background) for its scroll span — just the map. The camera transition
+   * still runs. Config content is preserved (toggle-safe).
+   */
+  | 'justMap'
+  /**
+   * Render mode: a full-width chapter card whose background covers the map
+   * area, content vertically centered with a max width. All map layers are
+   * forced off (display-side only) and the camera transition is skipped
+   * while this chapter is active. Config content is preserved (toggle-safe).
+   */
+  | 'justChapter';
 
 /**
  * swLng, swLat, neLng, neLat
