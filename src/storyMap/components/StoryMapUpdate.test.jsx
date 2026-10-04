@@ -157,6 +157,19 @@ const setup = async user => {
   });
 };
 
+// The configure sidebar's layer index fetch (`query visualizationConfigs`) is
+// separate, legitimate traffic — exclude it by OPERATION NAME. (The old
+// `String(query).includes('visualizationConfigs')` filter matched every query
+// that merely mentions the `visualizationConfigs` FIELD, e.g.
+// `query fetchVisualizationConfig`.)
+const LAYER_INDEX_OPERATION = 'visualizationConfigs';
+const operationName = query =>
+  String(query).match(/\b(?:query|mutation)\s+([A-Za-z0-9_]+)/)?.[1] ?? '';
+const nonLayerIndexCalls = () =>
+  terrasoApi.requestGraphQL.mock.calls.filter(
+    ([query]) => operationName(query) !== LAYER_INDEX_OPERATION
+  );
+
 test('StoryMapUpdate: Renders editor', async () => {
   terrasoApi.requestGraphQL.mockResolvedValue({
     storyMaps: {
@@ -491,11 +504,7 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   await setup({ id: API_STORY_MAP.createdBy.id });
   // The story map loads with one request (the configure sidebar's layer
   // index fetch is separate, legitimate traffic).
-  expect(
-    terrasoApi.requestGraphQL.mock.calls.filter(
-      ([query]) => !String(query).includes('visualizationConfigs')
-    ).length
-  ).toBe(1);
+  expect(nonLayerIndexCalls().length).toBe(1);
   // The Settings sidebar is closed by default (Configure Chapter wins).
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
@@ -519,9 +528,7 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
 
   // Load + invite mutation (the configure sidebar's layer index fetch is
   // separate, legitimate traffic).
-  const nonLayerCalls = terrasoApi.requestGraphQL.mock.calls.filter(
-    ([query]) => !String(query).includes('visualizationConfigs')
-  );
+  const nonLayerCalls = nonLayerIndexCalls();
   expect(nonLayerCalls).toHaveLength(2);
 
   const inviteCall = nonLayerCalls[1][1];
@@ -572,11 +579,7 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
   await setup({ id: API_STORY_MAP.createdBy.id });
   // The story map loads with one request (the configure sidebar's layer
   // index fetch is separate, legitimate traffic).
-  expect(
-    terrasoApi.requestGraphQL.mock.calls.filter(
-      ([query]) => !String(query).includes('visualizationConfigs')
-    ).length
-  ).toBe(1);
+  expect(nonLayerIndexCalls().length).toBe(1);
   // The Settings sidebar is closed by default (Configure Chapter wins).
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
@@ -604,9 +607,7 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
 
   // Load + remove mutation (the configure sidebar's layer index fetch is
   // separate, legitimate traffic).
-  const nonLayerCalls = terrasoApi.requestGraphQL.mock.calls.filter(
-    ([query]) => !String(query).includes('visualizationConfigs')
-  );
+  const nonLayerCalls = nonLayerIndexCalls();
   expect(nonLayerCalls).toHaveLength(2);
 
   const removeCall = nonLayerCalls[1][1];
@@ -651,11 +652,7 @@ test('StoryMapUpdate: See story map as editor', async () => {
 
   // The story map loads with one request (the configure sidebar's layer
   // index fetch is separate, legitimate traffic).
-  expect(
-    terrasoApi.requestGraphQL.mock.calls.filter(
-      ([query]) => !String(query).includes('visualizationConfigs')
-    ).length
-  ).toBe(1);
+  expect(nonLayerIndexCalls().length).toBe(1);
 
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
   // The Settings sidebar is closed by default (Configure Chapter wins).
