@@ -33,6 +33,20 @@ const createFakeMap = (layerIds: string[] = []) => {
   // Real mapbox moveLayer(id, beforeId?) semantics over an ordered id array
   // (index 0 = bottom of the stack); tests assert the resulting ORDER.
   const layers = [...layerIds];
+  // Like real mapbox, map.getLayer(id) hands out ONE stable style-layer
+  // object per id — until the layer is re-added or the style is swapped.
+  const layerObjects = new Map<string, { type: string }>();
+  const layerObjectFor = (id: string) => {
+    if (!layerObjects.has(id)) {
+      const type = id.endsWith('-markers')
+        ? 'circle'
+        : id.endsWith('-polygons-outline')
+          ? 'line'
+          : 'fill';
+      layerObjects.set(id, { type });
+    }
+    return layerObjects.get(id);
+  };
   return {
     layerOrder: () => [...layers],
     moveLayer: jest.fn((id: string, beforeId?: string) => {
@@ -46,22 +60,23 @@ const createFakeMap = (layerIds: string[] = []) => {
       layers.splice(toIndex === -1 ? layers.length : toIndex, 0, id);
     }),
     getStyle: () => ({ layers: layers.map(id => ({ id })) }),
-    getLayer: (id: string) => {
-      if (!layers.includes(id)) {
-        return undefined;
+    getLayer: (id: string) =>
+      layers.includes(id) ? layerObjectFor(id) : undefined,
+    // Simulates setStyle() (all objects replaced) or Layer re-adding its
+    // layer (one object replaced): the next getLayer() hands out fresh
+    // objects.
+    invalidateLayerObjects: (id?: string) => {
+      if (id === undefined) {
+        layerObjects.clear();
+      } else {
+        layerObjects.delete(id);
       }
-      if (id.endsWith('-markers')) {
-        return { type: 'circle' };
-      }
-      if (id.endsWith('-polygons-outline')) {
-        return { type: 'line' };
-      }
-      return { type: 'fill' };
     },
     setPaintProperty: jest.fn(),
     flyTo: jest.fn(),
     easeTo: jest.fn(),
     once: jest.fn(),
+    off: jest.fn(),
     getBearing: () => 0,
     rotateTo: jest.fn(),
     getBounds: () => ({
@@ -172,6 +187,36 @@ describe('enforceMapLayerOrder', () => {
       'b-polygons-outline',
       'b-polygons-fill',
     ]);
+  });
+
+  test('re-applies the order after a style switch replaces the layers', () => {
+    const map = createFakeMap([...layerSublayerIds('a')]);
+    const mapLayers = [{ layerId: 'a' }];
+
+    enforceMapLayerOrder(map as never, mapLayers);
+    map.moveLayer.mockClear();
+
+    // setStyle() replaces every style layer object: the new style has its
+    // own order, so the applied-order cache must not claim the old one.
+    map.invalidateLayerObjects();
+    enforceMapLayerOrder(map as never, mapLayers);
+
+    expect(map.moveLayer).toHaveBeenCalledTimes(layerSublayerIds('a').length);
+  });
+
+  test('re-applies the order after one layer is re-added (its object is replaced)', () => {
+    const map = createFakeMap([...layerSublayerIds('a')]);
+    const mapLayers = [{ layerId: 'a' }];
+
+    enforceMapLayerOrder(map as never, mapLayers);
+    map.moveLayer.mockClear();
+
+    // Layer.js removes and re-adds its layer when its props change: the
+    // re-added layer lands on TOP of the stack and must be re-ordered.
+    map.invalidateLayerObjects('a-markers');
+    enforceMapLayerOrder(map as never, mapLayers);
+
+    expect(map.moveLayer).toHaveBeenCalledTimes(layerSublayerIds('a').length);
   });
 });
 

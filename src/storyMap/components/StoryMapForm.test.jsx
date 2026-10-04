@@ -1418,12 +1418,14 @@ test('StoryMapForm: map controls balance across sidebar open/close and detached 
 
   // Detach the live geocoder control's DOM (the real v5 property is
   // `container`): unmount must stay safe and skip removeControl for the
-  // detached control.
+  // detached control (other controls are removed normally).
   const [liveGeocoder] = liveGeocoders().slice(-1);
   liveGeocoder.container = { parentNode: null };
-  const removalsBefore = map.removeControl.mock.calls.length;
   expect(() => unmount()).not.toThrow();
-  expect(map.removeControl.mock.calls.length).toBe(removalsBefore);
+  // Identity check (all geocoder doubles serialize alike).
+  expect(
+    map.removeControl.mock.calls.map(([control]) => control)
+  ).not.toContain(liveGeocoder);
 });
 
 test('StoryMapForm: Dragging the map writes the active chapter location immediately', async () => {

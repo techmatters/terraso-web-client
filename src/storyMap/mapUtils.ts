@@ -51,6 +51,23 @@ const ROTATION_DURATION = 30000;
 
 const GENERATED_LAYER_SUFFIXES = Object.values(LAYER_TYPES);
 
+// The `rotateAnimation` handler fires on the NEXT moveend, which may be a
+// long way out. Keep a handle so a session that starts meanwhile can drop
+// it: its camera-init move would otherwise fire the handler and start a 30s
+// rotation whose output gets captured.
+const pendingRotateHandlers = new WeakMap<object, () => void>();
+
+export const cancelPendingRotateAnimation = (map?: mapboxgl.Map | null) => {
+  if (!map) {
+    return;
+  }
+  const handler = pendingRotateHandlers.get(map);
+  if (handler) {
+    map.off('moveend', handler);
+    pendingRotateHandlers.delete(map);
+  }
+};
+
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
     return [];
@@ -276,13 +293,18 @@ const startCameraTransition = (
   // keep moving the editor map (and record a flipped bearing onto the step
   // being configured). Never rotate outside the viewer.
   if (transition.rotateAnimation && allowRotation) {
-    map.once('moveend', () => {
+    // One pending rotation per map: a new transition replaces the old one.
+    cancelPendingRotateAnimation(map);
+    const onMoveEnd = () => {
+      pendingRotateHandlers.delete(map);
       const rotateNumber = map.getBearing();
       map.rotateTo(rotateNumber + 180, {
         duration: ROTATION_DURATION,
         easing: t => t,
       });
-    });
+    };
+    pendingRotateHandlers.set(map, onMoveEnd);
+    map.once('moveend', onMoveEnd);
   }
 };
 

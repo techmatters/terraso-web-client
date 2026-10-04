@@ -69,13 +69,22 @@ const getSourceBounds = async (map, sourceId) => {
   const loadedSource = loaded
     ? source
     : await new Promise(resolve => {
-        map.on('sourcedata', () => {
+        // Self-removing: the shared map is long-lived, so a never-removed
+        // `sourcedata` listener per call would pile up forever. Drop it as
+        // soon as the source settles (or goes away).
+        const onSourceData = () => {
           const source = map.getSource(sourceId);
-          if (source.loaded()) {
+          if (!source || source.loaded()) {
+            map.off('sourcedata', onSourceData);
             resolve(source);
           }
-        });
+        };
+        map.on('sourcedata', onSourceData);
       });
+
+  if (!loadedSource) {
+    return;
+  }
 
   if (loadedSource.bounds) {
     return new mapboxgl.LngLatBounds(loadedSource.bounds);
