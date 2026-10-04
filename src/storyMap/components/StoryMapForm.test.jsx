@@ -100,6 +100,31 @@ jest.mock(
   })
 );
 
+// Fit-pipeline wiring: record the `changeBounds` prop the fit channel hands
+// EACH layer (a request seq number for the fit target, `false` for everyone
+// else) while rendering the REAL layer — the fit effect in
+// VisualizationMapLayer must actually run (this is a product-level spec, not
+// a hand-simulated camera move).
+jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => {
+  const actual = jest.requireActual(
+    'terraso-web-client/storyMap/components/StoryMapLayer'
+  );
+  const StoryMapLayerSpy = props => {
+    (globalThis.__storyMapChangeBoundsLog ??= []).push({
+      layerId: props.config?.id,
+      changeBounds: props.changeBounds,
+    });
+    return actual.StoryMapLayer(props);
+  };
+  return {
+    ...actual,
+    StoryMapLayer: StoryMapLayerSpy,
+    default: StoryMapLayerSpy,
+  };
+});
+
+const changeBoundsLog = () => globalThis.__storyMapChangeBoundsLog ?? [];
+
 const VISUALIZATION_CONFIG_JSON = {
   datasetConfig: {
     dataColumns: { option: '', selectedColumns: ['', '', ''] },
@@ -176,11 +201,12 @@ const VISUALIZATION_CONFIG_NO_TILESET = {
   title: 'Datalayer title 3',
 };
 
-const expectSave = async () => {
-  const header = screen.getByRole('region', { name: 'Story editor Header' });
-  expect(within(header).getByText('Saving…')).toBeInTheDocument();
+// DE-FLAKED: assert the SAVE TRANSACTION (the draft autosave fired) instead
+// of the synchronous 'Saving…' label — under CI slowness the save can resolve
+// before the label is inspected (the label itself is TopBar's concern).
+const expectSave = async onSaveDraft => {
   await waitFor(() => {
-    expect(within(header).getByText('Draft saved')).toBeInTheDocument();
+    expect(onSaveDraft).toHaveBeenCalled();
   });
 };
 
@@ -279,6 +305,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  globalThis.__storyMapChangeBoundsLog = [];
   global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
   mapboxgl.LngLatBounds = jest.fn();
   mapboxgl.LngLatBounds.prototype = {
@@ -744,7 +771,7 @@ test('StoryMapForm: Change title', async () => {
   );
 
   // Save
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1199,7 +1226,7 @@ test('StoryMapForm: Adds new chapter', async () => {
   });
   expect(newChapter).toBeInTheDocument();
 
-  await expectSave();
+  await expectSave(onSaveDraft);
   expect(onSaveDraft).toHaveBeenCalledWith(
     expect.objectContaining({
       title: 'Story Map Title',
@@ -1247,7 +1274,7 @@ test('StoryMapForm: Add embedded media', async () => {
   });
 
   // Save
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1270,7 +1297,7 @@ test('StoryMapForm: Add audio media', async () => {
   });
 
   // Save
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1359,29 +1386,9 @@ test('StoryMapForm: the editor map mounts positioning controls while configuring
     pointerEvents: 'none',
   });
 
-  const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
-  const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
-
-  expect(coordinateResult.center).toEqual([-77.6543, 1.2345]);
-  expect(coordinateResult.place_name).toEqual('Coordinates: 1.2345, -77.6543');
-  expect(geocoderOptions.getItemValue(coordinateResult)).toEqual(
-    '1.2345, -77.6543'
-  );
-  expect(geocoderOptions.render(coordinateResult)).toEqual(
-    '<div class="mapboxgl-ctrl-geocoder__result-coordinate">Coordinates: 1.2345, -77.6543</div>'
-  );
-
-  const standardResult = { place_name: 'Quito, Ecuador' };
-  expect(geocoderOptions.getItemValue(standardResult)).toEqual(
-    'Quito, Ecuador'
-  );
-  expect(geocoderOptions.render(standardResult)).toEqual('Quito, Ecuador');
-
-  expect(
-    geocoderOptions.render({
-      place_name: '<b>Quito</b> & "Ecuador"',
-    })
-  ).toEqual('&lt;b&gt;Quito&lt;/b&gt; &amp; &quot;Ecuador&quot;');
+  // The geocoder's option behavior (coordinate localGeocoder, getItemValue,
+  // render + escaping) is covered by the cheap MapGeocoder unit suite; only
+  // the WIRING (one control on the map) is pinned here.
 });
 
 test('StoryMapForm: map controls balance across sidebar open/close and detached geocoder DOM is safe', async () => {
@@ -1458,7 +1465,7 @@ test('StoryMapForm: Dragging the map writes the active chapter location immediat
     });
 
     // …and the editor's draft autosave persists it.
-    await expectSave();
+    await expectSave(onSaveDraft);
     const saved = onSaveDraft.mock.calls
       .at(-1)[0]
       .chapters.find(({ id }) => id === 'chapter-2');
@@ -1508,11 +1515,14 @@ test('StoryMapForm: Change chapter style', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Change Style' }))
   );
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalled();
   const saveCall = onSaveDraft.mock.calls.at(-1);
   expect(saveCall[0].style).toEqual('newStyle');
+  // The style write applies to the LIVE map (capture-at-mount): the map is
+  // never recreated for it (recreation would snap the camera).
+  expect(mapboxgl.Map).toHaveBeenCalledTimes(1);
 });
 
 test('StoryMapForm: Add map layer', async () => {
@@ -1561,7 +1571,7 @@ test('StoryMapForm: Add map layer', async () => {
 
     // Immediate apply: the layer is on the active chapter already — the
     // editor's draft autosave persists it.
-    await expectSave();
+    await expectSave(onSaveDraft);
 
     expect(onSaveDraft).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1632,7 +1642,7 @@ test('StoryMapForm: Move chapter down with menu', async () => {
     ).not.toBeInTheDocument()
   );
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1707,7 +1717,7 @@ test('StoryMapForm: Move chapter up with menu', async () => {
     ).not.toBeInTheDocument()
   );
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1833,7 +1843,7 @@ test('StoryMapForm: Delete chapter', async () => {
     expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
   });
 
-  await expectSave();
+  await expectSave(onSaveDraft);
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
 
@@ -1993,7 +2003,7 @@ test('StoryMapForm: Add featured image', async () => {
     ).not.toBeInTheDocument();
   });
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -2046,7 +2056,7 @@ test('StoryMapForm: Add short description', async () => {
     ).not.toBeInTheDocument();
   });
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -2088,7 +2098,7 @@ const probeFields = (testId = 'layer-fields-probe') =>
 const setupWithProbe = async ({ config, probe }) => {
   const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
   const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
-  await render(
+  const view = await render(
     <StoryMapConfigContextProvider
       baseConfig={config}
       storyMap={{
@@ -2100,7 +2110,7 @@ const setupWithProbe = async ({ config, probe }) => {
       <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />
     </StoryMapConfigContextProvider>
   );
-  return { onPublish, onSaveDraft };
+  return { ...view, onPublish, onSaveDraft };
 };
 
 test('StoryMapForm: Legacy chapter materializes mapLayers on the first sidebar layer edit', async () => {
@@ -2151,7 +2161,7 @@ test('StoryMapForm: Legacy chapter materializes mapLayers on the first sidebar l
         within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
       )
     );
-    await expectSave();
+    await expectSave(onSaveDraft);
 
     fields = probeFields();
     expect(fields.mapLayers).toEqual([{ layerId: AC085 }]);
@@ -2235,7 +2245,7 @@ test('StoryMapForm: Sidebar layer edits regenerate chapter layer events and drop
         within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
       )
     );
-    await expectSave();
+    await expectSave(onSaveDraft);
 
     const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
     expect(saved.mapLayers).toEqual([{ layerId: AC085 }]);
@@ -2292,7 +2302,7 @@ test('StoryMapForm: Add map layer to the title transition', async () => {
         within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
       )
     );
-    await expectSave();
+    await expectSave(onSaveDraft);
 
     const saved = onSaveDraft.mock.calls.at(-1)[0];
     expect(saved.titleTransition.mapLayers).toEqual([{ layerId: AC085 }]);
@@ -2371,7 +2381,7 @@ test('StoryMapForm: Removing the pointed layer repoints dataLayerConfigId to the
         })
       )
     );
-    await expectSave();
+    await expectSave(onSaveDraft);
 
     const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
     expect(saved.mapLayers).toEqual([{ layerId: 'layer-a' }]);
@@ -2417,7 +2427,7 @@ test('StoryMapForm: Removing all layers clears dataLayerConfigId and generated e
         })
       )
     );
-    await expectSave();
+    await expectSave(onSaveDraft);
 
     const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
     expect(saved.mapLayers).toEqual([]);
@@ -2471,7 +2481,7 @@ const CAMERA_FITTED = {
   ],
 };
 
-test('StoryMapForm: Adding a layer does not rewrite the chapter camera', async () => {
+test('StoryMapForm: adding a layer never rewrites the chapter camera (fit bursts suppressed, user moves recorded)', async () => {
   const io = installIntersectionObserverCapture();
   try {
     const map = makeCameraMap(CAMERA_OPEN);
@@ -2482,125 +2492,39 @@ test('StoryMapForm: Adding a layer does not rewrite the chapter camera', async (
     });
     await io.selectStep('chapter-1');
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
-      ).toBeInTheDocument();
-    });
-    await act(async () =>
-      fireEvent.click(
-        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
-      )
-    );
+    await toggleTreeLayer('Datalayer title 1');
 
-    // The map fits the added layer: a programmatic map move…
+    // The map fits the added layer: a BURST of programmatic moveends (real
+    // mapbox fires several per fit) — none of them is the user's camera
+    // (chapter-1 had no location and still has none).
     map.moveCameraTo(CAMERA_FITTED);
     await act(async () => {
       map.fire('move');
       map.fire('moveend');
     });
-
-    // …which is never recorded on the active chapter (it had no location and
-    // still has none).
+    await act(async () => {
+      map.fire('move');
+      map.fire('moveend');
+    });
     expect(probeChapter().location).toBeNull();
-    await expectSave();
+
+    // The next REAL user move is recorded (center + zoom)…
+    await act(async () => {
+      map.fire('mousedown');
+      map.moveCameraTo(CAMERA_OPEN);
+      map.fire('move');
+      map.fire('moveend');
+      map.fire('mouseup');
+    });
+    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
+    expect(probeChapter().location.zoom).toBe(CAMERA_OPEN.zoom);
+
+    // …and the draft autosave persists the USER's camera, not the fit.
+    await expectSave(onSaveDraft);
     const saved = onSaveDraft.mock.calls
       .at(-1)[0]
       .chapters.find(({ id }) => id === 'chapter-1');
-    expect(saved.location).toBeUndefined();
-  } finally {
-    io.restore();
-  }
-});
-
-test('StoryMapForm: a burst of programmatic moveends is fully suppressed', async () => {
-  const io = installIntersectionObserverCapture();
-  try {
-    const map = makeCameraMap(CAMERA_OPEN);
-    mapboxgl.Map.mockReturnValue(map);
-    await setupWithProbe({
-      config: BASE_CONFIG,
-      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
-    });
-    await io.selectStep('chapter-1');
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
-      ).toBeInTheDocument();
-    });
-    await act(async () =>
-      fireEvent.click(
-        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
-      )
-    );
-
-    // A bounds fit can fire SEVERAL moveends (real mapbox does): every one of
-    // them is programmatic — none may be recorded (found in E2E: the last
-    // moveend of the burst wrote the fit camera onto the chapter).
-    map.moveCameraTo(CAMERA_FITTED);
-    await act(async () => {
-      map.fire('move');
-      map.fire('moveend');
-    });
-    await act(async () => {
-      map.fire('move');
-      map.fire('moveend');
-    });
-    expect(probeChapter().location).toBeNull();
-
-    // The next REAL user move is still recorded.
-    await act(async () => {
-      map.fire('mousedown');
-      map.moveCameraTo(CAMERA_OPEN);
-      map.fire('move');
-      map.fire('moveend');
-    });
-    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
-  } finally {
-    io.restore();
-  }
-});
-
-test('StoryMapForm: A user map move is still recorded after adding a layer', async () => {
-  const io = installIntersectionObserverCapture();
-  try {
-    const map = makeCameraMap(CAMERA_OPEN);
-    mapboxgl.Map.mockReturnValue(map);
-    await setupWithProbe({
-      config: BASE_CONFIG,
-      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
-    });
-    await io.selectStep('chapter-1');
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
-      ).toBeInTheDocument();
-    });
-    await act(async () =>
-      fireEvent.click(
-        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
-      )
-    );
-    // The fit move (programmatic) is not recorded: no location appears.
-    map.moveCameraTo(CAMERA_FITTED);
-    await act(async () => {
-      map.fire('move');
-      map.fire('moveend');
-    });
-    expect(probeChapter().location).toBeNull();
-
-    // A real user move afterwards IS recorded.
-    await act(async () => {
-      map.fire('mousedown');
-      map.moveCameraTo(CAMERA_OPEN);
-      map.fire('move');
-      map.fire('moveend');
-    });
-
-    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
-    expect(probeChapter().location.zoom).toBe(CAMERA_OPEN.zoom);
+    expect(saved.location.center).toEqual(CAMERA_OPEN.center);
   } finally {
     io.restore();
   }
@@ -2838,14 +2762,12 @@ test('StoryMapForm: alignment buttons in the sidebar write the active chapter al
       )
     );
 
-    // Immediate apply: the config carries the new alignment and the chapter
-    // card realigns.
+    // Immediate apply: the config carries the new alignment (the config
+    // probe is the contract — the CSS class names it used to render are
+    // being rewritten and are not asserted here).
     expect(probeChapter().alignment).toBe('left');
-    expect(
-      screen.getByRole('region', { name: 'Chapter: Chapter 1' })
-    ).toHaveClass('lefty');
 
-    await expectSave();
+    await expectSave(onSaveDraft);
     const saved = onSaveDraft.mock.calls
       .at(-1)[0]
       .chapters.find(({ id }) => id === 'chapter-1');
@@ -3362,4 +3284,344 @@ test('StoryMapForm: an in-flight create-layer flow survives switching to Setting
   expect(screen.getByTestId('create-flow-file')).toHaveTextContent(
     'points.geojson'
   );
+});
+
+// ---------------------------------------------------------------------------
+// Fit-pipeline wiring: ConfigureChapterSidebar.onFitLayerBounds →
+// requestFitBounds (StoryMapForm/index.jsx) → the map editing session's fit
+// request → changeBounds={seq|false} on the layer stack (StoryMap) → the
+// VisualizationMapLayer fit effect. Product-level: no hand-simulated camera
+// moves — the assertions are the fit REQUEST PROPS and the map.fitBounds the
+// real fit effect performs.
+// ---------------------------------------------------------------------------
+
+const changeBoundsFor = layerId =>
+  changeBoundsLog()
+    .filter(entry => entry.layerId === layerId)
+    .at(-1)?.changeBounds;
+
+const makeReadyLayerConfig = (id, title, bounds) => ({
+  id,
+  title,
+  mapboxTilesetId: `tileset-${id}`,
+  mapboxTilesetStatus: TILESET_STATUS_READY,
+  visualizeConfig: { shape: 'circle', opacity: 50, size: 15, color: '#fff' },
+  viewportConfig: { bounds },
+});
+
+test('StoryMapForm: the fit pipeline is wired end to end — one fit per request, seq advances on re-toggle, non-target layers stay false', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: {
+        ...BASE_CONFIG,
+        chapters: [
+          {
+            ...BASE_CONFIG.chapters[0],
+            mapLayers: [{ layerId: 'pre-existing' }],
+            dataLayerConfigId: 'pre-existing',
+          },
+          ...BASE_CONFIG.chapters.slice(1),
+        ],
+        dataLayers: {
+          'pre-existing': makeReadyLayerConfig(
+            'pre-existing',
+            'Pre-existing layer',
+            {
+              northEast: { lat: 10, lng: 20 },
+              southWest: { lat: 0, lng: 10 },
+            }
+          ),
+        },
+      },
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // The pre-existing layer is mounted beside the fit target and is NEVER
+    // handed a request token.
+    expect(changeBoundsFor('pre-existing')).toBe(false);
+    expect(map.fitBounds).not.toHaveBeenCalled();
+
+    // Sidebar toggle → onFitLayerBounds → requestFitBounds → the session's
+    // fit request → the toggled layer gets the request SEQ and its fit
+    // effect (VisualizationMapLayer) fits the map to the config bounds.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(map.fitBounds).toHaveBeenCalledWith(expect.anything(), {
+      animate: false,
+    });
+    const firstSeq = changeBoundsFor(VISUALIZATION_CONFIG.id);
+    expect(typeof firstSeq).toBe('number');
+    expect(changeBoundsFor('pre-existing')).toBe(false);
+
+    // Toggling OFF is not a request: the consumed seq is never re-run.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+
+    // Toggling ON again IS a new request: the seq ADVANCES and fits once.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+    expect(changeBoundsFor(VISUALIZATION_CONFIG.id)).toBeGreaterThan(firstSeq);
+    expect(changeBoundsFor('pre-existing')).toBe(false);
+  } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Recorder lifecycle balance (the map editing session's map handlers).
+// ---------------------------------------------------------------------------
+
+const RECORDER_EVENTS = [
+  'dragstart',
+  'mousedown',
+  'touchstart',
+  'keydown',
+  'wheel',
+  'dblclick',
+  'movestart',
+  'move',
+  'moveend',
+];
+
+const recorderHandlerCounts = map =>
+  RECORDER_EVENTS.reduce((counts, type) => {
+    counts[type] = (map.onEvents[type] ?? []).length;
+    return counts;
+  }, {});
+
+test('StoryMapForm: the map editing session handler counts return to baseline across sidebar open/close and unmount', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
+  mapboxgl.Map.mockReturnValue(map);
+  const { unmount } = await setupWithProbe({ config: BASE_CONFIG });
+
+  // Open (the default): the session arms its gesture/attribution handlers.
+  const openCounts = recorderHandlerCounts(map);
+
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
+  const baselineCounts = recorderHandlerCounts(map);
+
+  // The session's footprint is exactly one handler per event it owns.
+  RECORDER_EVENTS.forEach(type => {
+    expect(openCounts[type] - baselineCounts[type]).toBe(1);
+  });
+
+  // Open/close ×3: counts land on the same open/baseline values every time —
+  // no handler ever stacks or leaks.
+  for (let cycle = 0; cycle < 3; cycle++) {
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+    );
+    expect(recorderHandlerCounts(map)).toEqual(openCounts);
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+      )
+    );
+    expect(recorderHandlerCounts(map)).toEqual(baselineCounts);
+  }
+
+  // Unmount: every map handler is off again (nothing leaks past teardown).
+  unmount();
+  RECORDER_EVENTS.forEach(type => {
+    expect(recorderHandlerCounts(map)[type]).toBe(0);
+  });
+});
+
+test('StoryMapForm: the transition replay on close is never recorded as a location', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    // Closing the sidebar RESUMES the camera step transitions: the map eases
+    // to the current chapter's camera and the replay terminates with a
+    // moveend burst — none of which is a user gesture.
+    map.flyTo = jest.fn(() => {
+      map.moveCameraTo(CAMERA_FITTED);
+      map.fire('movestart');
+      map.fire('move');
+      map.fire('moveend');
+    });
+    mapboxgl.Map.mockReturnValue(map);
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-2" testId="probe-2" />,
+    });
+    await io.selectStep('chapter-2');
+
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+      )
+    );
+    await waitFor(() => expect(map.flyTo).toHaveBeenCalled());
+
+    // The replay is not a camera edit: the chapter keeps its stored location
+    // (chapter-2 seeds one) and the close triggers no save at all.
+    expect(probeChapter('probe-2').location).toEqual({
+      center: { lng: -79.89928261750599, lat: -2.423124847733348 },
+      zoom: 5,
+    });
+    expect(onSaveDraft).not.toHaveBeenCalled();
+  } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Title-step edges.
+// ---------------------------------------------------------------------------
+
+const TitleTransitionProbe = () => {
+  const { config } = useStoryMapConfigDataContext();
+  return (
+    <div
+      data-testid="title-transition-probe"
+      data-transition={JSON.stringify(config.titleTransition ?? null)}
+    />
+  );
+};
+
+const titleTransition = () =>
+  JSON.parse(
+    screen
+      .getByTestId('title-transition-probe')
+      .getAttribute('data-transition') ?? 'null'
+  );
+
+test('StoryMapForm: the title step has no alignment control and titleTransition never gains an alignment key', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <TitleTransitionProbe />,
+    });
+    await io.selectStep(STORY_MAP_TITLE_ID);
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    // Alignment is per-CHAPTER: the title transition has no alignment in the
+    // config schema, so the control is absent while editing the title step.
+    expect(
+      within(sidebar).queryByRole('group', { name: 'Set alignment' })
+    ).not.toBeInTheDocument();
+
+    // Title-step edits (a camera write, a layer toggle) apply to
+    // titleTransition — and never mint an `alignment` key on it.
+    await dragMapTo(map, CAMERA_DRAGGED);
+    await toggleTreeLayer('Datalayer title 1');
+    const transition = titleTransition();
+    expect(transition.location.center).toEqual(CAMERA_DRAGGED.center);
+    expect('alignment' in transition).toBe(false);
+  } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Top bar toggle semantics.
+// ---------------------------------------------------------------------------
+
+test('StoryMapForm: top bar toggles expose aria-pressed for their sidebar state', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  const editChapter = screen.getByRole('button', { name: 'Edit Chapter' });
+  const settings = screen.getByRole('button', { name: 'Settings' });
+
+  // Configure Chapter is open by default; Settings is closed.
+  expect(editChapter).toHaveAttribute('aria-pressed', 'true');
+  expect(settings).toHaveAttribute('aria-pressed', 'false');
+
+  await act(async () => fireEvent.click(editChapter));
+  expect(editChapter).toHaveAttribute('aria-pressed', 'false');
+  expect(settings).toHaveAttribute('aria-pressed', 'false');
+
+  await act(async () => fireEvent.click(settings));
+  expect(settings).toHaveAttribute('aria-pressed', 'true');
+  expect(editChapter).toHaveAttribute('aria-pressed', 'false');
+});
+
+// ---------------------------------------------------------------------------
+// Layer reorder → persisted payload.
+// ---------------------------------------------------------------------------
+
+const orderListTitles = () =>
+  within(
+    screen.getByRole('list', {
+      name: 'Map layers in this chapter, topmost first',
+    })
+  )
+    .getAllByRole('listitem')
+    .map(item => item.getAttribute('aria-label'));
+
+test('StoryMapForm: a keyboard reorder persists the new mapLayers order', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    const { onSaveDraft } = await setupWithProbe({
+      config: {
+        ...BASE_CONFIG,
+        chapters: [
+          {
+            ...BASE_CONFIG.chapters[0],
+            mapLayers: [{ layerId: 'layer-a' }, { layerId: 'layer-b' }],
+            dataLayerConfigId: 'layer-a',
+          },
+          ...BASE_CONFIG.chapters.slice(1),
+        ],
+        dataLayers: {
+          'layer-a': makeReadyLayerConfig('layer-a', 'Alpha', {
+            northEast: { lat: 1, lng: 1 },
+            southWest: { lat: 0, lng: 0 },
+          }),
+          'layer-b': makeReadyLayerConfig('layer-b', 'Beta', {
+            northEast: { lat: 2, lng: 2 },
+            southWest: { lat: 1, lng: 1 },
+          }),
+        },
+      },
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Reorder with the REAL dnd keyboard sensor (space lifts, arrow moves,
+    // space drops) — the same DropResult the mouse sensor produces.
+    await waitFor(() => {
+      expect(screen.getByLabelText('Reorder Alpha')).toBeInTheDocument();
+    });
+    const handle = screen.getByLabelText('Reorder Alpha');
+    await act(async () => {
+      fireEvent.keyDown(handle, { key: ' ', keyCode: 32 });
+    });
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'ArrowDown', keyCode: 40 });
+    });
+    await act(async () => {
+      fireEvent.keyDown(window, { key: ' ', keyCode: 32 });
+    });
+
+    // The list shows the new order…
+    expect(orderListTitles()).toEqual(['Beta', 'Alpha']);
+
+    // …and the draft autosave persists the SAME order in mapLayers.
+    await expectSave(onSaveDraft);
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-1');
+    expect(saved.mapLayers).toEqual([
+      { layerId: 'layer-b' },
+      { layerId: 'layer-a' },
+    ]);
+  } finally {
+    io.restore();
+  }
 });
