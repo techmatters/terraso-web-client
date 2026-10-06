@@ -228,9 +228,35 @@ describe('Story Map Routes - Integration Tests', () => {
 
       expect(text).toContain('<title>Story Without Description Data</title>');
       expect(text).toContain(
-        'Inspire your audience with a free, easy to use, and powerful web app for place-based storytelling. Share data, media, and narratives on a map to ground your story in the land.'
+        'Inspire your audience with an open source, easy-to-use, and powerful map-based storytelling tool. Share data, media, and narratives on a map to ground your story in the land.'
       );
     });
+
+    it.each([undefined, '', '   '])(
+      'uses the generic title for a missing or blank title (%p) without replacing chapter text',
+      async title => {
+        mockFetch(
+          mockStoryMapResponse({
+            title,
+            chapters: [{ description: 'A story told through chapter text.' }],
+          })
+        );
+
+        const { text } = await request(app)
+          .get('/tools/story-maps/abc123/no-title')
+          .expect(200);
+
+        expect(text).toContain(
+          '<title>Terraso Story Maps - Free and Open Source Storymapping</title>'
+        );
+        expect(text).toContain(
+          'property="og:title" content="Terraso Story Maps - Free and Open Source Storymapping"'
+        );
+        expect(text).toContain(
+          'property="og:description" content="A story told through chapter text."'
+        );
+      }
+    );
 
     const fallbackScenarios = [
       ['story map not found', () => mockFetch(mockStoryMapResponse(null))],
