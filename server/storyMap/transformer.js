@@ -18,8 +18,10 @@
 const { baseUrl } = require('../config');
 
 const STORY_MAP_FALLBACK_IMAGE_PATH = '/storyMap/terraso-story-maps-img.jpg';
+const STORY_MAP_FALLBACK_TITLE =
+  'Terraso Story Maps - Free and Open Source Storymapping';
 const STORY_MAP_FALLBACK_DESCRIPTION =
-  'Inspire your audience with a free, easy to use, and powerful web app for place-based storytelling. Share data, media, and narratives on a map to ground your story in the land.';
+  'Inspire your audience with an open source, easy-to-use, and powerful map-based storytelling tool. Share data, media, and narratives on a map to ground your story in the land.';
 const MAX_OG_DESCRIPTION_LENGTH = 160;
 
 const getFallbackImageUrl = () =>
@@ -131,7 +133,7 @@ const parseConfig = node => {
 const buildMetaTags = node => {
   const storyMapConfig = parseConfig(node);
 
-  const title = storyMapConfig.title;
+  const title = toCleanText(storyMapConfig.title) || STORY_MAP_FALLBACK_TITLE;
   const description = getStoryMapMetaDescription(storyMapConfig);
   const image =
     storyMapConfig.featuredImage?.signedUrl ||
