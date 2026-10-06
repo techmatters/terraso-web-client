@@ -125,6 +125,29 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
               storyMapId: 'lftawa9',
               title: 'Story 2',
               isPublished: true,
+              configuration: JSON.stringify({
+                chapters: [
+                  {
+                    media: {
+                      type: 'video/mp4',
+                      signedUrl: 'https://example.com/video.mp4',
+                    },
+                  },
+                  { media: { type: 'image/jpeg' } },
+                  {
+                    media: {
+                      type: 'image/png',
+                      signedUrl: 'https://example.com/chapter.png',
+                    },
+                  },
+                  {
+                    media: {
+                      type: 'image/jpeg',
+                      signedUrl: 'https://example.com/later-chapter.jpg',
+                    },
+                  },
+                ],
+              }),
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
               createdBy: {
                 userId: 'user-2',
@@ -178,7 +201,7 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
   expect(link2).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
   expect(
     within(items[1]).getByRole('img', { name: 'Story 2' })
-  ).toHaveAttribute('src', '/storyMap/terraso-story-maps-img.jpg');
+  ).toHaveAttribute('src', 'https://example.com/chapter.png');
   const link1 = within(items[1]).getByRole('link', { name: 'Story 2' });
   expect(link1).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2/edit');
   const image = within(items[0]).getByRole('img', {

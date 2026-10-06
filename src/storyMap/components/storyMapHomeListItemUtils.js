@@ -11,7 +11,16 @@ export const STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY =
   '@media (min-width: 1000px)';
 
 export const getStoryMapImage = storyMapConfig =>
-  storyMapConfig?.featuredImage?.signedUrl || STORY_MAP_FALLBACK_IMAGE;
+  storyMapConfig?.featuredImage?.signedUrl ||
+  (Array.isArray(storyMapConfig?.chapters)
+    ? storyMapConfig.chapters.find(
+        chapter =>
+          chapter?.media?.signedUrl &&
+          (chapter.media.type === 'image' ||
+            chapter.media.type?.startsWith('image/'))
+      )?.media.signedUrl
+    : undefined) ||
+  STORY_MAP_FALLBACK_IMAGE;
 
 export const getStoryMapImageAlt = (storyMapConfig, title) =>
   storyMapConfig?.featuredImage?.description || title;
