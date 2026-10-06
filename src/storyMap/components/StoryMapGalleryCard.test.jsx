@@ -71,3 +71,37 @@ test('StoryMapGalleryCard: uses default image when no featured image is configur
     '/storyMap/terraso-story-maps-img.jpg'
   );
 });
+
+test('StoryMapGalleryCard: uses the first chapter image when no featured image is configured', () => {
+  render(
+    <MemoryRouter>
+      <StoryMapGalleryCard
+        storyMap={{
+          ...storyMap,
+          config: {
+            title: 'Chapter image story map',
+            chapters: [
+              {
+                media: {
+                  type: 'video/mp4',
+                  signedUrl: 'https://example.com/video.mp4',
+                },
+              },
+              {
+                media: {
+                  type: 'image/jpeg',
+                  signedUrl: 'https://example.com/chapter.jpg',
+                },
+              },
+            ],
+          },
+        }}
+      />
+    </MemoryRouter>
+  );
+
+  expect(screen.getByAltText('Chapter image story map')).toHaveAttribute(
+    'src',
+    'https://example.com/chapter.jpg'
+  );
+});
