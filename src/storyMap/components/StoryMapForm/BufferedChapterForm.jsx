@@ -34,7 +34,11 @@ const BUFFERED_CHAPTER_FIELDS = {
   },
 };
 
-const BufferedChapterForm = ({ record: persistedChapter }) => {
+const BufferedChapterForm = ({
+  record: persistedChapter,
+  isContained,
+  isMobile,
+}) => {
   const { chapter, getFieldBlurHandler, getFieldChangeHandler } =
     useBufferedChapterFields({
       chapter: persistedChapter,
@@ -46,6 +50,8 @@ const BufferedChapterForm = ({ record: persistedChapter }) => {
       record={chapter}
       onFieldChange={getFieldChangeHandler}
       onFieldBlur={getFieldBlurHandler}
+      isContained={isContained}
+      isMobile={isMobile}
     />
   );
 };

@@ -29,7 +29,10 @@ import {
 
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
 import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR } from 'terraso-web-client/storyMap/storyMapConstants';
+import {
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH,
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR,
+} from 'terraso-web-client/storyMap/storyMapConstants';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
@@ -65,49 +68,80 @@ const setup = async alignment => {
   };
 };
 
-describe('ChapterForm: just-modes keep the editable card (K8)', () => {
-  it.each(['justMap', 'justChapter'])(
-    'renders the title, media and description editors for a %s chapter (never emptied)',
-    async alignment => {
-      const { section } = await setup(alignment);
+describe('ChapterForm: just-modes render like the viewer (editor parity)', () => {
+  it('renders nothing over the map for a justMap chapter (span kept)', async () => {
+    const { section } = await setup('justMap');
 
-      // The editor deliberately keeps the editable card for the render
-      // modes — the map must stay visible and configurable while editing.
-      // The title is a click-to-edit field (EditableText)…
-      const title = within(section).getByRole('heading', { name: 'Chapter 1' });
-      await act(async () => {
-        fireEvent.click(title);
-      });
-      // …and opens the title editor with its value.
-      expect(
-        within(section).getByDisplayValue('Chapter 1')
-      ).toBeInTheDocument();
-      expect(
-        within(section).getByRole('img', { name: 'Chapter media' })
-      ).toBeInTheDocument();
-      expect(
-        within(section).getByText('Chapter 1 description')
-      ).toBeInTheDocument();
-    }
-  );
+    // Product decision (overrides the previous "authoring card"): the
+    // editor shows NOTHING over the map for a `justMap` chapter — no title,
+    // no media, no description, no background. The chapter keeps its scroll
+    // span and stays switchable through the Configure Chapter sidebar, so
+    // the config (content included) is never lost.
+    expect(section).toBeEmptyDOMElement();
+    expect(section.querySelector('.step-content')).toBeNull();
+    expect(section).not.toHaveClass('story-theme');
+    expect(section).toHaveClass('map-only');
+    expect(section).toHaveStyle('min-height: 100vh');
+  });
 
-  it.each(['justMap', 'justChapter'])(
-    'the %s editor card keeps its full editing width (the viewer 46rem cap must not leak in)',
-    async alignment => {
-      const { section } = await setup(alignment);
+  it('renders a full-screen editable chapter for a justChapter chapter', async () => {
+    const { section } = await setup('justChapter');
 
-      // The viewer's chapter-only cap is a CSS rule consuming a custom
-      // property the VIEWER sets (see StoryMap.css.test.ts). The editor
-      // never sets the var, so the rule's `none` fallback keeps the card at
-      // its full editing width — the old hardcoded (0,3,0) rule re-capped
-      // this card and must not come back.
-      expect(
-        section.style.getPropertyValue(CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR)
-      ).toBe('');
-      const content = within(section)
-        .getByRole('heading', { name: 'Chapter 1' })
-        .closest('.step-content');
-      expect(content).toHaveStyle('max-width: none');
-    }
-  );
+    // Full-screen shell: theme background covering the map, content
+    // centered, 120% of the map viewport tall.
+    expect(section).toHaveClass('chapter-only');
+    expect(section).toHaveClass('story-theme');
+    expect(section).toHaveStyle('width: 100%');
+    expect(section).toHaveStyle('min-height: 120vh');
+    expect(section).toHaveStyle(
+      'background-color: var(--story-theme-background)'
+    );
+    expect(section).toHaveStyle('justify-content: center');
+    expect(section).toHaveStyle('align-items: center');
+
+    // The form is STILL editable (product decision: full screen must not
+    // cost authoring). The title is a click-to-edit field (EditableText)…
+    const title = within(section).getByRole('heading', { name: 'Chapter 1' });
+    await act(async () => {
+      fireEvent.click(title);
+    });
+    // …and opens the title editor with its value.
+    expect(within(section).getByDisplayValue('Chapter 1')).toBeInTheDocument();
+    expect(
+      within(section).getByRole('img', { name: 'Chapter media' })
+    ).toBeInTheDocument();
+    expect(
+      within(section).getByText('Chapter 1 description')
+    ).toBeInTheDocument();
+  });
+
+  it('the justChapter form centers its content in the viewer reading column (var set)', async () => {
+    const { section } = await setup('justChapter');
+
+    // Same cap machinery as the viewer: the constant reaches the container
+    // as a custom property and the CSS rule on `.step-content` consumes it.
+    expect(section).toHaveStyle(
+      `${CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR}: ${CHAPTER_ONLY_CONTENT_MAX_WIDTH}`
+    );
+    const content = within(section)
+      .getByRole('heading', { name: 'Chapter 1' })
+      .closest('.step-content');
+    expect(content).toHaveStyle('width: 100%');
+  });
+
+  it('the classic editor card keeps its full editing width (var unset)', async () => {
+    const { section } = await setup('center');
+
+    // The viewer's chapter-only cap is a CSS rule consuming a custom
+    // property only the `justChapter` render sets. A classic card never
+    // sets the var, so the rule's `none` fallback keeps it at its full
+    // editing width.
+    expect(
+      section.style.getPropertyValue(CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR)
+    ).toBe('');
+    const content = within(section)
+      .getByRole('heading', { name: 'Chapter 1' })
+      .closest('.step-content');
+    expect(content).toHaveStyle('max-width: none');
+  });
 });

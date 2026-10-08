@@ -156,10 +156,11 @@ footer {
 /* `justChapter` content is centered at a readable max width. The VALUE has
    exactly one owner: CHAPTER_ONLY_CONTENT_MAX_WIDTH (storyMapConstants.ts),
    which sets --chapter-only-content-max-width on the viewer chapter
-   container — this rule consumes the VAR, so the two cannot drift. The
-   `none` fallback covers the editor (ChapterForm), which never sets the
-   var: its editable card keeps its full editing width instead of being
-   re-capped by this (0,3,0) rule. */
+   container AND on the editor's full-screen `justChapter` form — this rule
+   consumes the VAR, so the two cannot drift. The `none` fallback covers the
+   editor's classic cards (ChapterForm does not set the var there): they keep
+   their full editing width instead of being re-capped by this (0,3,0)
+   rule. */
 .step-container.chapter-only .step-content {
   max-width: var(--chapter-only-content-max-width, none);
   margin: 0 auto;

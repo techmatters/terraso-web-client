@@ -44,10 +44,11 @@ test('the chapter-only content cap consumes the JS-owned custom property (no sec
   expect(css).not.toContain(`max-width: ${CHAPTER_ONLY_CONTENT_MAX_WIDTH}`);
 });
 
-test('the cap rule neutralizes in the editor: unset var falls back to none', () => {
-  // ChapterForm (editor) never sets the var — the fallback keeps its
-  // editable card at its full editing width instead of re-capping it at
-  // 46rem through this (0,3,0) rule.
+test('the cap rule falls back to none when the var is unset (classic editor cards)', () => {
+  // The `justChapter` render (viewer shell AND editor form) sets the var;
+  // the editor's classic cards do not — the fallback keeps them at their
+  // full editing width instead of re-capping them at 46rem through this
+  // (0,3,0) rule.
   expect(css).toMatch(
     new RegExp(`var\\(${CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR},\\s*none\\)`)
   );

@@ -130,9 +130,10 @@ const Embedded = ({ record }) => {
  *   transition still runs.
  * - `justChapter`: a full-width card whose background covers the map area,
  *   with the content vertically centered and horizontally centered at a
- *   reasonable max width. Its camera transition is skipped and all map
- *   layers are forced off while it is active (see `mapUtils.ts` — viewer
- *   side only).
+ *   reasonable max width. Its span is 120% of the map viewport
+ *   (120vh / 120cqh), its camera transition is skipped and all map layers
+ *   are forced off while it is active (see `mapUtils.ts` — viewer side
+ *   only).
  * - `hidden` WINS over the modes: a hidden chapter performs no mode
  *   semantics (no camera skip, no layer forcing) — the map behind the
  *   invisible card stays alive.
@@ -140,9 +141,11 @@ const Embedded = ({ record }) => {
  *   33vh band there that no card can cover): normal card rendering with the
  *   content shown, camera transitions run, no layer forcing.
  *
- * The editor's chapter form (`ChapterForm`) deliberately keeps the editable
- * card for these alignments: the map must stay visible and editable while
- * configuring (camera recording, layer panel).
+ * The editor's chapter form (`ChapterForm`) renders the SAME render modes
+ * through this policy: `justMap` shows nothing over the map (only the
+ * scroll span) and `justChapter` is a full-screen editable chapter — theme
+ * background covering the map, form centered in the same reading column as
+ * the published content, inputs live.
  */
 const Chapter = ({ record, active, isContained, isMobile }) => {
   const { t } = useTranslation();
@@ -166,11 +169,12 @@ const Chapter = ({ record, active, isContained, isMobile }) => {
       className={className}
       sx={({ breakpoints }) => ({
         [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
-        // The render modes span the full chapter scroll space: 100vh
-        // uncontained, 100cqh when the story map scrolls in its container
-        // (the map is `100cqh` there too). The classic card paddings are
-        // dropped for them in `StoryMap.css`, next to the paddings they
-        // cancel: the span is exactly one viewport tall.
+        // The render modes span the chapter scroll space as a share of the
+        // map viewport: 100% for `justMap` (100vh uncontained, 100cqh when
+        // the story map scrolls in its container) and 120% for `justChapter`
+        // (see `chapterShell`). The classic card paddings are dropped for
+        // them in `StoryMap.css`, next to the paddings they cancel: the span
+        // is exactly the mode's share of the map viewport tall.
         ...(policy.spanHeight(isContained)
           ? { minHeight: policy.spanHeight(isContained) }
           : {}),
@@ -178,8 +182,9 @@ const Chapter = ({ record, active, isContained, isMobile }) => {
         // content centered. The content cap VALUE has exactly one owner —
         // CHAPTER_ONLY_CONTENT_MAX_WIDTH — carried to the CSS rule on
         // `.step-content` through the custom property below (StoryMap.css
-        // consumes the var; the editor never sets it and keeps its full
-        // editing width through the rule's `none` fallback).
+        // consumes the var; the editor's `justChapter` form sets the same
+        // var, and the rule's `none` fallback keeps every other editable
+        // card at its full editing width).
         ...(policy.coversMap
           ? {
               width: '100%',
@@ -555,6 +560,12 @@ const StoryMap = props => {
             ? {
                 pointerEvents: 'none',
                 '& .step-container, & .step.title': { pointerEvents: 'none' },
+                // A `justChapter` shell COVERS the map (opaque theme
+                // background): there is nothing underneath to drag, so the
+                // whole chapter stays interactive and the full-screen
+                // editor form is fully usable (click-to-edit title
+                // included) while the sidebar is open.
+                '& .step-container.chapter-only': { pointerEvents: 'auto' },
                 // Everything interactive keeps its pointer events: form
                 // controls, links, contenteditable, plus the ARIA-widget
                 // equivalents MUI renders as divs (Select, icon buttons,
