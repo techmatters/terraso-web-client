@@ -59,6 +59,10 @@ const ConfigButton = withProps(IconButton, {
   sx: {
     bgcolor: 'gray.lite1',
     borderRadius: 0,
+    // Square icon buttons: width and height pinned so the three alignment
+    // options read as one row of equal targets.
+    width: 40,
+    height: 40,
     '&:hover': { bgcolor: 'gray.mid', borderRadius: 0 },
   },
 });
@@ -118,7 +122,7 @@ const AlignmentSettings = ({ targetId }) => {
       </Typography>
       <ButtonGroup
         role="group"
-        orientation="vertical"
+        orientation="horizontal"
         aria-label={t('storyMap.form_chapter_alignment_buttons')}
       >
         {options.map(option => (
