@@ -163,6 +163,7 @@ const MapboxLayer = props => {
     showPopups = true,
     useConfigBounds,
     changeBounds = true,
+    avoidMoveWhenVisible = false,
     useTileset,
     isMapFile,
     opacity: initialOpacity,
@@ -284,11 +285,42 @@ const MapboxLayer = props => {
     };
 
     const applyBounds = bounds => {
-      if (!cancelled && bounds && !bounds.isEmpty()) {
+      if (cancelled || !bounds || bounds.isEmpty()) {
+        return;
+      }
+      if (!avoidMoveWhenVisible) {
         map.fitBounds(bounds, {
           animate: false,
         });
+        return;
       }
+      // Adding a layer must not move the camera while any part of the layer is
+      // already visible. Only when the layer is completely outside the
+      // current viewport do we zoom out enough to include both the current
+      // viewport and the new layer.
+      //
+      // mapbox-gl's LngLatBounds has no `intersects`, so the overlap test is
+      // written out (with the antimeridian caveat that `isEmpty`/the app's
+      // bounds validation already covers).
+      const viewport = map.getBounds();
+      const layerSw = bounds.getSouthWest();
+      const layerNe = bounds.getNorthEast();
+      const overlapsViewport =
+        layerNe.lng >= viewport.getWest() &&
+        layerSw.lng <= viewport.getEast() &&
+        layerNe.lat >= viewport.getSouth() &&
+        layerSw.lat <= viewport.getNorth();
+      if (overlapsViewport) {
+        return;
+      }
+      const union = new mapboxgl.LngLatBounds(
+        viewport.getSouthWest(),
+        viewport.getNorthEast()
+      );
+      union.extend(bounds);
+      map.fitBounds(union, {
+        animate: false,
+      });
     };
 
     if (useConfigBounds) {
@@ -317,6 +349,7 @@ const MapboxLayer = props => {
     useConfigBounds,
     sourceName,
     changeBounds,
+    avoidMoveWhenVisible,
   ]);
 
   const layer = useMemo(() => {

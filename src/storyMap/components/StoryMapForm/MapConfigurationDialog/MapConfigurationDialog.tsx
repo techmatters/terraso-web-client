@@ -252,6 +252,7 @@ const MapLayerPreview = ({
           config={mapLayerConfig}
           useConfigBounds
           changeBounds={mapLayerConfig.id === changeBoundsLayerId}
+          avoidMoveWhenVisible
           onLayerAdded={onLayerAdded}
         />
       ))}
