@@ -1,0 +1,267 @@
+{
+    "style": "mapbox://styles/mapbox/streets-v12",
+    "themeId": "theme-1",
+    "showMarkers": false,
+    "use3dTerrain": false,
+    "title": "Golden story map",
+    "subtitle": "Golden subtitle",
+    "byline": "Golden byline",
+    "projection": "mercator",
+    "chapters": [
+        {
+            "id": "chapter-1",
+            "title": "Golden chapter one",
+            "alignment": "left",
+            "description": "Golden chapter one description",
+            "media": {
+                "type": "image",
+                "url": "https://example.com/golden-1.png",
+                "signedUrl": "https://example.com/golden-1.png?sig=1"
+            },
+            "location": {
+                "center": { "lat": -2.42, "lng": -79.89 },
+                "zoom": 5,
+                "pitch": 0,
+                "bearing": 0,
+                "bounds": [-80, -3, -79, -2]
+            },
+            "mapLayers": [
+                { "layerId": "layer-points" },
+                { "layerId": "layer-polygons" }
+            ],
+            "dataLayerConfigId": "layer-points",
+            "onChapterEnter": [
+                { "layer": "water", "opacity": 0, "duration": 0.5 },
+                {
+                    "layer": "layer-points-markers",
+                    "opacity": 1,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-points-polygons-outline",
+                    "opacity": 1,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-points-polygons-fill",
+                    "opacity": 0.5,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-markers",
+                    "opacity": 1,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-outline",
+                    "opacity": 1,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-fill",
+                    "opacity": 0.75,
+                    "duration": 0
+                }
+            ],
+            "onChapterExit": [
+                { "layer": "water", "opacity": 1, "duration": 0.5 },
+                {
+                    "layer": "layer-points-markers",
+                    "opacity": 0,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-points-polygons-outline",
+                    "opacity": 0,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-points-polygons-fill",
+                    "opacity": 0,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-markers",
+                    "opacity": 0,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-outline",
+                    "opacity": 0,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-fill",
+                    "opacity": 0,
+                    "duration": 0
+                }
+            ]
+        },
+        {
+            "id": "chapter-2",
+            "title": "Golden chapter two",
+            "alignment": "center",
+            "description": "Golden chapter two description",
+            "media": {
+                "type": "embedded",
+                "url": "https://example.com/golden-embed"
+            },
+            "location": {
+                "center": { "lat": -1.5, "lng": -78.5 },
+                "zoom": 7
+            },
+            "mapLayers": [{ "layerId": "layer-polygons" }],
+            "dataLayerConfigId": "layer-polygons",
+            "onChapterEnter": [
+                {
+                    "layer": "layer-polygons-markers",
+                    "opacity": 1,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-outline",
+                    "opacity": 1,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-fill",
+                    "opacity": 0.75,
+                    "duration": 0
+                }
+            ],
+            "onChapterExit": [
+                {
+                    "layer": "layer-polygons-markers",
+                    "opacity": 0,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-outline",
+                    "opacity": 0,
+                    "duration": 0
+                },
+                {
+                    "layer": "layer-polygons-polygons-fill",
+                    "opacity": 0,
+                    "duration": 0
+                }
+            ]
+        }
+    ],
+    "titleTransition": {
+        "location": {
+            "center": { "lat": -2.42, "lng": -79.89 },
+            "zoom": 4
+        },
+        "rotateAnimation": true,
+        "mapAnimation": "flyTo",
+        "mapLayers": [{ "layerId": "layer-points" }],
+        "dataLayerConfigId": "layer-points",
+        "onChapterEnter": [
+            { "layer": "layer-points-markers", "opacity": 1, "duration": 0 },
+            {
+                "layer": "layer-points-polygons-outline",
+                "opacity": 1,
+                "duration": 0
+            },
+            {
+                "layer": "layer-points-polygons-fill",
+                "opacity": 0.5,
+                "duration": 0
+            }
+        ],
+        "onChapterExit": [
+            { "layer": "layer-points-markers", "opacity": 0, "duration": 0 },
+            {
+                "layer": "layer-points-polygons-outline",
+                "opacity": 0,
+                "duration": 0
+            },
+            {
+                "layer": "layer-points-polygons-fill",
+                "opacity": 0,
+                "duration": 0
+            }
+        ]
+    },
+    "dataLayers": {
+        "layer-points": {
+            "id": "layer-points",
+            "readableId": "golden-points",
+            "title": "Golden points layer",
+            "description": "Golden points layer description",
+            "slug": "golden-points-layer",
+            "createdAt": "2025-01-10T15:36:11.684190+00:00",
+            "createdBy": {
+                "id": "9de58095-749a-4d62-b6e0-d0b6034d8949",
+                "firstName": "Golden",
+                "lastName": "Author"
+            },
+            "mapboxTilesetId": "golden.tileset.points",
+            "mapboxTilesetStatus": "READY",
+            "tilesetId": "golden.tileset.points",
+            "geojsonSignedUrl": "https://example.com/golden-points.geojson?sig=1",
+            "ownerType": "StoryMapNode",
+            "visualizeConfig": {
+                "shape": "circle",
+                "opacity": 50,
+                "size": 15,
+                "color": "#FF580D"
+            },
+            "annotateConfig": {
+                "dataPoints": [],
+                "mapTitle": "Golden points"
+            },
+            "datasetConfig": {
+                "latitude": "lat",
+                "longitude": "lng"
+            },
+            "viewportConfig": {
+                "bounds": {
+                    "northEast": { "lat": -0.0017, "lng": -77.9075 },
+                    "southWest": { "lat": -0.3455, "lng": -79.0718 }
+                },
+                "baseMapStyle": "mapbox://styles/mapbox/light-v11"
+            }
+        },
+        "layer-polygons": {
+            "id": "layer-polygons",
+            "readableId": "golden-polygons",
+            "title": "Golden polygons layer",
+            "description": "Golden polygons layer description",
+            "slug": "golden-polygons-layer",
+            "createdAt": "2025-02-11T09:12:00.000000+00:00",
+            "createdBy": {
+                "id": "0b6a1f0e-4a5c-4c2b-9f6a-3f5f0a1b2c3d",
+                "firstName": "Golden",
+                "lastName": "Cartographer"
+            },
+            "mapboxTilesetId": "golden.tileset.polygons",
+            "mapboxTilesetStatus": "READY",
+            "tilesetId": "golden.tileset.polygons",
+            "geojsonSignedUrl": "https://example.com/golden-polygons.geojson?sig=1",
+            "ownerType": "LandscapeNode",
+            "visualizeConfig": {
+                "shape": "square",
+                "opacity": 75,
+                "size": 12,
+                "color": "#2A9D8F"
+            },
+            "annotateConfig": {
+                "dataPoints": [],
+                "annotationTitle": "Golden polygons"
+            },
+            "datasetConfig": {
+                "latitude": "y",
+                "longitude": "x",
+                "dataColumns": { "option": "", "selectedColumns": ["", "", ""] }
+            },
+            "viewportConfig": {
+                "bounds": {
+                    "northEast": { "lat": 1.25, "lng": -78.1 },
+                    "southWest": { "lat": -1.75, "lng": -80.4 }
+                }
+            }
+        }
+    }
+}

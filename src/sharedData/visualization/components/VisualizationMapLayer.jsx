@@ -24,6 +24,7 @@ import { Box, Portal, Stack, Typography } from '@mui/material';
 import Layer from 'terraso-web-client/gis/components/Layer';
 import { useMap } from 'terraso-web-client/gis/components/Map';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
+import { fitMapBounds } from 'terraso-web-client/gis/mapCamera';
 import { getLayerImage } from 'terraso-web-client/sharedData/visualization/visualizationMarkers';
 
 const DEFAULT_MARKER_OPACITY = 1;
@@ -33,6 +34,17 @@ export const LAYER_TYPES = {
   POLYGONS_OUTLINE: 'polygons-outline',
   POLYGONS_FILL: 'polygons-fill',
 };
+
+/**
+ * Bottom-to-top stacking order of the generated sublayers — THE single source
+ * of truth: the <Layer> renderings below insert them in this order and
+ * mapUtils enforces the same stack on transitions.
+ */
+export const LAYER_TYPE_STACK_ORDER = [
+  LAYER_TYPES.MARKERS,
+  LAYER_TYPES.POLYGONS_OUTLINE,
+  LAYER_TYPES.POLYGONS_FILL,
+];
 
 export const generateLayerId = (layerId, layerType) => {
   return `${layerId}-${layerType}`;
@@ -152,6 +164,7 @@ const MapboxLayer = props => {
     showPopups = true,
     useConfigBounds,
     changeBounds = true,
+    avoidMoveWhenVisible = false,
     useTileset,
     isMapFile,
     opacity: initialOpacity,
@@ -273,11 +286,46 @@ const MapboxLayer = props => {
     };
 
     const applyBounds = bounds => {
-      if (!cancelled && bounds && !bounds.isEmpty()) {
-        map.fitBounds(bounds, {
+      if (cancelled || !bounds || bounds.isEmpty()) {
+        return;
+      }
+      if (!avoidMoveWhenVisible) {
+        // Shared fit helper: the camera move is announced automatically, so
+        // it is never recorded as a user camera edit (mapCamera protocol).
+        fitMapBounds(map, bounds, {
           animate: false,
         });
+        return;
       }
+      // Adding a layer must not move the camera while any part of the layer is
+      // already visible. Only when the layer is completely outside the
+      // current viewport do we zoom out enough to include both the current
+      // viewport and the new layer.
+      //
+      // mapbox-gl's LngLatBounds has no `intersects`, so the overlap test is
+      // written out (with the antimeridian caveat that `isEmpty`/the app's
+      // bounds validation already covers).
+      const viewport = map.getBounds();
+      const layerSw = bounds.getSouthWest();
+      const layerNe = bounds.getNorthEast();
+      const overlapsViewport =
+        layerNe.lng >= viewport.getWest() &&
+        layerSw.lng <= viewport.getEast() &&
+        layerNe.lat >= viewport.getSouth() &&
+        layerSw.lat <= viewport.getNorth();
+      if (overlapsViewport) {
+        return;
+      }
+      const union = new mapboxgl.LngLatBounds(
+        viewport.getSouthWest(),
+        viewport.getNorthEast()
+      );
+      union.extend(bounds);
+      // Shared fit helper: announced as a programmatic move, never recorded as
+      // a user camera edit (mapCamera protocol).
+      fitMapBounds(map, union, {
+        animate: false,
+      });
     };
 
     if (useConfigBounds) {
@@ -306,6 +354,7 @@ const MapboxLayer = props => {
     useConfigBounds,
     sourceName,
     changeBounds,
+    avoidMoveWhenVisible,
   ]);
 
   const layer = useMemo(() => {
