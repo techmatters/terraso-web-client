@@ -415,7 +415,7 @@ test('StoryMap: justChapter chapter is a full-span card covering the map, conten
   // Full-width background covering the map area for the chapter's span.
   expect(section).toHaveClass('chapter-only');
   expect(section).toHaveStyle('width: 100%');
-  expect(section).toHaveStyle('min-height: 100vh');
+  expect(section).toHaveStyle('min-height: 120vh');
   expect(section).toHaveStyle(
     'background-color: var(--story-theme-background)'
   );
@@ -443,11 +443,11 @@ test('StoryMap: justChapter chapter is a full-span card covering the map, conten
   expect(content).toBeInTheDocument();
 });
 
-test('StoryMap: justChapter chapter span is 100cqh when the story map is contained', async () => {
+test('StoryMap: justChapter chapter span is 120cqh (120% of the map viewport) when the story map is contained', async () => {
   await render(<StoryMap config={JUST_MODES_CONFIG} isContained />);
 
   const section = screen.getByRole('region', { name: 'Chapter: Chapter Only' });
-  expect(section).toHaveStyle('min-height: 100cqh');
+  expect(section).toHaveStyle('min-height: 120cqh');
 });
 
 test('StoryMap: left/center/right chapter rendering is unchanged', async () => {
@@ -499,7 +499,7 @@ test('StoryMap: content-free just-mode beats keep their span through the consume
     .getElementById('empty-chapter')
     .querySelector('.step-container');
   expect(chapterBeat).toHaveClass('chapter-only');
-  expect(chapterBeat).toHaveStyle('min-height: 100vh');
+  expect(chapterBeat).toHaveStyle('min-height: 120vh');
 
   // The classic content-free chapter is still dropped.
   expect(document.getElementById('empty-classic')).toBeNull();

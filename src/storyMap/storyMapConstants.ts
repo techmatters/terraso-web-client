@@ -63,11 +63,26 @@ export const isSideCardAlignment = (alignment?: ChapterAlignment): boolean =>
 export const CHAPTER_ONLY_CONTENT_MAX_WIDTH = '46rem';
 
 /**
+ * Span height of a `justMap` beat, as a percentage of the map viewport
+ * (`100vh` / `100cqh`): exactly one map screen.
+ */
+export const MAP_ONLY_SPAN_PERCENT = 100;
+
+/**
+ * Span height of a `justChapter` beat, as a percentage of the map viewport
+ * (`120vh` / `120cqh`): the full-screen chapter reads as taller than one map
+ * screen in the viewer AND in the editor (the editor's full-screen chapter
+ * rendering consumes the same `chapterShell` span).
+ */
+export const CHAPTER_ONLY_SPAN_PERCENT = 120;
+
+/**
  * Custom property carrying {@link CHAPTER_ONLY_CONTENT_MAX_WIDTH} onto the
  * chapter container. The CSS rule on `.step-content` consumes the VAR — the
- * constant is the single owner of the value (see `StoryMap.css`). The
- * editor's chapter form never sets the var, and the rule's `none` fallback
- * keeps the editable card at its full editing width.
+ * constant is the single owner of the value (see `StoryMap.css`). The viewer
+ * sets it on a `justChapter` shell and the EDITOR's full-screen `justChapter`
+ * form sets it too (same centered reading column); the rule's `none`
+ * fallback keeps every other editable card at its full editing width.
  */
 export const CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR =
   '--chapter-only-content-max-width';
@@ -83,7 +98,11 @@ export type ChapterRenderPolicy = {
   rendersContent: boolean;
   /** Whether the shell's background covers the map area (`justChapter`). */
   coversMap: boolean;
-  /** Full-viewport scroll span (`100vh` / `100cqh`), or undefined for cards. */
+  /**
+   * Scroll span of the shell as a percentage of the map viewport
+   * (`100vh`/`100cqh` for `justMap`, `120vh`/`120cqh` for `justChapter`),
+   * or undefined for cards.
+   */
   spanHeight: (isContained: boolean) => string | undefined;
   /** Whether the step's camera transition runs. */
   cameraMode: 'run' | 'skip';
@@ -143,8 +162,16 @@ export const chapterShell = ({
     alignmentClass: (effective && ALIGNMENTS[effective]) || 'centered',
     rendersContent: shell !== 'mapOnly',
     coversMap,
-    spanHeight: isContained =>
-      shell === 'card' ? undefined : isContained ? '100cqh' : '100vh',
+    spanHeight: isContained => {
+      if (shell === 'card') {
+        return undefined;
+      }
+      const percent =
+        shell === 'chapterOnly'
+          ? CHAPTER_ONLY_SPAN_PERCENT
+          : MAP_ONLY_SPAN_PERCENT;
+      return `${percent}${isContained ? 'cqh' : 'vh'}`;
+    },
     cameraMode: modeSemantics ? 'skip' : 'run',
     layerPolicy: modeSemantics ? 'force-off-display' : 'model',
     boundsRegion: isSideCardAlignment(alignment) ? 'content-strip' : 'full',
