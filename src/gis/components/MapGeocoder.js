@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import escape from 'lodash/fp/escape';
 
@@ -43,9 +43,13 @@ const renderSearchResult = result =>
     : escape(result.place_name ?? '');
 
 const MapGeocoder = props => {
-  const { position } = props;
+  const { position, onResult } = props;
   const { t } = useTranslation();
   const { map } = useMap();
+  // The geocoder is created once per map: keep the callback in a ref so a
+  // caller-side identity change does not tear the control down.
+  const onResultRef = useRef(onResult);
+  onResultRef.current = onResult;
 
   useEffect(() => {
     if (!map) {
@@ -71,10 +75,20 @@ const MapGeocoder = props => {
       render: renderSearchResult,
       mapboxgl,
     });
+    // A search result IS user intent (a deliberate "go there" — the geocoder
+    // flies the map to it): callers use this to record the resulting camera,
+    // which no pointer gesture ever touches.
+    geocoder.on?.('result', event => onResultRef.current?.(event));
     map.addControl(geocoder, position);
 
     return () => {
-      if (!geocoder._container?.parentNode) {
+      // Skip removeControl when the control's DOM is already gone (e.g. the
+      // map was torn down and recreated on a style PROP change): the
+      // geocoder's onRemove crashes on `container.parentNode.removeChild`
+      // when it is already detached. NOTE: the geocoder sets `container`
+      // (v5) — a `_container` check here silently never matches and stacks
+      // a new search control on the shared map on every effect re-run.
+      if (!geocoder.container?.parentNode) {
         return;
       }
 

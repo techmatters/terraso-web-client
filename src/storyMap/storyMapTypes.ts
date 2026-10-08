@@ -32,6 +32,11 @@ export type VisualizeConfig = {
 
 export type MapLayerConfig = VisualizationConfigNode & {
   ownerType: 'StoryMapNode' | 'GroupNode' | 'LandscapeNode';
+  /** Stable id of the owning group/landscape, when applicable. */
+  ownerId?: string;
+  /** Display name of the owning group/landscape, when applicable. */
+  ownerName?: string;
+  visualizeConfig?: VisualizeConfig;
 };
 
 export type MapPosition = {
@@ -48,15 +53,98 @@ export type LayerConfig = {
   duration?: number;
 };
 
+/** Reference to a map layer shown during a transition. */
+export type MapLayerTransition = {
+  layerId: string;
+};
+
+/**
+ * One row of a transition's ordered layer list (index 0 = topmost).
+ * `config` is null for layer refs that resolve neither in the stored
+ * `dataLayers` payload nor in the fetched layer index (dangling/unknown
+ * refs): the row is kept and rendered as unknown — unknown data is never
+ * silently dropped.
+ */
+export type MapLayerDraftRow = {
+  layerId: string;
+  config: MapLayerConfig | null;
+};
+
 export type Transition = {
   location: MapPosition & { duration?: number };
   rotateAnimation?: boolean;
   mapAnimation?: 'flyTo' | 'easeTo';
+  /**
+   * Ordered list of the map layers shown during this transition.
+   * Index 0 is the topmost layer on the map.
+   * When absent, the legacy single-layer fields below are used instead.
+   */
+  mapLayers?: MapLayerTransition[];
+  /**
+   * @deprecated DERIVED compat field: the single-layer reference regenerated
+   * from {@link Transition.mapLayers} + `dataLayers` on every config write
+   * (see `syncTransitionLayerFields` in mapLayerUtils.ts — the ONLY writer).
+   * It points at the most recently added layer (topmost newly added one),
+   * stays put across reorders and removals of other layers, and is repointed
+   * to the topmost remaining layer (or cleared) when the layer it pointed at
+   * is removed.
+   *
+   * Read by ALL viewers (including new ones) for layer visibility —
+   * never hand-edit; do not remove. When `mapLayers` is present, readers
+   * prefer it and this field is only a compat fallback. Mid-rollout
+   * divergence: configs written by the OLD editor have no `mapLayers`; new
+   * readers then fall back to this field (legacy single-layer behavior).
+   * Transitions without `mapLayers` are never migrated on load.
+   */
+  dataLayerConfigId?: string;
+  /**
+   * @deprecated DERIVED compat field: layer fade-in events regenerated from
+   * {@link Transition.mapLayers} + `dataLayers` on every config write (see
+   * `syncTransitionLayerFields` in mapLayerUtils.ts — the ONLY writer). It
+   * contains one entry per sublayer of every layer in `mapLayers`; hand-made
+   * entries whose `layer` is not a generated data-layer sublayer id are
+   * preserved. Read by ALL viewers (including new ones) for layer visibility
+   * (`startLayerTransition` in mapUtils.ts) — never hand-edit; do not remove.
+   */
   onChapterEnter?: LayerConfig[];
+  /**
+   * @deprecated DERIVED compat field: layer fade-out events, see
+   * {@link Transition.onChapterEnter}.
+   */
   onChapterExit?: LayerConfig[];
 };
 
-export type ChapterAlignment = 'left' | 'right' | 'center';
+/**
+ * SCHEMA DEBT (deliberately deferred, product decision): `alignment` conflates
+ * card POSITION (`left`/`right`/`center`/`full`) and RENDER MODE
+ * (`justMap`/`justChapter`). The clean fix is a separate `displayMode` field
+ * with a 2-row data migration — not done here.
+ */
+export type ChapterAlignment =
+  | 'left'
+  | 'right'
+  | 'center'
+  /**
+   * LEGACY ALIAS (Mapbox storytelling-template lineage: `ALIGNMENTS.full →
+   * 'fully'`, the `.fully` full-width card). Stored configs in the wild
+   * contain it and the editor round-trips the whole config on save, so it
+   * stays a legal value; the editor does not offer it. Mirrored by the
+   * backend `CHAPTER_ALIGNMENTS` enum.
+   */
+  | 'full'
+  /**
+   * Render mode: the chapter renders NOTHING over the map (no content, no
+   * background) for its scroll span — just the map. The camera transition
+   * still runs. Config content is preserved (toggle-safe).
+   */
+  | 'justMap'
+  /**
+   * Render mode: a full-width chapter card whose background covers the map
+   * area, content vertically centered with a max width. All map layers are
+   * forced off (display-side only) and the camera transition is skipped
+   * while this chapter is active. Config content is preserved (toggle-safe).
+   */
+  | 'justChapter';
 
 /**
  * swLng, swLat, neLng, neLat
@@ -68,6 +156,13 @@ export type ChapterConfig = {
   title: string;
   description: Descendant;
   alignment: ChapterAlignment;
+  /**
+   * Legacy (Mapbox storytelling-template field): a hidden chapter keeps its
+   * scroll span but renders nothing visible. `hidden` WINS over the just-mode
+   * render semantics (no camera skip, no layer forcing — see
+   * `chapterShell`).
+   */
+  hidden?: boolean;
   media: {
     type: 'image' | 'video' | 'embedded';
     url: string;

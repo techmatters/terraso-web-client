@@ -122,6 +122,16 @@ footer {
   display: flex;
 }
 
+/* The render modes (`map-only`, `chapter-only`) span exactly one viewport:
+   the classic card paddings above are cancelled for them. This rule sits
+   NEXT to the paddings it cancels and wins by specificity (0,2,0) — not by
+   stylesheet insertion order like the sx it replaces. */
+.step-container.map-only,
+.step-container.chapter-only {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .step-container.title {
   padding-top: 5vh;
 }
@@ -141,6 +151,19 @@ footer {
 .step-container .step-content h3 {
   font-size: 2em;
   font-weight: bold;
+}
+
+/* `justChapter` content is centered at a readable max width. The VALUE has
+   exactly one owner: CHAPTER_ONLY_CONTENT_MAX_WIDTH (storyMapConstants.ts),
+   which sets --chapter-only-content-max-width on the viewer chapter
+   container AND on the editor's full-screen `justChapter` form — this rule
+   consumes the VAR, so the two cannot drift. The `none` fallback covers the
+   editor's classic cards (ChapterForm does not set the var there): they keep
+   their full editing width instead of being re-capped by this (0,3,0)
+   rule. */
+.step-container.chapter-only .step-content {
+  max-width: var(--chapter-only-content-max-width, none);
+  margin: 0 auto;
 }
 
 .step-container .step-content h4 {

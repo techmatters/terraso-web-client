@@ -15,18 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { Box, Button, Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 
-import {
-  getLayerOpacity,
-  LAYER_TYPES,
-} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
-import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
@@ -34,7 +28,6 @@ import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstant
 const TitleForm = props => {
   const { t } = useTranslation();
   const { setConfig } = useStoryMapConfigActionsContext();
-  const [locationOpen, setLocationOpen] = useState(false);
   const { config } = props;
 
   const inputProps = useMemo(
@@ -64,52 +57,6 @@ const TitleForm = props => {
     [setConfig]
   );
 
-  const onDataLayerChange = useCallback(
-    dataLayerConfig => {
-      const baseEvents = dataLayerConfig
-        ? Object.values(LAYER_TYPES).map(name => ({
-            layer: generateLayerId(dataLayerConfig.id, name),
-            opacity: getLayerOpacity(name, dataLayerConfig),
-            duration: 0,
-          }))
-        : [];
-
-      const onChapterEnter = baseEvents;
-      const onChapterExit = baseEvents.map(_.set('opacity', 0));
-
-      setConfig(
-        _.flow(
-          dataLayerConfig
-            ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig)
-            : _.identity,
-          _.set('titleTransition.dataLayerConfigId', dataLayerConfig?.id),
-          _.set('titleTransition.onChapterEnter', onChapterEnter),
-          _.set('titleTransition.onChapterExit', onChapterExit)
-        )
-      );
-    },
-    [setConfig]
-  );
-
-  const onLocationClick = useCallback(() => {
-    setLocationOpen(true);
-  }, []);
-
-  const onLocationClose = useCallback(() => {
-    setLocationOpen(false);
-  }, []);
-
-  const onLocationChangeWrapper = useCallback(
-    ({ location, mapStyle, dataLayerConfig }) => {
-      onFieldChange('titleTransition.location')(location);
-      onFieldChange('style')(mapStyle);
-      onDataLayerChange(dataLayerConfig);
-
-      onLocationClose();
-    },
-    [onFieldChange, onLocationClose, onDataLayerChange]
-  );
-
   const onTitleBlur = useCallback(() => {
     const trimmedTitle = config.title.trim();
     if (trimmedTitle !== config.title) {
@@ -126,28 +73,6 @@ const TitleForm = props => {
       })}
       sx={{ opacity: 0.99, pb: '35vh' }}
     >
-      {locationOpen && (
-        <MapConfigurationDialog
-          open={locationOpen}
-          location={config.titleTransition?.location}
-          mapLayerConfig={_.get(
-            `dataLayers.${_.get('titleTransition.dataLayerConfigId', config)}`,
-            config
-          )}
-          title={t('storyMap.form_title_location_dialog_title')}
-          onClose={onLocationClose}
-          onConfirm={onLocationChangeWrapper}
-        />
-      )}
-
-      <Button
-        variant="contained"
-        startIcon={<GpsFixedIcon />}
-        onClick={onLocationClick}
-        sx={{ borderRadius: '0px', mb: 1, width: '100%' }}
-      >
-        {t('storyMap.form_title_location_button')}
-      </Button>
       <Stack
         className="story-theme step-content"
         spacing={1}

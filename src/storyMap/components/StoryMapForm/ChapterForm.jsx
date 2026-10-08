@@ -15,181 +15,79 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
-import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
-import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Grid,
-  IconButton,
-  Stack,
-} from '@mui/material';
+import { Box, Grid, Stack } from '@mui/material';
 
-import { withProps } from 'terraso-web-client/react-hoc';
-
-import {
-  generateLayerId,
-  getLayerOpacity,
-  LAYER_TYPES,
-} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/EditableMedia';
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
-import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
-  useStoryMapConfigActionsContext,
-  useStoryMapConfigDataContext,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH,
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR,
+  chapterShell,
+} from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
-const ConfigButton = withProps(IconButton, {
-  size: 'small',
-  sx: {
-    bgcolor: 'gray.lite1',
-    borderRadius: 0,
-    '&:hover': { bgcolor: 'gray.mid', borderRadius: 0 },
-  },
-});
+// The chapter card layout wrapper. The map configuration (location, style,
+// layers) and the alignment buttons live in the Configure Chapter sidebar.
+// A `chapterOnly` chapter spans the full shell width: the viewer's cap rule
+// on `.step-content` (46rem, centered) applies to the editor's inputs too,
+// so authoring happens in the same reading column as the published chapter.
 const ChapterConfig = props => {
-  const { t } = useTranslation();
-  const {
-    onAlignmentChange,
-    chapter,
-    onLocationChange,
-    onMapStyleChange,
-    onDataLayerChange,
-    children,
-  } = props;
-  const [locationOpen, setLocationOpen] = useState(false);
-  const { config } = useStoryMapConfigDataContext();
-
-  const options = useMemo(
-    () => [
-      {
-        label: t('storyMap.form_chapter_alignment_left'),
-        Icon: AlignHorizontalLeftIcon,
-        value: 'left',
-      },
-      {
-        label: t('storyMap.form_chapter_alignment_center'),
-        Icon: AlignHorizontalCenterIcon,
-        value: 'center',
-      },
-      {
-        label: t('storyMap.form_chapter_alignment_right'),
-        Icon: AlignHorizontalRightIcon,
-        value: 'right',
-      },
-    ],
-    [t]
-  );
-
-  const onLocationClick = useCallback(() => {
-    setLocationOpen(true);
-  }, []);
-
-  const onLocationClose = useCallback(() => {
-    setLocationOpen(false);
-  }, []);
-
-  const onLocationChangeWrapper = useCallback(
-    ({ location, mapStyle, dataLayerConfig }) => {
-      onLocationChange(location);
-      onMapStyleChange(mapStyle);
-      onDataLayerChange(dataLayerConfig);
-      onLocationClose();
-    },
-    [onLocationChange, onLocationClose, onMapStyleChange, onDataLayerChange]
-  );
-
+  const { chapter, chapterOnly, children } = props;
   const hasVisualMedia = chapterHasVisualMedia(chapter);
 
   return (
-    <>
-      {locationOpen && (
-        <MapConfigurationDialog
-          open={locationOpen}
-          location={chapter.location}
-          mapLayerConfig={_.get(
-            `dataLayers.${chapter.dataLayerConfigId}`,
-            config
-          )}
-          title={chapter.title}
-          chapterId={chapter.id}
-          onClose={onLocationClose}
-          onConfirm={onLocationChangeWrapper}
-        />
-      )}
-      <Grid
-        container
-        sx={{
-          width: hasVisualMedia ? '50vw' : '35vw',
-          // Cap the container so its 11/12 content cell lands exactly on the
-          // chapter content card's max border box: mirror .step-content in
-          // StoryMap.css (max-width 35vw + 50px x2 padding = calc(35vw +
-          // 100px)); the cell is 11/12 of the container, so the container cap
-          // is that width x 12/11. Keep this in sync with StoryMap.css.
-          maxWidth: 'calc((35vw + 100px) * 12 / 11)',
-        }}
-      >
-        <Grid size={11}>
-          <Button
-            variant="contained"
-            onClick={onLocationClick}
-            startIcon={<GpsFixedIcon />}
-            sx={{
-              borderRadius: '0px',
-              mb: 1,
-              width: '100%',
-            }}
-          >
-            {t('storyMap.form_chapter_location_button')}
-          </Button>
-        </Grid>
-        <Grid size={11}>{children}</Grid>
-        <Grid size={1}>
-          <ButtonGroup
-            orientation="vertical"
-            aria-label={t('storyMap.form_chapter_alignment_buttons')}
-          >
-            {options.map(option => (
-              <ConfigButton
-                key={option.value}
-                title={option.label}
-                onClick={() => onAlignmentChange(option.value)}
-              >
-                <option.Icon />
-              </ConfigButton>
-            ))}
-          </ButtonGroup>
-        </Grid>
-      </Grid>
-    </>
+    <Grid
+      container
+      sx={{ width: chapterOnly ? '100%' : hasVisualMedia ? '50vw' : '35vw' }}
+    >
+      <Grid size={12}>{children}</Grid>
+    </Grid>
   );
 };
 
 const ChapterForm = props => {
-  const { record, onFieldChange, onFieldBlur } = props;
+  const {
+    record,
+    onFieldChange,
+    onFieldBlur,
+    isContained = false,
+    isMobile = false,
+  } = props;
   const { t } = useTranslation();
-  const { setConfig, init } = useStoryMapConfigActionsContext();
+  const { init } = useStoryMapConfigActionsContext();
   const [isNew, setIsNew] = useState(false);
+
+  // The editor renders the SAME render modes as the viewer: `chapterShell`
+  // is the one policy. `justMap` renders nothing over the map (only the
+  // scroll span is kept), `justChapter` is a full-screen editable chapter —
+  // theme background covering the map, form centered in the same column as
+  // the published content. The alignment buttons live in the Configure
+  // Chapter sidebar, so switching back to a card restores this editable
+  // card with the config (content included) untouched.
+  const policy = useMemo(
+    () =>
+      chapterShell({
+        alignment: record.alignment,
+        hidden: record.hidden,
+        isMobile,
+      }),
+    [record.alignment, record.hidden, isMobile]
+  );
 
   const classList = useMemo(
     () =>
       [
         'step-container',
         'active',
-        ALIGNMENTS[record.alignment] || 'centered',
+        policy.alignmentClass,
+        ...(policy.coversMap ? ['story-theme'] : []),
         ...(record.hidden ? ['hidden'] : []),
       ].join(' '),
-    [record.alignment, record.hidden]
+    [policy.alignmentClass, policy.coversMap, record.hidden]
   );
 
   useEffect(() => {
@@ -198,43 +96,7 @@ const ChapterForm = props => {
     }
   }, [record.id, init]);
 
-  const onMapStyleChange = useCallback(
-    style => {
-      setConfig(_.set('style', style));
-    },
-    [setConfig]
-  );
-
-  const onDataLayerChange = useCallback(
-    dataLayerConfig => {
-      const baseEvents = dataLayerConfig
-        ? Object.values(LAYER_TYPES).map(name => ({
-            layer: generateLayerId(dataLayerConfig.id, name),
-            opacity: getLayerOpacity(name, dataLayerConfig),
-            duration: 0,
-          }))
-        : [];
-      const onChapterEnter = baseEvents;
-      const onChapterExit = baseEvents.map(_.set('opacity', 0));
-
-      setConfig(config => ({
-        ...(dataLayerConfig
-          ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config)
-          : config),
-        chapters: config.chapters.map(chapter =>
-          chapter.id === record.id
-            ? {
-                ...chapter,
-                dataLayerConfigId: dataLayerConfig?.id,
-                onChapterEnter,
-                onChapterExit,
-              }
-            : chapter
-        ),
-      }));
-    },
-    [record.id, setConfig]
-  );
+  const spanHeight = policy.spanHeight(isContained);
 
   return (
     <Box
@@ -244,47 +106,60 @@ const ChapterForm = props => {
       aria-label={t('storyMap.view_chapter_label', {
         title: record.title || t('storyMap.form_chapter_no_title_label'),
       })}
-      sx={{ opacity: 0.99 }}
+      sx={{
+        opacity: 0.99,
+        ...(spanHeight ? { minHeight: spanHeight } : {}),
+        ...(policy.coversMap
+          ? {
+              width: '100%',
+              bgcolor: 'var(--story-theme-background)',
+              justifyContent: 'center',
+              alignItems: 'center',
+              [CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR]:
+                CHAPTER_ONLY_CONTENT_MAX_WIDTH,
+            }
+          : {}),
+      }}
     >
-      <ChapterConfig
-        chapter={record}
-        onAlignmentChange={onFieldChange('alignment')}
-        onLocationChange={onFieldChange('location')}
-        onMapStyleChange={onMapStyleChange}
-        onDataLayerChange={onDataLayerChange}
-      >
-        <Stack
-          className="story-theme step-content"
-          spacing={1}
-          sx={{ maxWidth: 'none' }}
-        >
-          <EditableText
-            placeholder={t('storyMap.form_chapter_title_placeholder')}
-            Component="h3"
-            value={record.title}
-            onChange={onFieldChange('title')}
-            onBlur={onFieldBlur('title')}
-            focus={isNew}
-            inputProps={{
-              inputProps: {
-                'aria-label': t('storyMap.form_chapter_title_label'),
-              },
-            }}
-          />
-          <EditableMedia
-            label={t('storyMap.form_chapter_media_label')}
-            value={record.media}
-            onChange={onFieldChange('media')}
-          />
-          <EditableRichText
-            label={t('storyMap.form_chapter_description_label')}
-            placeholder={t('storyMap.form_chapter_description_placeholder')}
-            value={record.description}
-            onChange={onFieldChange('description')}
-            onBlur={onFieldBlur('description')}
-          />
-        </Stack>
-      </ChapterConfig>
+      {policy.rendersContent && (
+        <ChapterConfig chapter={record} chapterOnly={policy.coversMap}>
+          <Stack
+            className="story-theme step-content"
+            spacing={1}
+            // Classic editable cards keep their full editing width (the
+            // inline `none` beats the 35vw rule). A `justChapter` form drops
+            // the override so the viewer's var-driven cap and centering
+            // apply to the inputs too.
+            sx={policy.coversMap ? { width: '100%' } : { maxWidth: 'none' }}
+          >
+            <EditableText
+              placeholder={t('storyMap.form_chapter_title_placeholder')}
+              Component="h3"
+              value={record.title}
+              onChange={onFieldChange('title')}
+              onBlur={onFieldBlur('title')}
+              focus={isNew}
+              inputProps={{
+                inputProps: {
+                  'aria-label': t('storyMap.form_chapter_title_label'),
+                },
+              }}
+            />
+            <EditableMedia
+              label={t('storyMap.form_chapter_media_label')}
+              value={record.media}
+              onChange={onFieldChange('media')}
+            />
+            <EditableRichText
+              label={t('storyMap.form_chapter_description_label')}
+              placeholder={t('storyMap.form_chapter_description_placeholder')}
+              value={record.description}
+              onChange={onFieldChange('description')}
+              onBlur={onFieldBlur('description')}
+            />
+          </Stack>
+        </ChapterConfig>
+      )}
     </Box>
   );
 };

@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
 import logger from 'terraso-client-shared/monitoring/logger';
@@ -33,6 +33,17 @@ export const LAYER_TYPES = {
   POLYGONS_OUTLINE: 'polygons-outline',
   POLYGONS_FILL: 'polygons-fill',
 };
+
+/**
+ * Bottom-to-top stacking order of the generated sublayers — THE single source
+ * of truth: the <Layer> renderings below insert them in this order and
+ * mapUtils enforces the same stack on transitions.
+ */
+export const LAYER_TYPE_STACK_ORDER = [
+  LAYER_TYPES.MARKERS,
+  LAYER_TYPES.POLYGONS_OUTLINE,
+  LAYER_TYPES.POLYGONS_FILL,
+];
 
 export const generateLayerId = (layerId, layerType) => {
   return `${layerId}-${layerType}`;
@@ -58,13 +69,22 @@ const getSourceBounds = async (map, sourceId) => {
   const loadedSource = loaded
     ? source
     : await new Promise(resolve => {
-        map.on('sourcedata', () => {
+        // Self-removing: the shared map is long-lived, so a never-removed
+        // `sourcedata` listener per call would pile up forever. Drop it as
+        // soon as the source settles (or goes away).
+        const onSourceData = () => {
           const source = map.getSource(sourceId);
-          if (source.loaded()) {
+          if (!source || source.loaded()) {
+            map.off('sourcedata', onSourceData);
             resolve(source);
           }
-        });
+        };
+        map.on('sourcedata', onSourceData);
       });
+
+  if (!loadedSource) {
+    return;
+  }
 
   if (loadedSource.bounds) {
     return new mapboxgl.LngLatBounds(loadedSource.bounds);
@@ -152,6 +172,7 @@ const MapboxLayer = props => {
     showPopups = true,
     useConfigBounds,
     changeBounds = true,
+    avoidMoveWhenVisible = false,
     useTileset,
     isMapFile,
     opacity: initialOpacity,
@@ -250,20 +271,50 @@ const MapboxLayer = props => {
     sourceName,
   ]);
 
+  // ONE fit per request token. `changeBounds` is a request seq number (or
+  // `true` for "fit whenever the bounds change"): a CONSUMED seq must never
+  // fit again — config writes after a fit re-ran this effect through the
+  // bounds OBJECT identity and re-fit the map (in the story map editor the
+  // camera recorder then saved the FIT as the user's camera). Bounds are
+  // read through a ref and the effect keys on their SCALAR values, so
+  // deep-equal rebuilds cannot re-trigger a fit either.
+  const handledChangeBoundsRef = useRef(null);
+  const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
+  const viewportBoundsRef = useRef(viewportBounds);
+  viewportBoundsRef.current = viewportBounds;
+  const boundsKey = viewportBounds
+    ? [
+        viewportBounds.southWest?.lng,
+        viewportBounds.southWest?.lat,
+        viewportBounds.northEast?.lng,
+        viewportBounds.northEast?.lat,
+      ].join(',')
+    : '';
+
   useEffect(() => {
     if (!map || !changeBounds) {
       return;
     }
 
+    const isRequestToken = typeof changeBounds === 'number';
+    if (isRequestToken) {
+      if (handledChangeBoundsRef.current === changeBounds) {
+        return;
+      }
+      handledChangeBoundsRef.current = changeBounds;
+    } else {
+      handledChangeBoundsRef.current = null;
+    }
+
     let cancelled = false;
 
     const getConfigBounds = () => {
-      const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
-      if (!viewportBounds) {
+      const bounds = viewportBoundsRef.current;
+      if (!bounds) {
         return;
       }
-      const southWest = viewportBounds.southWest;
-      const northEast = viewportBounds.northEast;
+      const southWest = bounds.southWest;
+      const northEast = bounds.northEast;
       if (!southWest || !northEast) {
         return;
       }
@@ -273,11 +324,42 @@ const MapboxLayer = props => {
     };
 
     const applyBounds = bounds => {
-      if (!cancelled && bounds && !bounds.isEmpty()) {
+      if (cancelled || !bounds || bounds.isEmpty()) {
+        return;
+      }
+      if (!avoidMoveWhenVisible) {
         map.fitBounds(bounds, {
           animate: false,
         });
+        return;
       }
+      // Adding a layer must not move the camera while any part of the layer is
+      // already visible. Only when the layer is completely outside the
+      // current viewport do we zoom out enough to include both the current
+      // viewport and the new layer.
+      //
+      // mapbox-gl's LngLatBounds has no `intersects`, so the overlap test is
+      // written out (with the antimeridian caveat that `isEmpty`/the app's
+      // bounds validation already covers).
+      const viewport = map.getBounds();
+      const layerSw = bounds.getSouthWest();
+      const layerNe = bounds.getNorthEast();
+      const overlapsViewport =
+        layerNe.lng >= viewport.getWest() &&
+        layerSw.lng <= viewport.getEast() &&
+        layerNe.lat >= viewport.getSouth() &&
+        layerSw.lat <= viewport.getNorth();
+      if (overlapsViewport) {
+        return;
+      }
+      const union = new mapboxgl.LngLatBounds(
+        viewport.getSouthWest(),
+        viewport.getNorthEast()
+      );
+      union.extend(bounds);
+      map.fitBounds(union, {
+        animate: false,
+      });
     };
 
     if (useConfigBounds) {
@@ -300,13 +382,7 @@ const MapboxLayer = props => {
     return () => {
       cancelled = true;
     };
-  }, [
-    map,
-    visualizationConfig?.viewportConfig?.bounds,
-    useConfigBounds,
-    sourceName,
-    changeBounds,
-  ]);
+  }, [map, boundsKey, useConfigBounds, sourceName, changeBounds, avoidMoveWhenVisible]);
 
   const layer = useMemo(() => {
     if (!map || (useSvg && !imageSvg)) {
