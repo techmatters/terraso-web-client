@@ -144,7 +144,7 @@ describe('enforceMapLayerOrder', () => {
     expect(map.layerOrder()).toEqual(['a-markers', 'b-polygons-fill']);
   });
 
-  test('skips no-op moves when the order is already applied', () => {
+  test('re-asserts the order after an external layer re-add (async arrival)', () => {
     const map = createFakeMap([
       ...layerSublayerIds('a'),
       ...layerSublayerIds('b'),
@@ -152,13 +152,20 @@ describe('enforceMapLayerOrder', () => {
     const mapLayers = [{ layerId: 'b' }, { layerId: 'a' }];
 
     enforceMapLayerOrder(map as never, mapLayers);
-    const orderAfterFirstPass = map.layerOrder();
-    map.moveLayer.mockClear();
+    // Sublayers arriving asynchronously (e.g. marker icons resolving) are
+    // added on top of the stack, displacing the enforced order.
+    map.moveLayer('a-markers');
 
     enforceMapLayerOrder(map as never, mapLayers);
 
-    expect(map.moveLayer).not.toHaveBeenCalled();
-    expect(map.layerOrder()).toEqual(orderAfterFirstPass);
+    expect(map.layerOrder()).toEqual([
+      'a-markers',
+      'a-polygons-outline',
+      'a-polygons-fill',
+      'b-markers',
+      'b-polygons-outline',
+      'b-polygons-fill',
+    ]);
   });
 });
 

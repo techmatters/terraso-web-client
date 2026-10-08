@@ -305,13 +305,14 @@ const startLayerTransition = (
  * are skipped (they will be ordered on the next pass, e.g. after
  * `onLayerAdded`).
  *
- * No-op moves are skipped by comparing the desired order against the order
- * this helper last applied to the map (per-map cache, restricted to layers
- * still on the map) — layer existence is checked with `map.getLayer`, never
- * with `map.getStyle()` (which deep-clones the whole style).
+ * Always applies the moves (there is no "already ordered" cache): sublayers
+ * can be re-added on top of the stack asynchronously — the marker sublayer
+ * only renders once its icon image resolves, and a `Layer` effect re-run
+ * removes and re-adds its mapbox layer on top — so the applied order can be
+ * invalidated without this helper being called. Re-arranging is idempotent
+ * and layer existence is checked with `map.getLayer`, never with
+ * `map.getStyle()` (which deep-clones the whole style).
  */
-const appliedLayerOrder = new WeakMap<object, string[]>();
-
 export const enforceMapLayerOrder = (
   map: mapboxgl.Map,
   mapLayers: MapLayerTransition[]
@@ -329,15 +330,6 @@ export const enforceMapLayerOrder = (
   if (desiredTopFirst.length === 0) {
     return;
   }
-
-  const currentTopFirst = (appliedLayerOrder.get(map) ?? []).filter(exists);
-  const alreadyOrdered =
-    currentTopFirst.length === desiredTopFirst.length &&
-    desiredTopFirst.every((id, index) => currentTopFirst[index] === id);
-  if (alreadyOrdered) {
-    return;
-  }
-  appliedLayerOrder.set(map, desiredTopFirst);
 
   // moveLayer() moves a layer to the top of the stack, so apply bottom-first.
   desiredTopFirst
