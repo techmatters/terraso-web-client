@@ -394,6 +394,14 @@ export const ConfigureChapterSidebar = ({
         )}
         closeLabel={t('storyMap.form_configure_chapter_sidebar_close')}
       >
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          data-testid="configure-chapter-zoom-help"
+          sx={{ mb: 1 }}
+        >
+          {t('storyMap.form_configure_chapter_zoom_help')}
+        </Typography>
         <Stack spacing={2} sx={{ my: 1, position: 'relative' }}>
           {dragActive && (
             <Box

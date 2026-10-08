@@ -481,6 +481,39 @@ const Map = forwardRef((props, ref) => {
     }
   }, [map, interactive, disableScrollZoom, disableRotation, disablePitch]);
 
+  // When scroll-zoom is disabled (the story map editor positions the map in
+  // place: a plain wheel must scroll the story), Shift+wheel is the explicit
+  // zoom gesture: it zooms the map around the pointer instead of scrolling.
+  // The zoom is applied synchronously (duration 0), so the map editing
+  // session's wheel gesture attribution records it as the user's camera.
+  useEffect(() => {
+    if (!map || !disableScrollZoom) {
+      return;
+    }
+    const container = map.getCanvasContainer();
+    const onWheel = event => {
+      if (!event.shiftKey) {
+        return;
+      }
+      event.preventDefault();
+      const delta = event.deltaMode === 1 ? event.deltaY * 40 : event.deltaY;
+      const rect = container.getBoundingClientRect();
+      map.easeTo({
+        zoom: Math.min(
+          map.getMaxZoom(),
+          Math.max(map.getMinZoom(), map.getZoom() - delta / 300)
+        ),
+        around: map.unproject([
+          event.clientX - rect.left,
+          event.clientY - rect.top,
+        ]),
+        duration: 0,
+      });
+    };
+    container.addEventListener('wheel', onWheel, { passive: false });
+    return () => container.removeEventListener('wheel', onWheel);
+  }, [map, disableScrollZoom]);
+
   useEffect(() => {
     if (!map) {
       return;
