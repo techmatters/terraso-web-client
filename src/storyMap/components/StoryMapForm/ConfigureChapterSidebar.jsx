@@ -426,7 +426,9 @@ export const ConfigureChapterSidebar = ({
             </Box>
           )}
           <AlignmentSettings targetId={targetId} />
-          <Divider />
+          {/* The alignment section is hidden on the title step: no leading
+              divider without a section above it. */}
+          {targetId !== STORY_MAP_TITLE_ID && <Divider />}
           <MapLayersPanel
             rows={rows}
             activeLayerIds={targetLayerIds}
