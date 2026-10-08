@@ -50,7 +50,6 @@ import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
 import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
-import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
   MapConfigLayerStack,
   usePublishMapConfigLayerStack,
@@ -77,9 +76,13 @@ import {
   resolveMapLayers,
   toMapLayers,
 } from 'terraso-web-client/storyMap/mapLayerUtils';
-import { cancelPendingRotateAnimation } from 'terraso-web-client/storyMap/mapUtils';
 import {
-  MapBounds,
+  cancelPendingRotateAnimation,
+  locationFitViewport,
+  recordContentRegionBounds,
+} from 'terraso-web-client/storyMap/mapUtils';
+import {
+  ChapterAlignment,
   MapConfigurationConfirm,
   MapLayerConfig,
   MapLayerDraftRow,
@@ -192,10 +195,18 @@ type MapLocationChangeProps = {
    * (pointer/wheel), so only genuinely user-driven moves are recorded.
    */
   programmaticMoveRef: MutableRefObject<number>;
+  /**
+   * Chapter alignment for the recorded bounds: the recorder stores the
+   * content region (the strip the chapter panel leaves uncovered), the exact
+   * inverse of the playback expansion, so the saved location reproduces the
+   * framed camera. Title transitions are centered (undefined).
+   */
+  alignment?: ChapterAlignment;
 };
 const MapLocationChange = ({
   onPositionChange,
   programmaticMoveRef,
+  alignment,
 }: MapLocationChangeProps) => {
   const { map } = useMap();
 
@@ -212,15 +223,29 @@ const MapLocationChange = ({
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
-        bounds: _.flatten(map.getBounds().toArray()) as MapBounds,
+        // NOT the raw camera bounds: the content region of the map container,
+        // so playback — which expands the recorded bounds again to compensate
+        // for the chapter panel — reproduces exactly what was framed here.
+        bounds: recordContentRegionBounds(map, alignment),
       });
     };
     const endProgrammaticMove = () => {
       programmaticMoveRef.current = 0;
     };
+    // The final camera is settled at `moveend`: mapbox's terrain correction
+    // adjusts the zoom there (after the last `move`), so recording only
+    // `move` would persist a camera the user never ended on — and the
+    // playback fit would land on it, moving the map after Save.
+    const onMoveEnd = () => {
+      if (programmaticMoveRef.current > 0) {
+        programmaticMoveRef.current = 0;
+        return;
+      }
+      updatePosition();
+    };
     map.on('load', updatePosition);
     map.on('move', updatePosition);
-    map.on('moveend', endProgrammaticMove);
+    map.on('moveend', onMoveEnd);
     const userInteractionEvents = [
       'dragstart',
       'mousedown',
@@ -235,12 +260,12 @@ const MapLocationChange = ({
     return () => {
       map.off('load', updatePosition);
       map.off('move', updatePosition);
-      map.off('moveend', endProgrammaticMove);
+      map.off('moveend', onMoveEnd);
       userInteractionEvents.forEach(event =>
         map.off(event, endProgrammaticMove)
       );
     };
-  }, [map, onPositionChange, programmaticMoveRef]);
+  }, [map, onPositionChange, programmaticMoveRef, alignment]);
 
   return null;
 };
@@ -257,6 +282,8 @@ type MapConfigurationDialogProps = {
   location?: MapPosition;
   title?: string;
   chapterId?: string;
+  /** Chapter alignment for the recorded content-region bounds (title: undefined). */
+  alignment?: ChapterAlignment;
   /** Chapter/titleTransition `mapLayers` (legacy chapters pass undefined). */
   mapLayers?: MapLayerTransition[];
   /** Chapter/titleTransition `dataLayerConfigId`. */
@@ -270,7 +297,8 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   };
   const { setConfig, registerSessionDataLayers } =
     useStoryMapConfigActionsContext();
-  const { open, onClose, onConfirm, location, title, chapterId } = props;
+  const { open, onClose, onConfirm, location, title, chapterId, alignment } =
+    props;
 
   // Programmatic-fit suppression for camera recording (see MapLocationChange).
   const programmaticMoveRef = useRef(0);
@@ -301,7 +329,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [helperOpen, setHelperOpen] = useState(false);
   const [styleMenuOpen, setStyleMenuOpen] = useState(false);
 
-  const { map, changeStyle } = useMap();
+  const { map, mapDimensions, changeStyle } = useMap();
 
   const user = useSelector((state: any) => state.account.currentUser);
 
@@ -463,8 +491,18 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     }
     cameraInitializedRef.current = true;
     const { center, zoom, pitch, bearing, bounds } = initialLocation ?? {};
-    if (bounds && isValidBounds(bounds)) {
-      map.fitBounds(bounds, { animate: false });
+    // The stored bounds are the CONTENT region: re-expand them with the same
+    // math playback uses (`locationFitViewport`) so the overlay opens on the
+    // exact camera the editor/viewer shows — `map.fitBounds` would fit the
+    // perspective/terrain footprint and drift.
+    const viewport = locationFitViewport(bounds, alignment, mapDimensions);
+    if (viewport) {
+      map.jumpTo({
+        center: viewport.center,
+        zoom: viewport.zoom,
+        pitch: pitch ?? 0,
+        bearing: bearing ?? 0,
+      });
       return;
     }
     if (center) {
@@ -475,7 +513,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
         bearing: bearing ?? 0,
       });
     }
-  }, [map, initialLocation]);
+  }, [map, mapDimensions, initialLocation, alignment]);
 
   const handleConfirm = useCallback(() => {
     confirmedRef.current = true;
@@ -859,11 +897,47 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
               />
             </Box>
             {/* Transparent, click-through map window: the live editor map
-                below is what gets dragged to set the chapter position. */}
-            <Box
-              data-testid="map-config-map-window"
-              sx={{ flex: 1, pointerEvents: 'none' }}
-            />
+                below is what gets dragged to set the chapter position. The
+                bottom action bar sits in this middle column (between the
+                sidebars), so both sidebars keep running to the bottom of the
+                viewport. */}
+            <Stack
+              direction="column"
+              sx={{ flex: 1, minWidth: 0, minHeight: 0 }}
+            >
+              <Box
+                data-testid="map-config-map-window"
+                sx={{ flex: 1, pointerEvents: 'none' }}
+              />
+              {/* Bottom bar: the Save/Cancel action bar (8px vertical padding,
+                  same as the top bar). */}
+              <Stack
+                data-testid="map-config-bottom-bar"
+                direction="row"
+                spacing={2}
+                sx={{
+                  bgcolor: 'white',
+                  borderTop: '1px solid',
+                  borderColor: 'gray.lite1',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  py: 1,
+                  px: 3,
+                  pointerEvents: 'auto',
+                }}
+              >
+                <Button size="large" onClick={handleCancel}>
+                  {t('storyMap.location_dialog_cancel_button')}
+                </Button>
+                <Button
+                  size="large"
+                  onClick={handleConfirm}
+                  variant="contained"
+                >
+                  {t('storyMap.location_dialog_confirm_button')}
+                </Button>
+              </Stack>
+            </Stack>
             {/* Right sidebar: the layers panel at the story map configuration
                 right sidebar width. */}
             <Box
@@ -896,29 +970,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                 onRemove={onRemoveLayer}
               />
             </Box>
-          </Stack>
-          {/* Bottom bar: the large Save/Cancel action bar. */}
-          <Stack
-            data-testid="map-config-bottom-bar"
-            direction="row"
-            spacing={2}
-            sx={{
-              minHeight: 112,
-              bgcolor: 'white',
-              borderTop: '1px solid',
-              borderColor: 'gray.lite1',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: 3,
-              pointerEvents: 'auto',
-            }}
-          >
-            <Button size="large" onClick={handleCancel}>
-              {t('storyMap.location_dialog_cancel_button')}
-            </Button>
-            <Button size="large" onClick={handleConfirm} variant="contained">
-              {t('storyMap.location_dialog_confirm_button')}
-            </Button>
           </Stack>
           {dragActive && (
             <Box
@@ -957,6 +1008,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       <MapLocationChange
         onPositionChange={handlePositionChange}
         programmaticMoveRef={programmaticMoveRef}
+        alignment={alignment}
       />
       <CreateMapLayerFileUpload
         title={title}

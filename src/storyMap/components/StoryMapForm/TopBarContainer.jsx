@@ -30,7 +30,7 @@ const TopBarContainer = ({ children, id = 'form-header', ariaLabel }) => {
         borderBottom: `1px solid ${theme.palette.gray.lite1}`,
         display: 'flex',
         alignItems: 'center',
-        pt: 3,
+        pt: 1,
         pb: 1,
         zIndex: 4,
         bgcolor: 'white',
