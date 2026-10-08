@@ -57,7 +57,9 @@ import { getTransition } from 'terraso-web-client/storyMap/storyMapUtils';
  * TRANSIENT: mapbox starts their zoom synchronously, so on the next tick a
  * gesture that has not moved the map is disarmed again — a wheel over the
  * story (scroll-zoom is disabled while configuring) must never make a later
- * programmatic move look like a user's camera.
+ * programmatic move look like a user's camera. SHIFT+wheel is the one
+ * deliberate wheel gesture: it zooms the map synchronously and is recorded
+ * as the user's camera (see startShiftZoom).
  */
 export const MapEditingSession = ({
   active,
@@ -85,6 +87,10 @@ export const MapEditingSession = ({
   const gestureRef = useRef(null);
   // A pending deliberate record without a gesture (geocoder result).
   const recordIntentRef = useRef(false);
+  // The last native wheel event handled as a deliberate Shift+wheel zoom:
+  // the DOM capture listener and the map-level `wheel` event carry the same
+  // original event, and the zoom must be applied exactly once per event.
+  const shiftZoomEventRef = useRef(null);
 
   const recordCamera = useCallback(
     id => {
@@ -114,6 +120,51 @@ export const MapEditingSession = ({
     [map, onPositionChange]
   );
 
+  /**
+   * SHIFT+WHEEL: while the editor disables scroll-zoom (a plain wheel must
+   * scroll the story), holding Shift is the explicit zoom gesture. The zoom
+   * is applied synchronously (duration 0) and marked as deliberate user
+   * intent, so the move it causes is recorded as the pinned target's camera
+   * — a real browser wheel event is dispatched listener-by-listener, so the
+   * transient gesture window below cannot span it.
+   */
+  const startShiftZoom = useCallback(
+    originalEvent => {
+      if (!map || shiftZoomEventRef.current === originalEvent) {
+        return;
+      }
+      shiftZoomEventRef.current = originalEvent;
+      const delta =
+        originalEvent.deltaMode === 1
+          ? originalEvent.deltaY * 40
+          : originalEvent.deltaY;
+      if (!delta) {
+        return;
+      }
+      const currentZoom = map.getZoom();
+      const nextZoom = Math.min(
+        map.getMaxZoom(),
+        Math.max(map.getMinZoom(), currentZoom - delta / 300)
+      );
+      if (Math.abs(nextZoom - currentZoom) < 1e-6) {
+        return;
+      }
+      pinnedTargetRef.current = liveTargetRef.current;
+      recordIntentRef.current = true;
+      const container = map.getCanvasContainer();
+      const rect = container.getBoundingClientRect();
+      map.easeTo({
+        zoom: nextZoom,
+        around: map.unproject([
+          originalEvent.clientX - rect.left,
+          originalEvent.clientY - rect.top,
+        ]),
+        duration: 0,
+      });
+    },
+    [map]
+  );
+
   useEffect(() => {
     if (!map || !active) {
       return;
@@ -137,7 +188,17 @@ export const MapEditingSession = ({
         gestureRef.current = null;
       }
     };
-    const startTransientGesture = () => {
+    const startTransientGesture = event => {
+      const originalEvent = event?.originalEvent ?? event;
+      if (originalEvent?.shiftKey) {
+        // Shift+wheel is a deliberate camera gesture (see startShiftZoom):
+        // the default must be prevented here so the story does not scroll.
+        if (originalEvent.type === 'wheel') {
+          originalEvent.preventDefault?.();
+        }
+        startShiftZoom(originalEvent);
+        return;
+      }
       startGesture();
       // mapbox starts the wheel/dblclick zoom synchronously: if the map has
       // not moved by the end of this event, the gesture produced no camera
@@ -206,7 +267,7 @@ export const MapEditingSession = ({
         container?.removeEventListener(event, endGesture, true)
       );
     };
-  }, [map, active, recordCamera]);
+  }, [map, active, recordCamera, startShiftZoom]);
 
   // A geocoder result IS user intent ("go there"), even though the map move
   // it causes is programmatic: record the camera it lands on.
