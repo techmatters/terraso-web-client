@@ -71,7 +71,8 @@ const FormSidebar = ({
         ref={contentRef}
         sx={{
           px: 3,
-          py: 1,
+          pt: 0,
+          pb: 1,
           height: '100%',
           overflowY: 'auto',
           bgcolor: 'white',
@@ -85,10 +86,17 @@ const FormSidebar = ({
           sx={{
             alignItems: 'center',
             justifyContent: 'space-between',
-            my: 1,
+            mt: 0,
+            mb: 1,
           }}
         >
-          <Typography component="h2" variant="h3">
+          {/* The theme's heading variants carry a top padding; the sidebar
+              title sits flush at the top of the drawer instead. */}
+          <Typography
+            component="h2"
+            variant="h3"
+            sx={{ pt: 0, fontSize: '1.25rem' }}
+          >
             {title}
           </Typography>
           <IconButton aria-label={closeLabel} onClick={onClose} size="small">
