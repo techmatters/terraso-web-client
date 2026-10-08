@@ -576,8 +576,18 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
         onClose={handleCancel}
         aria-labelledby="map-location-dialog-title"
         aria-describedby="map-location-dialog-content-text"
-        maxWidth="sm"
+        maxWidth={false}
         fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              // Fill (most of) the available viewport height; the map and the
+              // layer sidebar share this height and scroll independently.
+              height: '90vh',
+              maxHeight: 'none',
+            },
+          },
+        }}
       >
         <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
           <Stack>
@@ -620,11 +630,16 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
           </DialogActions>
         </Stack>
 
-        <DialogContent>
+        <DialogContent sx={{ overflow: 'hidden' }}>
           <Stack
             direction="row"
             spacing={2}
-            sx={{ alignItems: 'stretch', position: 'relative' }}
+            sx={{
+              alignItems: 'stretch',
+              position: 'relative',
+              height: '100%',
+              minHeight: 0,
+            }}
           >
             {dragActive && (
               <Box
@@ -648,10 +663,11 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                 </Typography>
               </Box>
             )}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ flex: 1, minWidth: 0, minHeight: 0 }}>
               <Map
                 ref={mapRef}
                 use3dTerrain
+                height="100%"
                 initialLocation={initialLocation}
                 projection={config.projection}
                 mapStyle={config.style}

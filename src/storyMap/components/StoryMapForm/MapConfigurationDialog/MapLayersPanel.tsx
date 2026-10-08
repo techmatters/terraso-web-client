@@ -67,7 +67,14 @@ export const MapLayersPanel = ({
   const { owner } = useCollaborationContext();
 
   return (
-    <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
+    <Box
+      sx={{
+        width: SIDEBAR_WIDTH,
+        flexShrink: 0,
+        height: '100%',
+        overflowY: 'auto',
+      }}
+    >
       <Stack spacing={2}>
         {dropError && (
           <Alert severity="error" onClose={onDismissDropError}>
