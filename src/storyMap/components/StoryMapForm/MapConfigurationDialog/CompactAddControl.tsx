@@ -17,7 +17,8 @@
 
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Paper, Typography } from '@mui/material';
+import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
+import { Box, Paper, Typography } from '@mui/material';
 
 import {
   isMapLayerFileAccepted,
@@ -104,12 +105,22 @@ export const CompactAddControl = ({
           event.target.value = '';
         }}
       />
-      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-        {t('storyMap.form_map_layers_add_title')}
-      </Typography>
-      <Typography variant="body2">
-        {t('storyMap.form_map_layers_add_drop_text')}
-      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+        }}
+      >
+        <CloudUploadOutlined fontSize="large" />
+        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+          {t('storyMap.form_map_layers_add_title')}
+        </Typography>
+        <Typography variant="body2">
+          {t('storyMap.form_map_layers_add_drop_text')}
+        </Typography>
+      </Box>
     </Paper>
   );
 };
