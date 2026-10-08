@@ -22,7 +22,14 @@ import { useSelector } from 'terraso-web-client/terrasoApi/store';
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
-import { Box, ButtonGroup, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  ButtonGroup,
+  Divider,
+  IconButton,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
@@ -422,6 +429,7 @@ export const ConfigureChapterSidebar = ({
             </Box>
           )}
           <AlignmentSettings targetId={targetId} />
+          <Divider />
           <MapLayersPanel
             rows={rows}
             activeLayerIds={targetLayerIds}
@@ -437,6 +445,7 @@ export const ConfigureChapterSidebar = ({
             onRemove={onRemoveLayer}
             sx={{ width: '100%' }}
           />
+          <Divider />
           <HelperText
             showLabel
             label={t('storyMap.form_location_dialog_helper_text_label')}
