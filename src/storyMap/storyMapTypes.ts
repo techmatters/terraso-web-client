@@ -32,6 +32,11 @@ export type VisualizeConfig = {
 
 export type MapLayerConfig = VisualizationConfigNode & {
   ownerType: 'StoryMapNode' | 'GroupNode' | 'LandscapeNode';
+  /** Stable id of the owning group/landscape, when applicable. */
+  ownerId?: string;
+  /** Display name of the owning group/landscape, when applicable. */
+  ownerName?: string;
+  visualizeConfig?: VisualizeConfig;
 };
 
 export type MapPosition = {
@@ -48,11 +53,97 @@ export type LayerConfig = {
   duration?: number;
 };
 
+/** Reference to a map layer shown during a transition. */
+export type MapLayerTransition = {
+  layerId: string;
+};
+
+/**
+ * One row of a transition's ordered layer list (index 0 = topmost).
+ * `config` is null for layer refs that resolve neither in the stored
+ * `dataLayers` payload nor in the fetched layer index (dangling/unknown
+ * refs): the row is kept and rendered as unknown — unknown data is never
+ * silently dropped.
+ */
+export type MapLayerDraftRow = {
+  layerId: string;
+  config: MapLayerConfig | null;
+};
+
+/**
+ * Confirm payload of the map configuration overlay. Writes back ALL
+ * layerIds — including rows whose config resolves nowhere (unknown refs are
+ * preserved). Compat fields are derived from `mapLayers` at the config
+ * write boundary; this payload carries no compat knowledge.
+ */
+export type MapConfigurationConfirm = {
+  location: MapPosition;
+  mapStyle: string;
+  /** Ordered layer rows, index 0 = topmost on the map. */
+  mapLayerRows: MapLayerDraftRow[];
+};
+
+/**
+ * Which transition (chapter or title) the fullscreen map configuration
+ * overlay is editing, plus its confirm callback. Everything else about the
+ * overlay (draft layers, camera, create flow) lives inside
+ * `MapConfigurationDialog`.
+ */
+export type MapConfigTarget = {
+  location?: MapPosition;
+  title?: string;
+  chapterId?: string;
+  /** Chapter alignment: the recorded camera bounds are the content region
+   * (the strip the chapter panel leaves uncovered), so `expandBoundsForDisplay`
+   * reproduces the framed camera exactly in playback. Title transitions are
+   * centered and record the full camera bounds. */
+  alignment?: ChapterAlignment;
+  mapLayers?: MapLayerTransition[];
+  dataLayerConfigId?: string;
+  onConfirm: (_: MapConfigurationConfirm) => void;
+};
+
 export type Transition = {
   location: MapPosition & { duration?: number };
   rotateAnimation?: boolean;
   mapAnimation?: 'flyTo' | 'easeTo';
+  /**
+   * Ordered list of the map layers shown during this transition.
+   * Index 0 is the topmost layer on the map.
+   * When absent, the legacy single-layer fields below are used instead.
+   */
+  mapLayers?: MapLayerTransition[];
+  /**
+   * @deprecated DERIVED compat field: the single-layer reference regenerated
+   * from {@link Transition.mapLayers} + `dataLayers` on every config write
+   * (see `syncTransitionLayerFields` in mapLayerUtils.ts — the ONLY writer).
+   * It points at the most recently added layer (topmost newly added one),
+   * stays put across reorders and removals of other layers, and is repointed
+   * to the topmost remaining layer (or cleared) when the layer it pointed at
+   * is removed.
+   *
+   * Read by ALL viewers (including new ones) for layer visibility —
+   * never hand-edit; do not remove. When `mapLayers` is present, readers
+   * prefer it and this field is only a compat fallback. Mid-rollout
+   * divergence: configs written by the OLD editor have no `mapLayers`; new
+   * readers then fall back to this field (legacy single-layer behavior).
+   * Transitions without `mapLayers` are never migrated on load.
+   */
+  dataLayerConfigId?: string;
+  /**
+   * @deprecated DERIVED compat field: layer fade-in events regenerated from
+   * {@link Transition.mapLayers} + `dataLayers` on every config write (see
+   * `syncTransitionLayerFields` in mapLayerUtils.ts — the ONLY writer). It
+   * contains one entry per sublayer of every layer in `mapLayers`; hand-made
+   * entries whose `layer` is not a generated data-layer sublayer id are
+   * preserved. Read by ALL viewers (including new ones) for layer visibility
+   * (`startLayerTransition` in mapUtils.ts) — never hand-edit; do not remove.
+   */
   onChapterEnter?: LayerConfig[];
+  /**
+   * @deprecated DERIVED compat field: layer fade-out events, see
+   * {@link Transition.onChapterEnter}.
+   */
   onChapterExit?: LayerConfig[];
 };
 
