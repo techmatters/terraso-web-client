@@ -265,9 +265,10 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
           mapLayerConfig,
         })
       );
-      // The map stage fits the added layer automatically (programmatic move,
-      // never recorded as a user camera edit).
-      setChangeBoundsLayerId(mapLayerConfig.id);
+      // NO camera fit for the created layer: the create session already
+      // previewed it on this map and the user positioned the camera during
+      // the flow — finalizing must leave the camera exactly where it is
+      // (the preview's own one-shot fit is the only move of the flow).
       setDraftLayerIds(current => addMapLayerId(current, mapLayerConfig.id));
     },
     [setConfig, registerSessionDataLayers, chapterId, setDraftLayerIds]
