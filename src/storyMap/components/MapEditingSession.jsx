@@ -248,6 +248,12 @@ export const MapEditingSession = ({
               : false
           }
           useConfigBounds
+          // Branch 1's already-visible fit semantics (the old map
+          // configuration dialog's layer-add preview): an added layer that
+          // is at least partially visible leaves the camera untouched; only
+          // a layer completely outside the viewport zooms out to the
+          // viewport ∪ layer union.
+          avoidMoveWhenVisible
           opacity={0}
           onLayerAdded={onLayerAdded}
         />
