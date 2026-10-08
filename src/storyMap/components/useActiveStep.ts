@@ -52,7 +52,6 @@ const useActiveStep = ({
           const id = entry.target.id;
           if (entry.isIntersecting) {
             setActiveId(id);
-            console.log(id);
           }
         }
       },

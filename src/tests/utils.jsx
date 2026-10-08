@@ -40,6 +40,21 @@ const executeAxe = import.meta.env['TEST_A11Y'] === 'true';
 
 jest.setTimeout(JEST_TEST_TIMEOUT);
 
+// Redux's serializable-check middleware warns about values the app
+// intentionally keeps in its store (LngLat map positions, File uploads). The
+// warnings are pure console noise in tests and drown real failures, so filter
+// exactly that message here (test-only; the app store keeps the check).
+const consoleError = console.error.bind(console);
+console.error = (...args) => {
+  if (
+    typeof args[0] === 'string' &&
+    args[0].includes('A non-serializable value was detected')
+  ) {
+    return;
+  }
+  consoleError(...args);
+};
+
 // Mock mapbox
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
 

@@ -64,6 +64,7 @@ const SideBarItem = props => {
     chaptersLength,
     draggableProps,
     isDragging,
+    onSelect,
   } = props;
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const openMenu = useMemo(() => Boolean(menuAnchorEl), [menuAnchorEl]);
@@ -154,7 +155,13 @@ const SideBarItem = props => {
           bgcolor: item.active || isDragging ? 'blue.mid' : 'transparent',
           '&:hover': { bgcolor: item.active ? 'blue.mid' : 'gray.lite1' },
         }}
-        onClick={() => scrollTo(item.id)}
+        onClick={() => {
+          // Explicit navigation: select the step IMMEDIATELY (the smooth
+          // scroll below settles later — the scroll-spy must not report a
+          // different edit target in between).
+          onSelect?.(item.id);
+          scrollTo(item.id);
+        }}
         aria-label={
           isDragging
             ? t('storyMap.form_chapter_dragging_label', {
@@ -283,8 +290,15 @@ const SideBarItem = props => {
 
 const ChaptersSidebar = props => {
   const { t } = useTranslation();
-  const { config, currentStepId, onAdd, onDelete, onMoveChapter, height } =
-    props;
+  const {
+    config,
+    currentStepId,
+    onAdd,
+    onDelete,
+    onMoveChapter,
+    onSelect,
+    height,
+  } = props;
   const { chapters } = config;
   const sensorAPIRef = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -368,7 +382,7 @@ const ChaptersSidebar = props => {
       }}
     >
       <StoryThemeSelector />
-      <SideBarItem item={titleItem} />
+      <SideBarItem item={titleItem} onSelect={onSelect} />
       <DragDropContext
         onDragEnd={onDragEnd}
         onBeforeCapture={onDragStart}
@@ -389,6 +403,7 @@ const ChaptersSidebar = props => {
                       onDelete={onDelete}
                       onMoveDown={onMoveChapterDown}
                       onMoveUp={onMoveChapterUp}
+                      onSelect={onSelect}
                       chaptersLength={chapters.length}
                       isDragging={snapshot.isDragging}
                       draggableProps={provided}

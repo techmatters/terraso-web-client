@@ -157,6 +157,19 @@ const setup = async user => {
   });
 };
 
+// The configure sidebar's layer index fetch (`query visualizationConfigs`) is
+// separate, legitimate traffic — exclude it by OPERATION NAME. (The old
+// `String(query).includes('visualizationConfigs')` filter matched every query
+// that merely mentions the `visualizationConfigs` FIELD, e.g.
+// `query fetchVisualizationConfig`.)
+const LAYER_INDEX_OPERATION = 'visualizationConfigs';
+const operationName = query =>
+  String(query).match(/\b(?:query|mutation)\s+([A-Za-z0-9_]+)/)?.[1] ?? '';
+const nonLayerIndexCalls = () =>
+  terrasoApi.requestGraphQL.mock.calls.filter(
+    ([query]) => operationName(query) !== LAYER_INDEX_OPERATION
+  );
+
 test('StoryMapUpdate: Renders editor', async () => {
   terrasoApi.requestGraphQL.mockResolvedValue({
     storyMaps: {
@@ -247,7 +260,7 @@ test('StoryMapUpdate: Republish tracks an update event', async () => {
   });
 });
 
-test('StoryMapUpdate: stale draft save response does not overwrite newer local edits', async () => {
+test('StoryMapUpdate: saves are serialized and a stale draft save response does not overwrite newer local edits', async () => {
   jest.useFakeTimers();
 
   const firstSave = createDeferred();
@@ -302,20 +315,28 @@ test('StoryMapUpdate: stale draft save response does not overwrite newer local e
     jest.advanceTimersByTime(1500);
   });
 
-  await waitFor(() => {
-    expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  });
+  // Saves are serialized (concurrent saves resolve last-write-wins on the
+  // backend): the second draft save does NOT start while the first is in
+  // flight — it is retried when the in-flight one settles.
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
+  // The STALE save's response lands first (the server echoes "First title")
+  // and must not overwrite the newer local edits.
   await act(async () => {
-    secondSave.resolve(buildSavedStoryMap('Second title'));
+    firstSave.resolve(buildSavedStoryMap('First title'));
   });
 
   await waitFor(() => {
     expect(titleInput).toHaveValue('Second title');
   });
 
+  // …and the retried save persists the newer state.
+  await waitFor(() => {
+    expect(terrasoApi.request).toHaveBeenCalledTimes(2);
+  });
+
   await act(async () => {
-    firstSave.resolve(buildSavedStoryMap('First title'));
+    secondSave.resolve(buildSavedStoryMap('Second title'));
   });
 
   await waitFor(() => {
@@ -406,6 +427,10 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
   });
   await setup({ id: API_STORY_MAP.createdBy.id });
 
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -477,7 +502,13 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   });
 
   await setup({ id: API_STORY_MAP.createdBy.id });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  // The story map loads with one request (the configure sidebar's layer
+  // index fetch is separate, legitimate traffic).
+  expect(nonLayerIndexCalls().length).toBe(1);
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -495,9 +526,12 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
 
   await act(async () => fireEvent.click(inviteButton));
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  // Load + invite mutation (the configure sidebar's layer index fetch is
+  // separate, legitimate traffic).
+  const nonLayerCalls = nonLayerIndexCalls();
+  expect(nonLayerCalls).toHaveLength(2);
 
-  const inviteCall = terrasoApi.requestGraphQL.mock.calls[1][1];
+  const inviteCall = nonLayerCalls[1][1];
 
   expect(inviteCall).toMatchObject({
     input: {
@@ -543,7 +577,13 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
   });
 
   await setup({ id: API_STORY_MAP.createdBy.id });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  // The story map loads with one request (the configure sidebar's layer
+  // index fetch is separate, legitimate traffic).
+  expect(nonLayerIndexCalls().length).toBe(1);
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -565,9 +605,12 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
 
   await act(async () => fireEvent.click(confirmationButton));
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  // Load + remove mutation (the configure sidebar's layer index fetch is
+  // separate, legitimate traffic).
+  const nonLayerCalls = nonLayerIndexCalls();
+  expect(nonLayerCalls).toHaveLength(2);
 
-  const removeCall = terrasoApi.requestGraphQL.mock.calls[1][1];
+  const removeCall = nonLayerCalls[1][1];
 
   expect(removeCall).toMatchObject({
     input: {
@@ -607,9 +650,15 @@ test('StoryMapUpdate: See story map as editor', async () => {
 
   await setup(API_STORY_MAP.membershipList.memberships.edges[1].node.user);
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  // The story map loads with one request (the configure sidebar's layer
+  // index fetch is separate, legitimate traffic).
+  expect(nonLayerIndexCalls().length).toBe(1);
 
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
