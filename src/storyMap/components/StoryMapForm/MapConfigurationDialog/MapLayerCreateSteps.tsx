@@ -288,6 +288,7 @@ const MapLayerCreateStepsPanel = ({
   const {
     visualizationConfig,
     setVisualizationConfig,
+    fileContext,
     loadingFile,
     loadingFileError,
     saving,
@@ -365,10 +366,18 @@ const MapLayerCreateStepsPanel = ({
     session,
   ]);
 
-  // The form is only shown once the session's file is uploaded AND parsed;
-  // until then a busy indicator (or the upload/load errors) is shown.
-  const ready = Boolean(selectedFile) && !loadingFile && !loadingFileError;
-  const busy = uploading || (Boolean(selectedFile) && loadingFile);
+  // The form is only shown once the session's file is uploaded AND parsed
+  // (`fileContext` holds the parsed headers/geometry every form widget reads);
+  // until then a busy indicator (or the upload/load errors) is shown. The
+  // parsed guard is load-bearing: the upload resolves one render BEFORE the
+  // parse effect flips `loadingFile`, and without it the form renders its
+  // column selects against empty headers and the dialog crashes.
+  const parsed = Boolean(fileContext);
+  const ready =
+    Boolean(selectedFile) && parsed && !loadingFile && !loadingFileError;
+  const busy =
+    uploading ||
+    (Boolean(selectedFile) && !loadingFileError && (!parsed || loadingFile));
 
   return (
     <Box sx={{ width: '100%', minWidth: 0 }}>
