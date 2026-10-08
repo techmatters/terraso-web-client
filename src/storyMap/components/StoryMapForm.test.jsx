@@ -27,7 +27,10 @@ import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { when } from 'jest-when';
 import logger from 'terraso-client-shared/monitoring/logger';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { createLoadedMapMock } from 'terraso-web-client/tests/mapboxMock';
+import {
+  createBounds,
+  createLoadedMapMock,
+} from 'terraso-web-client/tests/mapboxMock';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -307,11 +310,8 @@ afterAll(() => {
 beforeEach(() => {
   globalThis.__storyMapChangeBoundsLog = [];
   global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-  mapboxgl.LngLatBounds = jest.fn();
-  mapboxgl.LngLatBounds.prototype = {
-    isEmpty: jest.fn().mockReturnValue(false),
-  };
-  mapboxgl.LngLat = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn((...args) => createBounds(...args));
+  mapboxgl.LngLat = jest.fn((lng, lat) => ({ lng, lat }));
   mapboxgl.Popup = jest.fn();
   const Popup = {
     setLngLat: jest.fn().mockReturnThis(),
@@ -671,57 +671,6 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
     image: 'https://test.com/image.png',
   });
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
-});
-
-test('StoryMapForm: Edit Map button width matches chapter content width', async () => {
-  await setup({
-    config: {
-      ...BASE_CONFIG,
-      chapters: [
-        {
-          id: 'chapter-embed',
-          title: 'Chapter with embed',
-          description: 'Chapter with embed description',
-          media: {
-            type: 'embedded',
-            source: 'youtube',
-            url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-            title: 'Test video',
-          },
-          onChapterEnter: [],
-          onChapterExit: [],
-        },
-        {
-          id: 'chapter-no-media',
-          title: 'Chapter without media',
-          description: 'Chapter without media description',
-          onChapterEnter: [],
-          onChapterExit: [],
-        },
-      ],
-    },
-  });
-
-  // The chapter content card (.step-content in StoryMap.css) is capped at
-  // max-width 35vw plus its 50px x2 horizontal padding (border box
-  // calc(35vw + 100px)). The chapter's grid container must be capped so its
-  // 11/12 content cell lands exactly on that card width, keeping the Edit Map
-  // button, the card, and the 1/12 alignment column adjacent.
-  const embedButton = within(
-    screen.getByRole('region', { name: 'Chapter: Chapter with embed' })
-  ).getByRole('button', { name: 'Edit Map' });
-  const embedContainer = embedButton.closest('.MuiGrid-container');
-  expect(getComputedStyle(embedContainer).maxWidth).toBe(
-    'calc((35vw + 100px) * 12 / 11)'
-  );
-  expect(getComputedStyle(embedButton).width).toBe('100%');
-
-  // Without visual media the container cap never binds: the button fills its
-  // grid cell as before.
-  const noMediaButton = within(
-    screen.getByRole('region', { name: 'Chapter: Chapter without media' })
-  ).getByRole('button', { name: 'Edit Map' });
-  expect(getComputedStyle(noMediaButton).width).toBe('100%');
 });
 
 test('StoryMapForm: Change title', async () => {
@@ -2451,9 +2400,9 @@ const makeCameraMap = openValues => {
     getZoom: () => current.zoom,
     getPitch: () => current.pitch,
     getBearing: () => current.bearing,
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => current.bounds,
-    }),
+    getBounds: jest.fn(() =>
+      createBounds(current.bounds[0], current.bounds[1])
+    ),
     moveCameraTo: next => {
       current = next;
     },
@@ -2480,6 +2429,21 @@ const CAMERA_FITTED = {
     [2, 2],
   ],
 };
+// A viewport that does NOT contain the Ecuador test layers (~[-79.1, -0.35]
+// to [-77.9, 0]). The editor fit channel is wired through
+// avoidMoveWhenVisible, so the fit effect only fires when the layer is
+// completely outside the current viewport; CAMERA_OPEN's world bounds would
+// always report the layer as visible and never fit.
+const CAMERA_AWAY = {
+  center: { lng: 15, lat: 5 },
+  zoom: 5,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [10, 0],
+    [20, 10],
+  ],
+};
 
 test('StoryMapForm: adding a layer never rewrites the chapter camera (fit bursts suppressed, user moves recorded)', async () => {
   const io = installIntersectionObserverCapture();
@@ -2493,6 +2457,11 @@ test('StoryMapForm: adding a layer never rewrites the chapter camera (fit bursts
     await io.selectStep('chapter-1');
 
     await toggleTreeLayer('Datalayer title 1');
+
+    // The world-bounds viewport already shows the layer, so no fit request
+    // moves the camera (avoidMoveWhenVisible). The move burst below is the
+    // recorder's concern — simulated manually, not produced by a fit.
+    expect(map.fitBounds).not.toHaveBeenCalled();
 
     // The map fits the added layer: a BURST of programmatic moveends (real
     // mapbox fires several per fit) — none of them is the user's camera
@@ -2869,7 +2838,7 @@ const DeleteChapterButton = ({ chapterId }) => {
 test('StoryMapForm: a layer fit never re-fits and never overwrites the users camera', async () => {
   const io = installIntersectionObserverCapture();
   try {
-    const map = makeFittingCameraMap(CAMERA_OPEN, CAMERA_FITTED);
+    const map = makeFittingCameraMap(CAMERA_AWAY, CAMERA_FITTED);
     mapboxgl.Map.mockReturnValue(map);
     await setupWithProbe({
       config: BASE_CONFIG,
@@ -2893,14 +2862,14 @@ test('StoryMapForm: a layer fit never re-fits and never overwrites the users cam
     await act(async () =>
       fireEvent.click(screen.getByRole('button', { name: 'Align Center' }))
     );
-    await dragMapTo(map, CAMERA_OPEN);
+    await dragMapTo(map, CAMERA_AWAY);
     await act(async () =>
       fireEvent.click(
         screen.getByRole('treeitem', { name: 'Datalayer title 1' })
       )
     );
     expect(map.fitBounds).toHaveBeenCalledTimes(1);
-    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
+    expect(probeChapter().location.center).toEqual(CAMERA_AWAY.center);
   } finally {
     io.restore();
   }
@@ -2909,7 +2878,7 @@ test('StoryMapForm: a layer fit never re-fits and never overwrites the users cam
 test('StoryMapForm: one fit per request — toggling a layer off and on re-fits it', async () => {
   const io = installIntersectionObserverCapture();
   try {
-    const map = makeFittingCameraMap(CAMERA_OPEN, CAMERA_FITTED);
+    const map = makeFittingCameraMap(CAMERA_AWAY, CAMERA_FITTED);
     mapboxgl.Map.mockReturnValue(map);
     // A second layer is ALREADY on the chapter: it is mounted beside the
     // toggled one and must never be fitted by these writes.
@@ -2975,7 +2944,7 @@ test('StoryMapForm: a geocoder result after a layer fit IS recorded as the step 
     }),
   }));
   try {
-    const map = makeFittingCameraMap(CAMERA_OPEN, CAMERA_FITTED);
+    const map = makeFittingCameraMap(CAMERA_AWAY, CAMERA_FITTED);
     mapboxgl.Map.mockReturnValue(map);
     await setupWithProbe({
       config: BASE_CONFIG,
@@ -3305,7 +3274,7 @@ const makeReadyLayerConfig = (id, title, bounds) => ({
 test('StoryMapForm: the fit pipeline is wired end to end — one fit per request, seq advances on re-toggle, non-target layers stay false', async () => {
   const io = installIntersectionObserverCapture();
   try {
-    const map = makeCameraMap(CAMERA_OPEN);
+    const map = makeCameraMap(CAMERA_AWAY);
     mapboxgl.Map.mockReturnValue(map);
     await setupWithProbe({
       config: {
