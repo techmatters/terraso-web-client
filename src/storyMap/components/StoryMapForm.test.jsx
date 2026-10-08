@@ -3189,21 +3189,14 @@ test('StoryMapForm: clicking a chapter in the sidebar retargets the map writes b
   }
 });
 
-test('StoryMapForm: the configure sidebar says which chapter is being edited', async () => {
+test('StoryMapForm: the configure sidebar has no editing-target label', async () => {
   const io = installIntersectionObserverCapture();
   try {
     mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
     await setupWithProbe({ config: BASE_CONFIG });
 
     await io.selectStep('chapter-1');
-    expect(screen.getByTestId('editing-target')).toHaveTextContent(
-      'Editing: Chapter 1'
-    );
-
-    await io.selectStep(STORY_MAP_TITLE_ID);
-    expect(screen.getByTestId('editing-target')).toHaveTextContent(
-      'Editing: Title'
-    );
+    expect(screen.queryByTestId('editing-target')).not.toBeInTheDocument();
   } finally {
     io.restore();
   }

@@ -394,17 +394,6 @@ export const ConfigureChapterSidebar = ({
         )}
         closeLabel={t('storyMap.form_configure_chapter_sidebar_close')}
       >
-        {/* The edit target is always visible: edits apply IMMEDIATELY to
-            the step named here (map camera writes included). */}
-        <Typography
-          variant="h4"
-          data-testid="editing-target"
-          sx={{ fontWeight: 'bold' }}
-        >
-          {t('storyMap.form_configure_chapter_editing_target', {
-            title: targetTitle,
-          })}
-        </Typography>
         <Stack spacing={2} sx={{ my: 1, position: 'relative' }}>
           {dragActive && (
             <Box
