@@ -107,6 +107,7 @@ const ChapterConfig = props => {
       dataLayerConfigId: chapter.dataLayerConfigId,
       title: chapter.title,
       chapterId: chapter.id,
+      alignment: chapter.alignment,
       onConfirm: onLocationChangeWrapper,
     });
   }, [openMapConfig, chapter, onLocationChangeWrapper]);

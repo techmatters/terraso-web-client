@@ -93,6 +93,11 @@ export type MapConfigTarget = {
   location?: MapPosition;
   title?: string;
   chapterId?: string;
+  /** Chapter alignment: the recorded camera bounds are the content region
+   * (the strip the chapter panel leaves uncovered), so `expandBoundsForDisplay`
+   * reproduces the framed camera exactly in playback. Title transitions are
+   * centered and record the full camera bounds. */
+  alignment?: ChapterAlignment;
   mapLayers?: MapLayerTransition[];
   dataLayerConfigId?: string;
   onConfirm: (_: MapConfigurationConfirm) => void;

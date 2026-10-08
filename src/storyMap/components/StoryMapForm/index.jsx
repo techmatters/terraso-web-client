@@ -361,6 +361,7 @@ const StoryMapForm = props => {
                   location={mapConfigTarget.location}
                   title={mapConfigTarget.title}
                   chapterId={mapConfigTarget.chapterId}
+                  alignment={mapConfigTarget.alignment}
                   mapLayers={mapConfigTarget.mapLayers}
                   dataLayerConfigId={mapConfigTarget.dataLayerConfigId}
                 />
