@@ -17,6 +17,65 @@
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 
+const toLngLat = value =>
+  Array.isArray(value) ? { lng: value[0], lat: value[1] } : value;
+
+/**
+ * Minimal LngLatBounds stand-in: parses the constructor forms used by the
+ * app and supports the corner/union math the fit logic needs. Production
+ * reads getSouthWest/getNorthEast for the layer/viewport overlap test and
+ * getWest/getSouth/getEast/getNorth for the union fit, so bounds mocks that
+ * only implement isEmpty (or toArray) make those paths throw.
+ */
+export const createBounds = (...args) => {
+  let sw;
+  let ne;
+  if (args.length === 1) {
+    const arg = args[0];
+    if (Array.isArray(arg) && Array.isArray(arg[0])) {
+      sw = toLngLat(arg[0]);
+      ne = toLngLat(arg[1]);
+    } else {
+      sw = toLngLat(arg);
+      ne = toLngLat(arg);
+    }
+  } else {
+    sw = toLngLat(args[0]);
+    ne = toLngLat(args[1]);
+  }
+  const cornersOf = other =>
+    other.args ?? [other.getSouthWest(), other.getNorthEast()];
+  const bounds = {
+    get args() {
+      return [sw, ne];
+    },
+    isEmpty: () => false,
+    extend: other => {
+      const [otherSw, otherNe] = cornersOf(other);
+      sw = {
+        lng: Math.min(sw.lng, otherSw.lng),
+        lat: Math.min(sw.lat, otherSw.lat),
+      };
+      ne = {
+        lng: Math.max(ne.lng, otherNe.lng),
+        lat: Math.max(ne.lat, otherNe.lat),
+      };
+      return bounds;
+    },
+    getSouthWest: () => sw,
+    getNorthEast: () => ne,
+    getWest: () => sw.lng,
+    getSouth: () => sw.lat,
+    getEast: () => ne.lng,
+    getNorth: () => ne.lat,
+    toArray: () => [
+      [sw.lng, sw.lat],
+      [ne.lng, ne.lat],
+    ],
+  };
+  return bounds;
+};
+
 /**
  * Map instance mock with REAL event-listener semantics: `on`/`once`/`off`
  * record handler ARRAYS per event type (the shared editor map has 3+
@@ -148,7 +207,7 @@ export const createLoadedMapMock = (overrides = {}) => {
 export const setupMapboxMock = () => {
   beforeEach(() => {
     mapboxgl.Map = jest.fn().mockReturnValue(createMapMock());
-    mapboxgl.LngLatBounds = jest.fn();
+    mapboxgl.LngLatBounds = jest.fn((...args) => createBounds(...args));
     mapboxgl.NavigationControl = jest.fn();
   });
 };
