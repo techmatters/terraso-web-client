@@ -26,7 +26,10 @@ import {
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { when } from 'jest-when';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { createLoadedMapMock } from 'terraso-web-client/tests/mapboxMock';
+import {
+  createBounds,
+  createLoadedMapMock,
+} from 'terraso-web-client/tests/mapboxMock';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -267,11 +270,8 @@ afterAll(() => {
 
 beforeEach(() => {
   global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-  mapboxgl.LngLatBounds = jest.fn();
-  mapboxgl.LngLatBounds.prototype = {
-    isEmpty: jest.fn().mockReturnValue(false),
-  };
-  mapboxgl.LngLat = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn((...args) => createBounds(...args));
+  mapboxgl.LngLat = jest.fn((lng, lat) => ({ lng, lat }));
   mapboxgl.Popup = jest.fn();
   const Popup = {
     setLngLat: jest.fn().mockReturnThis(),
@@ -1320,12 +1320,7 @@ test('StoryMapForm: Change chapter location', async () => {
     getZoom: jest.fn().mockReturnValue(10),
     getPitch: jest.fn().mockReturnValue(64),
     getBearing: jest.fn().mockReturnValue(45),
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
+    getBounds: jest.fn(() => createBounds([-180, -90], [180, 90])),
   };
   mapboxgl.Map.mockReturnValue(map);
   MapboxGlGeocoder.mockClear();
@@ -1393,12 +1388,7 @@ test('StoryMapForm: Change chapter location', async () => {
   map.getZoom.mockReturnValue(13);
   map.getPitch.mockReturnValue(20);
   map.getBearing.mockReturnValue(5);
-  map.getBounds.mockReturnValue({
-    toArray: () => [
-      [-78, 1],
-      [-77, 2],
-    ],
-  });
+  map.getBounds.mockReturnValue(createBounds([-78, 1], [-77, 2]));
 
   await act(async () => map.fire('move'));
 
@@ -1440,12 +1430,7 @@ test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', 
     getZoom: jest.fn().mockReturnValue(10),
     getPitch: jest.fn().mockReturnValue(64),
     getBearing: jest.fn().mockReturnValue(45),
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
+    getBounds: jest.fn(() => createBounds([-180, -90], [180, 90])),
   };
   mapboxgl.Map.mockReturnValue(map);
   MapboxGlGeocoder.mockClear();
@@ -1495,12 +1480,7 @@ test('StoryMapForm: Change chapter style', async () => {
     getZoom: () => 10,
     getPitch: () => 64,
     getBearing: () => 45,
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
+    getBounds: jest.fn(() => createBounds([-180, -90], [180, 90])),
   };
   mapboxgl.Map.mockReturnValue(map);
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
@@ -1547,12 +1527,7 @@ test('StoryMapForm: Add map layer', async () => {
     getZoom: () => 10,
     getPitch: () => 64,
     getBearing: () => 45,
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
+    getBounds: jest.fn(() => createBounds([-180, -90], [180, 90])),
   };
   mapboxgl.Map.mockReturnValue(map);
 
@@ -2473,9 +2448,9 @@ const makeCameraMap = openValues => {
     getZoom: () => current.zoom,
     getPitch: () => current.pitch,
     getBearing: () => current.bearing,
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => current.bounds,
-    }),
+    getBounds: jest.fn(() =>
+      createBounds(current.bounds[0], current.bounds[1])
+    ),
     moveCameraTo: next => {
       current = next;
     },

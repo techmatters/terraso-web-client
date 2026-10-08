@@ -1696,9 +1696,15 @@ describe('MapConfigurationDialog', () => {
         location: undefined,
       });
 
-      // The camera lands on the title transition's starting position.
-      expect(mockMap.fitBounds).toHaveBeenCalledWith(titleLocation.bounds, {
-        animate: false,
+      // The camera lands on the title transition's starting position: the
+      // shared camera is replayed through `jumpTo` (this harness has no
+      // `mapDimensions`, so `locationFitViewport` is skipped and the raw
+      // location camera is restored — never a `fitBounds` fit).
+      expect(mockMap.jumpTo).toHaveBeenCalledWith({
+        center: titleLocation.center,
+        zoom: titleLocation.zoom,
+        pitch: titleLocation.pitch,
+        bearing: titleLocation.bearing,
       });
 
       // …and the session teardown restores the session-open snapshot on a
