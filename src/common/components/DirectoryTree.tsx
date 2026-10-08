@@ -167,6 +167,8 @@ const DirectoryTreeRow = ({
           display: 'flex',
           alignItems: 'center',
           gap: theme.spacing(0.5),
+          // Indent each nesting level by the width of the chevron column.
+          pl: (level - 1) * 3,
           opacity: node.disabled ? 0.6 : 1,
         })}
       >
@@ -174,7 +176,11 @@ const DirectoryTreeRow = ({
           {hasChildren &&
             (isExpanded ? <ExpandMoreIcon /> : <ChevronRightIcon />)}
         </Box>
-        <Typography component="span" variant="body2" sx={{ flexGrow: 1 }}>
+        <Typography
+          component="span"
+          variant="body2"
+          sx={{ flexGrow: 1, fontWeight: hasChildren ? 'bold' : undefined }}
+        >
           {node.label}
         </Typography>
         {node.action && (
