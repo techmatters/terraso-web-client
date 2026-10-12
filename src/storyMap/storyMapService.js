@@ -31,6 +31,8 @@ import {
   compareStoryMapsByUpdatedAt,
   extractStoryMap,
   getStoryMapConfig,
+  normalizeStoryMapConfig,
+  parseStoryMapConfiguration,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const normalizeUpdatedStoryMap = (storyMap, response = {}) => ({
@@ -40,7 +42,10 @@ const normalizeUpdatedStoryMap = (storyMap, response = {}) => ({
   configuration: response.configuration || storyMap.config,
   config: getStoryMapConfig({
     ...response,
-    config: response.config || storyMap.config,
+    config:
+      response.config ||
+      parseStoryMapConfiguration(response.configuration) ||
+      storyMap.config,
     configuration: response.configuration || storyMap.config,
   }),
   isPublished:
@@ -95,9 +100,11 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),
-      config: storyMap.publishedConfiguration
-        ? JSON.parse(storyMap.publishedConfiguration)
-        : JSON.parse(storyMap.configuration),
+      config: normalizeStoryMapConfig(
+        storyMap.publishedConfiguration
+          ? JSON.parse(storyMap.publishedConfiguration)
+          : JSON.parse(storyMap.configuration)
+      ),
       memberships: extractMemberships(storyMap.membershipList),
       accountMembership: extractAccountMembership(storyMap.membershipList),
     }));
@@ -125,7 +132,7 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),
-      config: JSON.parse(storyMap.configuration),
+      config: normalizeStoryMapConfig(JSON.parse(storyMap.configuration)),
       memberships: extractMemberships(storyMap.membershipList),
       accountMembership: extractAccountMembership(storyMap.membershipList),
     }));
@@ -141,7 +148,10 @@ export const addStoryMap = async ({ storyMap, files }) => {
   const title = _.get('config.title', storyMap);
   storyMapForm.append('title', generateValidTitle(title));
   storyMapForm.append('publish', storyMap.publish);
-  storyMapForm.append('configuration', JSON.stringify(storyMap.config));
+  storyMapForm.append(
+    'configuration',
+    JSON.stringify(normalizeStoryMapConfig(storyMap.config))
+  );
   Object.keys(files).forEach((fileId, index) => {
     const file = files[fileId].file;
     storyMapForm.append('files', file, fileId);
@@ -165,7 +175,10 @@ export const updateStoryMap = async ({ storyMap, files }) => {
     generateValidTitle(_.getOr('', 'config.title', storyMap))
   );
   storyMapForm.append('publish', storyMap.publish);
-  storyMapForm.append('configuration', JSON.stringify(storyMap.config));
+  storyMapForm.append(
+    'configuration',
+    JSON.stringify(normalizeStoryMapConfig(storyMap.config))
+  );
   Object.keys(files).forEach((fileId, index) => {
     const file = files[fileId].file;
     storyMapForm.append('files', file, fileId);

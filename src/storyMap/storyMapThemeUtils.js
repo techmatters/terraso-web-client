@@ -15,7 +15,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import { getContrastRatio } from '@mui/material/styles';
+
 export const DEFAULT_STORY_MAP_THEME = 'theme-1';
+
+export const STORY_MAP_CONTROL_SX = {
+  color: 'var(--story-theme-text)',
+  '&:hover': {
+    bgcolor: 'var(--story-theme-highlight)',
+    color: 'var(--story-theme-highlight-text)',
+  },
+};
+
+export const STORY_MAP_OVERLAY_CONTROL_SX = {
+  ...STORY_MAP_CONTROL_SX,
+  bgcolor: 'var(--story-theme-text)',
+  color: 'var(--story-theme-background)',
+};
 
 export const STORY_MAP_THEME_OPTIONS = [
   {
@@ -94,5 +110,10 @@ export const getStoryMapThemeCssVariables = config => {
     '--story-theme-text': themeOption.text,
     '--story-theme-link': themeOption.link,
     '--story-theme-highlight': themeOption.highlight,
+    '--story-theme-highlight-text':
+      getContrastRatio(themeOption.text, themeOption.highlight) >=
+      getContrastRatio(themeOption.background, themeOption.highlight)
+        ? themeOption.text
+        : themeOption.background,
   };
 };

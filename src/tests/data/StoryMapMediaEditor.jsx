@@ -5,8 +5,6 @@ import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/Cha
 import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
-const POC_THEME_STYLES = getStoryMapThemeCssVariables({ themeId: 'theme-7' });
-
 export const INITIAL_CHAPTER = {
   alignment: 'left',
   description: [
@@ -19,7 +17,7 @@ export const INITIAL_CHAPTER = {
       ],
     },
   ],
-  id: 'media-editor-poc',
+  id: 'media-editor-test',
   mediaPresentation: 'carousel',
   mediaItems: [
     {
@@ -63,7 +61,7 @@ export const INITIAL_CHAPTER = {
   title: 'Multiple media chapter',
 };
 
-const StoryMapMediaEditorPocContent = ({ initialChapter }) => {
+const StoryMapMediaEditorContent = ({ initialChapter }) => {
   const [chapter, setChapter] = useState(initialChapter);
   const onFieldChange = useCallback(
     field => value =>
@@ -74,7 +72,7 @@ const StoryMapMediaEditorPocContent = ({ initialChapter }) => {
   return (
     <Box
       sx={{
-        ...POC_THEME_STYLES,
+        ...getStoryMapThemeCssVariables(initialChapter),
         bgcolor: '#1A3A2A',
         minHeight: '100vh',
         p: { xs: 2, md: 4 },
@@ -93,16 +91,16 @@ const StoryMapMediaEditorPocContent = ({ initialChapter }) => {
   );
 };
 
-const StoryMapMediaEditorPoc = ({ initialChapter = INITIAL_CHAPTER }) => (
+const StoryMapMediaEditor = ({ initialChapter = INITIAL_CHAPTER }) => (
   <StoryMapConfigContextProvider
     baseConfig={{
       chapters: [initialChapter],
       dataLayers: {},
-      themeId: 'theme-7',
+      themeId: initialChapter.themeId,
     }}
   >
-    <StoryMapMediaEditorPocContent initialChapter={initialChapter} />
+    <StoryMapMediaEditorContent initialChapter={initialChapter} />
   </StoryMapConfigContextProvider>
 );
 
-export default StoryMapMediaEditorPoc;
+export default StoryMapMediaEditor;
