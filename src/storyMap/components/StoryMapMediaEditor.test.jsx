@@ -1,0 +1,952 @@
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from 'terraso-web-client/tests/utils';
+import i18n from 'i18next';
+import StoryMapMediaEditor, {
+  INITIAL_CHAPTER,
+} from 'terraso-web-client/tests/data/StoryMapMediaEditor';
+import Button from '@mui/material/Button';
+import { getContrastRatio } from '@mui/material/styles';
+
+import {
+  CarouselPresentation,
+  GalleryPresentation,
+} from 'terraso-web-client/storyMap/components/StoryMapMedia';
+import { STORY_MAP_THEME_OPTIONS } from 'terraso-web-client/storyMap/storyMapThemeUtils';
+
+const MEDIA_ERROR_MESSAGES = [
+  {
+    language: 'en-US',
+    media: 'Media unavailable',
+    video: 'Video preview unavailable',
+  },
+  {
+    language: 'es-ES',
+    media: 'Contenido multimedia no disponible',
+    video: 'Vista previa del video no disponible',
+  },
+];
+
+test.each(MEDIA_ERROR_MESSAGES)(
+  'StoryMapMedia: failed images show the localized media error message in $language',
+  async ({ language, media }) => {
+    await render(
+      <CarouselPresentation items={[INITIAL_CHAPTER.mediaItems[0]]} />
+    );
+    const previousLanguage = i18n.language;
+    try {
+      await act(() => i18n.changeLanguage(language));
+      fireEvent.error(screen.getByRole('img'));
+      expect(screen.getByRole('alert')).toHaveTextContent(media);
+    } finally {
+      await act(() => i18n.changeLanguage(previousLanguage));
+    }
+  }
+);
+
+test.each(MEDIA_ERROR_MESSAGES)(
+  'StoryMapMedia: failed gallery videos show the localized preview error message in $language',
+  async ({ language, video }) => {
+    await render(
+      <GalleryPresentation items={[INITIAL_CHAPTER.mediaItems[4]]} />
+    );
+    const previousLanguage = i18n.language;
+    try {
+      await act(() => i18n.changeLanguage(language));
+      fireEvent.error(screen.getByLabelText('video media'));
+      expect(screen.getByRole('alert')).toHaveTextContent(video);
+    } finally {
+      await act(() => i18n.changeLanguage(previousLanguage));
+    }
+  }
+);
+
+jest.mock('react-avatar-editor', () => ({
+  __esModule: true,
+  default: props => (
+    <div
+      data-position={JSON.stringify(props.position)}
+      data-scale={props.scale}
+      data-testid="image-crop-editor"
+    />
+  ),
+}));
+
+test.each([
+  { name: 'portrait', width: 900, height: 1200 },
+  { name: 'wide', width: 3000, height: 1000 },
+])(
+  'StoryMapMediaEditor: a fresh $name image fits the full image with blurred fill before crop editing and after reopening',
+  async ({ width, height }) => {
+    const image = {
+      id: 'fresh-image',
+      type: 'image/jpeg',
+      signedUrl: 'https://test.com/fresh.jpg',
+    };
+    const initialChapter = { ...INITIAL_CHAPTER, mediaItems: [image] };
+    const { unmount } = await render(
+      <StoryMapMediaEditor initialChapter={initialChapter} />
+    );
+    const viewport = screen.getByTestId('carousel-viewport');
+    expect(viewport).toHaveStyle({ 'aspect-ratio': '16/9' });
+    const preview = within(viewport).getByRole('img');
+    Object.defineProperties(preview, {
+      naturalWidth: { value: width },
+      naturalHeight: { value: height },
+    });
+    fireEvent.load(preview);
+    expect(within(viewport).getByRole('img')).toHaveStyle({
+      objectFit: 'contain',
+    });
+    expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Update Media' })
+    ).toBeInTheDocument();
+    expect(image).not.toHaveProperty('crop');
+    unmount();
+    await render(
+      <StoryMapMediaEditor
+        initialChapter={JSON.parse(JSON.stringify(initialChapter))}
+      />
+    );
+    expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
+    expect(
+      within(screen.getByTestId('carousel-viewport')).getByRole('img')
+    ).toHaveStyle({ objectFit: 'contain' });
+  }
+);
+
+test.each([
+  {
+    language: 'en-US',
+    altAction: 'Add alt text for image media 1',
+    editAltAction: 'Edit alt text for image media 1',
+    altTooltip: 'Add alt text',
+    done: 'Done',
+  },
+  {
+    language: 'es-ES',
+    altAction: 'Agregar texto alternativo para imagen multimedia 1',
+    editAltAction: 'Editar texto alternativo para imagen multimedia 1',
+    altTooltip: 'Agregar texto alternativo',
+    done: 'Listo',
+  },
+])(
+  'StoryMapMediaEditor: crop completion and ALT action labels are localized for $language',
+  async ({ language, altAction, editAltAction, altTooltip, done }) => {
+    const previousLanguage = i18n.language;
+    try {
+      await act(() => i18n.changeLanguage(language));
+      await render(
+        <StoryMapMediaEditor
+          initialChapter={{
+            ...INITIAL_CHAPTER,
+            mediaItems: [INITIAL_CHAPTER.mediaItems[0]],
+          }}
+        />
+      );
+      const altButton = screen.getByRole('button', { name: altAction });
+      fireEvent.mouseOver(altButton);
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(altTooltip);
+      fireEvent.click(altButton);
+      expect(screen.getByRole('button', { name: done })).toBeInTheDocument();
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'Image description' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: done }));
+      fireEvent.click(screen.getByRole('button', { name: editAltAction }));
+      expect(screen.getByRole('button', { name: done })).toBeInTheDocument();
+    } finally {
+      await act(() => i18n.changeLanguage(previousLanguage));
+    }
+  }
+);
+
+test.each(STORY_MAP_THEME_OPTIONS)(
+  'StoryMapMediaEditor: $id keeps collection controls and expanded media in the selected theme',
+  async storyTheme => {
+    await render(
+      <StoryMapMediaEditor
+        initialChapter={{ ...INITIAL_CHAPTER, themeId: storyTheme.id }}
+      />
+    );
+    expect(screen.getByRole('button', { name: 'Next media' })).toHaveStyle({
+      color: 'var(--story-theme-text)',
+    });
+    expect(screen.getByRole('button', { name: 'Add media' })).toHaveClass(
+      'MuiButton-contained'
+    );
+    const toolbar = screen.getByRole('toolbar', {
+      name: 'Current media actions',
+    });
+    expect(toolbar).toHaveStyle({ backgroundColor: 'rgba(33, 33, 33, 0.92)' });
+    for (const name of [
+      'Crop image media 1',
+      'Remove image media 1',
+      'Move image media 1 later',
+    ]) {
+      expect(within(toolbar).getByRole('button', { name })).toHaveStyle({
+        color: 'rgb(255, 255, 255)',
+      });
+    }
+    expect(
+      within(toolbar).getByRole('button', {
+        name: 'Move image media 1 earlier',
+      })
+    ).toHaveStyle({
+      color: 'rgba(255, 255, 255, 0.45)',
+    });
+    expect(
+      screen.getByRole('button', { name: 'Display as carousel' })
+    ).toHaveStyle({
+      'background-color': 'var(--story-theme-highlight)',
+      color: 'var(--story-theme-highlight-text)',
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+    expect(screen.getByTestId('gallery-media-collection')).toHaveStyle({
+      color: 'var(--story-theme-text)',
+      '--story-theme-text': storyTheme.text,
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Open image media 1' }));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveStyle({
+      '--story-theme-background': storyTheme.background,
+      '--story-theme-text': storyTheme.text,
+    });
+    expect(
+      within(dialog).getByRole('button', { name: 'Close media viewer' })
+    ).toHaveStyle({
+      'background-color': 'var(--story-theme-text)',
+      color: 'var(--story-theme-background)',
+    });
+    const highlightText = getComputedStyle(dialog).getPropertyValue(
+      '--story-theme-highlight-text'
+    );
+
+    expect(
+      getContrastRatio(highlightText, storyTheme.highlight)
+    ).toBeGreaterThanOrEqual(4.5);
+  }
+);
+
+test.each([1, 2])(
+  'StoryMapMediaEditor: Add media matches standard editor action buttons with %i items',
+  async count => {
+    await render(
+      <>
+        <Button variant="contained">Reference action</Button>
+        <StoryMapMediaEditor
+          initialChapter={{
+            ...INITIAL_CHAPTER,
+            themeId: 'theme-1',
+            mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, count),
+          }}
+        />
+      </>
+    );
+
+    const referenceStyle = getComputedStyle(
+      screen.getByRole('button', { name: 'Reference action' })
+    );
+    expect(screen.getByRole('button', { name: 'Add media' })).toHaveStyle({
+      color: referenceStyle.color,
+      backgroundColor: referenceStyle.backgroundColor,
+    });
+  }
+);
+
+test.each(['theme-1', 'theme-7'])(
+  'StoryMapMediaEditor: empty media retains the original upload placeholder in %s',
+  async themeId => {
+    await render(
+      <StoryMapMediaEditor
+        initialChapter={{
+          ...INITIAL_CHAPTER,
+          themeId,
+          mediaItems: [],
+        }}
+      />
+    );
+    const upload = screen.getByRole('button', { name: 'Add media' });
+    expect(upload).toHaveClass('MuiButton-outlined');
+    expect(within(upload).queryByTestId('AddIcon')).not.toBeInTheDocument();
+    expect(upload.parentElement).toHaveStyle({
+      backgroundColor: 'rgb(210, 237, 247)',
+      minHeight: '150px',
+      padding: '16px',
+      alignItems: 'center',
+      justifyContent: 'center',
+    });
+    expect(
+      screen.getByText(
+        'Upload or link images, audio recordings or video files.'
+      )
+    ).toBeInTheDocument();
+    fireEvent.click(upload);
+    expect(
+      screen.getByRole('dialog', { name: 'Add media' })
+    ).toBeInTheDocument();
+  }
+);
+
+test('StoryMapMediaEditor: single-media controls remain visible on a dark theme', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        themeId: 'theme-1',
+        mediaItems: [INITIAL_CHAPTER.mediaItems[0]],
+      }}
+    />
+  );
+  expect(
+    screen.getByRole('button', { name: 'Crop image media 1' })
+  ).toHaveStyle({ color: 'rgb(255, 255, 255)' });
+});
+
+test('StoryMapMediaEditor: next and previous controls navigate the controlled media collection', async () => {
+  await render(<StoryMapMediaEditor />);
+  fireEvent.click(screen.getByRole('button', { name: 'Next media' }));
+  expect(screen.getByText('Media 2 of 6')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Previous media' }));
+  expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: a single image supports alt text, cropping and original-image expansion', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: [INITIAL_CHAPTER.mediaItems[0]],
+      }}
+    />
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Add alt text for image media 1' })
+  );
+  fireEvent.change(
+    screen.getByRole('textbox', {
+      name: 'Describe this image for people with visual impairments',
+    }),
+    {
+      target: { value: 'Mangrove restoration' },
+    }
+  );
+  fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
+    target: { value: '2' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+  expect(screen.getByRole('img', { name: 'Mangrove restoration' })).toHaveStyle(
+    { transform: 'scale(2)' }
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Expand image media' }));
+  expect(
+    within(screen.getByRole('dialog')).getByRole('img', {
+      name: 'Mangrove restoration',
+    })
+  ).not.toHaveStyle({ transform: 'scale(2)' });
+});
+
+test('StoryMapMedia: playback controls remain outside the expansion button and pause before expansion', async () => {
+  const pause = jest
+    .spyOn(HTMLMediaElement.prototype, 'pause')
+    .mockImplementation(() => {});
+  const items = [
+    { id: 'audio-1', type: 'audio/mpeg', url: 'https://test.com/audio.mp3' },
+  ];
+  await render(
+    <CarouselPresentation items={items} theme={{ id: 'theme-5' }} />
+  );
+  const expand = screen.getByRole('button', { name: 'Expand audio media' });
+  expect(
+    within(expand).queryByLabelText('audio media')
+  ).not.toBeInTheDocument();
+  fireEvent.click(expand);
+  expect(pause).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole('dialog')).toHaveStyle({
+    '--story-theme-background': '#1A3A2A',
+  });
+  pause.mockRestore();
+});
+
+test('StoryMapMediaEditor: stores image crop settings for the carousel while expansion uses the original image', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeInTheDocument();
+
+  const carousel = screen.getByTestId('carousel-viewport');
+  const originalImage = within(carousel).getByRole('img', {
+    name: 'image media',
+  });
+  const originalSource = originalImage.getAttribute('src');
+
+  const carouselActions = screen.getByRole('toolbar', {
+    name: 'Current media actions',
+  });
+  expect(carousel.parentElement.previousElementSibling).toBe(carouselActions);
+  fireEvent.click(
+    within(carouselActions).getByRole('button', {
+      name: 'Crop image media 1',
+    })
+  );
+  fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
+    target: { value: '2' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+
+  expect(originalImage).toHaveStyle({ transform: 'scale(2)' });
+  expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Expand image media' }));
+
+  expect(
+    within(screen.getByRole('dialog')).getByRole('img', {
+      name: 'image media',
+    })
+  ).toHaveAttribute('src', originalSource);
+});
+
+test('StoryMapMediaEditor: closes the headerless expanded media viewer with its top-right close control', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Expand image media' }));
+
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(
+    screen.queryByTestId('gallery-media-viewer-header')
+  ).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Close media viewer' }));
+
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+});
+
+test('StoryMapMediaEditor: fits the full image at the computed minimum zoom', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  fireEvent.click(
+    within(
+      screen.getByRole('toolbar', { name: 'Current media actions' })
+    ).getByRole('button', { name: 'Crop image media 1' })
+  );
+  const cropSource = screen.getByAltText('Crop source');
+  Object.defineProperties(cropSource, {
+    naturalHeight: { value: 1000 },
+    naturalWidth: { value: 3000 },
+  });
+  fireEvent.load(cropSource);
+  fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
+    target: { value: '0.5925925925925926' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+
+  const stageImage = within(screen.getByTestId('carousel-viewport')).getByRole(
+    'img',
+    { name: 'image media' }
+  );
+  Object.defineProperties(stageImage, {
+    naturalHeight: { value: 1000 },
+    naturalWidth: { value: 3000 },
+  });
+  fireEvent.load(stageImage);
+
+  expect(
+    within(screen.getByTestId('carousel-viewport')).getByRole('img', {
+      name: 'image media',
+    })
+  ).toHaveStyle({ objectFit: 'contain' });
+});
+
+test('StoryMapMediaEditor: applies saved carousel crops to Gallery tiles', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  fireEvent.click(
+    within(
+      screen.getByRole('toolbar', { name: 'Current media actions' })
+    ).getByRole('button', { name: 'Crop image media 1' })
+  );
+  fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
+    target: { value: '2' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+
+  const galleryImage = await waitFor(() =>
+    within(
+      screen.getByRole('button', { name: 'Open image media 1' })
+    ).getByRole('img', { name: 'image media' })
+  );
+  expect(galleryImage).toHaveStyle({
+    objectPosition: '50% 50%',
+    transform: 'scale(2)',
+    transformOrigin: '50% 50%',
+  });
+});
+
+test('StoryMapMediaEditor: fills Gallery tiles behind complete minimum-zoom images', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  fireEvent.click(
+    within(
+      screen.getByRole('toolbar', { name: 'Current media actions' })
+    ).getByRole('button', { name: 'Crop image media 1' })
+  );
+  const cropSource = screen.getByAltText('Crop source');
+  Object.defineProperties(cropSource, {
+    naturalHeight: { value: 1000 },
+    naturalWidth: { value: 3000 },
+  });
+  fireEvent.load(cropSource);
+  fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
+    target: { value: '0.5925925925925926' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+
+  const galleryImage = await waitFor(() =>
+    within(
+      screen.getByRole('button', { name: 'Open image media 1' })
+    ).getByRole('img', { name: 'image media' })
+  );
+  Object.defineProperties(galleryImage, {
+    naturalHeight: { value: 1000 },
+    naturalWidth: { value: 3000 },
+  });
+  fireEvent.load(galleryImage);
+
+  const fittedGalleryImage = within(
+    screen.getByRole('button', { name: 'Open image media 1' })
+  ).getByRole('img', { name: 'image media' });
+  expect(fittedGalleryImage).toHaveStyle({ objectFit: 'contain' });
+  expect(fittedGalleryImage.parentElement).toHaveStyle({
+    position: 'relative',
+  });
+});
+
+test('StoryMapMediaEditor: provides clear reordering, direct navigation, and confirmed deletion', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  expect(
+    within(
+      screen.getByRole('toolbar', { name: 'Media collection actions' })
+    ).getByRole('button', { name: 'Add media' })
+  ).toBeInTheDocument();
+
+  const currentMediaActions = screen.getByRole('toolbar', {
+    name: 'Current media actions',
+  });
+  expect(
+    within(currentMediaActions).getByRole('button', {
+      name: 'Move image media 1 earlier',
+    })
+  ).toBeDisabled();
+  expect(
+    within(currentMediaActions).getByRole('button', {
+      name: 'Move image media 1 later',
+    })
+  ).toBeEnabled();
+
+  fireEvent.click(screen.getByRole('button', { name: 'image media 2' }));
+
+  expect(screen.getByText('Media 2 of 6')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'image media 2' })).toHaveAttribute(
+    'aria-current',
+    'true'
+  );
+
+  fireEvent.click(
+    within(
+      screen.getByRole('toolbar', { name: 'Current media actions' })
+    ).getByRole('button', { name: 'Remove image media 2' })
+  );
+
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(screen.getByText('Delete image?')).toBeInTheDocument();
+  expect(screen.getByText('Media 2 of 6')).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Delete image' }));
+
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  expect(screen.getByText('Media 2 of 5')).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: shows one actionable ALT indicator on images without alt text', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  const altTextBadge = screen.getByRole('button', {
+    name: 'Add alt text for image media 1',
+  });
+  expect(altTextBadge).toBeInTheDocument();
+  expect(
+    screen.queryAllByRole('button', {
+      name: 'Add alt text for image media 1',
+    })
+  ).toHaveLength(1);
+
+  fireEvent.click(altTextBadge);
+  fireEvent.change(
+    screen.getByPlaceholderText(
+      'Describe this image for people with visual impairments'
+    ),
+    { target: { value: 'A mapped landscape with trees and wildflowers.' } }
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+
+  expect(
+    screen.getByRole('button', { name: 'Edit alt text for image media 1' })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: /alt text for audio media/i })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: switches presentation while sharing contextual media actions', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  const collectionActions = screen.getByRole('toolbar', {
+    name: 'Media collection actions',
+  });
+  expect(
+    within(collectionActions).getByRole('button', {
+      name: 'Display as carousel',
+    })
+  ).toHaveAttribute('aria-pressed', 'true');
+
+  fireEvent.click(
+    within(collectionActions).getByRole('button', {
+      name: 'Display as gallery',
+    })
+  );
+
+  await waitFor(() =>
+    expect(screen.getByTestId('gallery-media-grid')).toBeInTheDocument()
+  );
+  expect(screen.queryByTestId('carousel-viewport')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /^Reorder / })).toBeNull();
+  expect(
+    screen.getByRole('button', { name: 'Open image media 1' }).parentElement
+  ).toHaveAttribute('draggable', 'true');
+
+  const firstMedia = screen.getByRole('button', {
+    name: 'Open image media 1',
+  });
+  const secondMedia = screen.getByRole('button', {
+    name: 'Open image media 2',
+  });
+  const firstSource = within(firstMedia).getByRole('img').getAttribute('src');
+  const secondSource = within(secondMedia).getByRole('img').getAttribute('src');
+  const dataTransfer = {
+    effectAllowed: 'move',
+    getData: jest.fn(() => '0'),
+    setData: jest.fn(),
+    setDragImage: jest.fn(),
+  };
+  fireEvent.dragStart(firstMedia.parentElement, { dataTransfer });
+  fireEvent.dragOver(secondMedia, { dataTransfer });
+  fireEvent.drop(secondMedia, { dataTransfer });
+
+  expect(
+    within(
+      screen.getByRole('button', { name: 'Open image media 1' })
+    ).getByRole('img')
+  ).toHaveAttribute('src', secondSource);
+  expect(
+    within(
+      screen.getByRole('button', { name: 'Open image media 2' })
+    ).getByRole('img')
+  ).toHaveAttribute('src', firstSource);
+
+  const secondMediaActions = screen.getByRole('button', {
+    name: 'Actions for image media 2',
+  });
+  expect(secondMediaActions).toBeVisible();
+  fireEvent.click(secondMediaActions);
+  expect(screen.getByRole('menuitem', { name: 'Crop' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('menuitem', { name: 'Move earlier' })
+  ).not.toHaveAttribute('aria-disabled', 'true');
+  expect(
+    screen.getByRole('menuitem', { name: 'Move later' })
+  ).not.toHaveAttribute('aria-disabled', 'true');
+  expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+
+  fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' });
+  fireEvent.click(screen.getByRole('button', { name: 'Open image media 2' }));
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: shows a muted first-frame video preview in Gallery', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+
+  const videoTile = screen.getByRole('button', {
+    name: 'Open video media 5',
+  });
+  const preview = within(videoTile).getByTestId('gallery-video-preview');
+  const video = within(preview).getByLabelText('video media');
+
+  Object.defineProperty(video, 'duration', { configurable: true, value: 5 });
+  video.pause = jest.fn();
+  fireEvent.loadedMetadata(video);
+  fireEvent.seeked(video);
+
+  expect(video.muted).toBe(true);
+  expect(video).toHaveAttribute('playsinline');
+  expect(video).toHaveAttribute('preload', 'metadata');
+  expect(video).not.toHaveAttribute('controls');
+  expect(video.currentTime).toBe(0.1);
+  expect(
+    within(preview).getByTestId('PlayCircleOutlinedIcon')
+  ).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: provides compact controls in Gallery audio tiles', async () => {
+  await render(<StoryMapMediaEditor />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+
+  const preview = screen.getByTestId('gallery-audio-preview');
+  const audio = within(preview).getByLabelText('audio media');
+  Object.defineProperty(audio, 'duration', { configurable: true, value: 184 });
+  Object.defineProperty(audio, 'paused', { configurable: true, value: true });
+  audio.play = jest.fn(() => Promise.resolve());
+  fireEvent.loadedMetadata(audio);
+  fireEvent.timeUpdate(audio, { target: { currentTime: 12 } });
+  fireEvent.click(within(preview).getByRole('button', { name: 'Play audio' }));
+
+  expect(
+    within(preview).getByRole('button', { name: 'Play audio' })
+  ).toBeInTheDocument();
+  expect(audio.play).toHaveBeenCalled();
+  expect(
+    within(preview).getByRole('button', { name: 'Expand audio media' })
+  ).toBeInTheDocument();
+  expect(within(preview).getByText('0:12 / 3:04')).toBeInTheDocument();
+  expect(audio).toHaveAttribute('preload', 'metadata');
+  expect(audio).toHaveStyle({ display: 'none' });
+});
+
+test('StoryMapMediaEditor: uses the production editor for one media item', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: [INITIAL_CHAPTER.mediaItems[0]],
+      }}
+    />
+  );
+
+  expect(screen.queryByText('Media 1 of 1')).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Display as carousel' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Display as gallery' })
+  ).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Media navigation')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Reorder media')).not.toBeInTheDocument();
+  const toolbar = screen.getByRole('toolbar', {
+    name: 'Current media actions',
+  });
+  expect(
+    within(toolbar).getByRole('button', { name: 'Crop image media 1' })
+  ).toBeInTheDocument();
+  expect(
+    within(toolbar).getByRole('button', { name: 'Update Media' })
+  ).toHaveTextContent('Update Media');
+  expect(
+    within(toolbar).getByRole('button', { name: 'Update Media' })
+  ).toHaveClass('MuiButton-text');
+  expect(
+    within(toolbar).getByRole('button', { name: 'Remove image media 1' })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: /Move .* (earlier|later)/ })
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Update Media' })
+  ).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Remove image media 1' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Delete image' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  const upload = screen.getByRole('button', { name: 'Add media' });
+  expect(upload).toHaveClass('MuiButton-outlined');
+  expect(upload.parentElement).toHaveStyle({
+    backgroundColor: 'rgb(210, 237, 247)',
+  });
+  expect(
+    screen.queryByRole('toolbar', { name: 'Current media actions' })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: uses production actions for one embedded item', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: [INITIAL_CHAPTER.mediaItems[5]],
+      }}
+    />
+  );
+
+  expect(
+    screen.getByRole('button', { name: 'Update Media' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Remove Embedded video 1' })
+  ).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: replacing a failed uncropped image renders the new upload', async () => {
+  const { crop, ...image } = INITIAL_CHAPTER.mediaItems[0];
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: [image],
+      }}
+    />
+  );
+  fireEvent.error(screen.getByRole('img'));
+  expect(screen.getByRole('alert')).toHaveTextContent('Media unavailable');
+  fireEvent.click(screen.getByRole('button', { name: 'Update Media' }));
+  const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  const dropZone = within(dialog).getByRole('button', {
+    name: /Upload a photo or audio file/,
+  });
+  const file = new File(['replacement'], 'replacement.jpg', {
+    type: 'image/jpeg',
+  });
+  await act(async () =>
+    fireEvent.drop(dropZone, {
+      dataTransfer: {
+        files: [file],
+        items: [{ kind: 'file', type: file.type, getAsFile: () => file }],
+        types: ['Files'],
+      },
+    })
+  );
+  const submit = within(dialog).getByRole('button', { name: 'Add media' });
+  await waitFor(() => expect(submit).toBeEnabled());
+  fireEvent.click(submit);
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  expect(screen.getByRole('img')).toHaveAttribute(
+    'src',
+    'data:image/jpeg;base64,cmVwbGFjZW1lbnQ='
+  );
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: replacing single media preserves collection size', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 1),
+      }}
+    />
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Update Media' }));
+  const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  const input = within(dialog).getByRole('textbox', {
+    name: 'Link to a YouTube or Vimeo video',
+  });
+  fireEvent.change(input, {
+    target: { value: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' },
+  });
+  fireEvent.blur(input);
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Add media' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  expect(
+    screen.getByRole('button', { name: 'Expand Embedded video' })
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Media 1 of 2')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Media navigation')).not.toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: multiple items omit Update Media in carousel and gallery actions', async () => {
+  await render(<StoryMapMediaEditor />);
+  expect(
+    screen.queryByRole('button', { name: 'Update Media' })
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Actions for image media 1' })
+  );
+  expect(
+    screen.queryByRole('menuitem', { name: 'Update Media' })
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditor: removing the second item keeps the shared layout and adding restores gallery selection', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaPresentation: 'gallery',
+        mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 2),
+      }}
+    />
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Actions for image media 2' })
+  );
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Delete' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Delete image' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  expect(
+    screen.getByRole('toolbar', { name: 'Current media actions' })
+  ).toBeInTheDocument();
+  expect(screen.getByTestId('carousel-viewport')).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Update Media' })
+  ).toHaveTextContent('Update Media');
+  expect(
+    screen.queryByRole('button', { name: 'Display as gallery' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: /Move .* (earlier|later)/ })
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
+  const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  const input = within(dialog).getByRole('textbox', {
+    name: 'Link to a YouTube or Vimeo video',
+  });
+  fireEvent.change(input, {
+    target: { value: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' },
+  });
+  fireEvent.blur(input);
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Add media' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  expect(screen.getByTestId('gallery-media-collection')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Update Media' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Display as gallery' })
+  ).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByText('Media 1 of 2')).toBeInTheDocument();
+});

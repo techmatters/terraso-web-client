@@ -180,8 +180,8 @@ const ChapterForm = props => {
     record,
     onFieldChange,
     onFieldBlur,
-    mediaField = 'media',
-    multipleMedia = false,
+    mediaField = 'mediaItems',
+    multipleMedia = true,
     mediaPresentationField = 'mediaPresentation',
   } = props;
   const { t } = useTranslation();

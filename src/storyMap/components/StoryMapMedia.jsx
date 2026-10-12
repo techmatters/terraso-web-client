@@ -1,4 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import i18n from 'i18next';
+import logger from 'terraso-client-shared/monitoring/logger';
 import CloseIcon from '@mui/icons-material/Close';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -16,226 +18,18 @@ import {
   Typography,
 } from '@mui/material';
 
-import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor';
-import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
-import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
-
-const POC_THEME_ID = 'theme-7';
-const POC_THEME_STYLES = getStoryMapThemeCssVariables({
-  themeId: POC_THEME_ID,
-});
-const POC_MEDIA_SURFACE = '#FFF6E3';
-const CAROUSEL_ASPECT_RATIO = 16 / 9;
-
-const calculateFitScale = ({ naturalHeight, naturalWidth }) => {
-  if (!naturalHeight || !naturalWidth) {
-    return undefined;
-  }
-
-  const imageAspectRatio = naturalWidth / naturalHeight;
-  return Math.min(
-    imageAspectRatio / CAROUSEL_ASPECT_RATIO,
-    CAROUSEL_ASPECT_RATIO / imageAspectRatio
-  );
-};
-
-const MEDIA_ITEMS = [
-  {
-    type: 'image/jpeg',
-    signedUrl: '/storyMap/terraso-story-maps-img.jpg',
-    crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
-  },
-  {
-    type: 'image/png',
-    signedUrl: '/storyMap/set-map-step-1.png',
-    crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
-  },
-  {
-    type: 'image/jpeg',
-    signedUrl:
-      'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=900&h=1200&q=85',
-    crop: { position: { x: 0.5, y: 0.5 }, scale: 0.421875 },
-  },
-  {
-    type: 'audio/mpeg',
-    signedUrl: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3',
-  },
-  {
-    type: 'video/mp4',
-    signedUrl: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
-  },
-  {
-    type: 'embedded',
-    source: 'youtube',
-    url: 'https://www.youtube.com/embed/aqz-KE-bpKQ',
-  },
-];
-
-const createChapterDescription = () => [
-  {
-    type: 'heading-one',
-    children: [{ text: 'Chapter context' }],
-  },
-  {
-    type: 'paragraph',
-    children: [
-      { text: 'Participatory mapping', bold: true },
-      { text: ' helps communities document local priorities and ' },
-      { text: 'make evidence visible', italic: true },
-      { text: ' in their own terms.' },
-    ],
-  },
-  {
-    type: 'bulleted-list',
-    children: [
-      {
-        type: 'list-item',
-        children: [{ text: 'Review the media in context' }],
-      },
-      { type: 'list-item', children: [{ text: 'Continue with the story' }] },
-    ],
-  },
-  {
-    type: 'paragraph',
-    children: [
-      { text: ' ' },
-      {
-        type: 'link',
-        url: 'https://terraso.org',
-        children: [{ text: 'Learn more' }],
-      },
-      { text: ' about Terraso Story Maps.' },
-    ],
-  },
-];
-
-const createInlineEditorialContent = () => [
-  {
-    type: 'rich-text',
-    value: [
-      {
-        type: 'heading-one',
-        children: [{ text: 'Mapping what matters' }],
-      },
-      {
-        type: 'paragraph',
-        children: [
-          { text: 'Communities begin by identifying the places that shape ' },
-          { text: 'daily life', italic: true },
-          { text: '.' },
-        ],
-      },
-    ],
-  },
-  { type: 'media', item: MEDIA_ITEMS[0] },
-  {
-    type: 'rich-text',
-    value: [
-      {
-        type: 'heading-one',
-        children: [{ text: 'Listening in context' }],
-      },
-      {
-        type: 'paragraph',
-        children: [
-          { text: 'An audio recording can keep a local perspective close.' },
-        ],
-      },
-    ],
-  },
-  { type: 'media', item: MEDIA_ITEMS[3] },
-  {
-    type: 'rich-text',
-    value: [
-      {
-        type: 'heading-one',
-        children: [{ text: 'Seeing the change' }],
-      },
-      {
-        type: 'paragraph',
-        children: [{ text: 'Video can document observations as they unfold.' }],
-      },
-    ],
-  },
-  { type: 'media', item: MEDIA_ITEMS[4] },
-];
-
-const POC_CONFIG = {
-  style: 'mapbox://styles/mapbox/streets-v12',
-  themeId: POC_THEME_ID,
-  title: 'Multiple Media Patterns',
-  subtitle: 'Compare the same chapter media in three viewer experiences.',
-  byline: 'Story Map media POC',
-  chapters: [
-    {
-      id: 'gallery',
-      title: 'Gallery',
-      description: createChapterDescription(),
-      mediaPresentation: 'gallery',
-      mediaItems: MEDIA_ITEMS,
-      alignment: 'left',
-    },
-    {
-      id: 'carousel',
-      title: 'Carousel',
-      description: createChapterDescription(),
-      mediaPresentation: 'carousel',
-      mediaItems: MEDIA_ITEMS,
-      alignment: 'left',
-    },
-    {
-      id: 'thumbnail-carousel',
-      title: 'Thumbnail Carousel',
-      description: createChapterDescription(),
-      mediaPresentation: 'thumbnail-carousel',
-      mediaItems: MEDIA_ITEMS,
-      alignment: 'left',
-    },
-    {
-      id: 'editorial-stack',
-      title: 'Editorial Stack',
-      description: createChapterDescription(),
-      mediaPresentation: 'stack',
-      mediaItems: MEDIA_ITEMS,
-      alignment: 'left',
-    },
-    {
-      id: 'inline-editorial',
-      title: 'Inline Editorial',
-      description: createChapterDescription(),
-      inlineContent: createInlineEditorialContent(),
-      mediaPresentation: 'inline-editorial',
-      alignment: 'left',
-    },
-  ],
-};
-
-const mediaKind = item => {
-  if (item.type.startsWith('image')) {
-    return 'image';
-  }
-
-  if (item.type.startsWith('audio')) {
-    return 'audio';
-  }
-
-  if (item.type.startsWith('video')) {
-    return 'video';
-  }
-
-  return 'embedded';
-};
-
-const mediaTypeLabel = item => {
-  const kind = mediaKind(item);
-
-  return kind === 'embedded' ? 'Embedded video' : `${kind} media`;
-};
-
-const mediaLabel = (item, index) =>
-  `${mediaTypeLabel(item)}${index === undefined ? '' : ` ${index + 1}`}`;
-
-const mediaSource = item => item.signedUrl || item.url;
+import {
+  calculateMediaFitScale as calculateFitScale,
+  MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
+  getMediaSource,
+  getMediaKind as mediaKind,
+  getMediaLabel as mediaLabel,
+} from 'terraso-web-client/storyMap/storyMapMediaUtils';
+import {
+  getStoryMapThemeCssVariables,
+  STORY_MAP_CONTROL_SX,
+  STORY_MAP_OVERLAY_CONTROL_SX,
+} from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 const formatAudioTime = seconds => {
   const roundedSeconds = Math.max(0, Math.floor(seconds || 0));
@@ -243,8 +37,9 @@ const formatAudioTime = seconds => {
   return `${minutes}:${String(roundedSeconds % 60).padStart(2, '0')}`;
 };
 
-const PocMedia = ({
+const StoryMapMediaItem = ({
   item,
+  label,
   compact = false,
   fill = false,
   maxHeight,
@@ -253,6 +48,7 @@ const PocMedia = ({
   imageStyle,
   onImageLoad,
 }) => {
+  const [hasError, setHasError] = useState(false);
   const style = {
     display: 'block',
     height: fill ? '100%' : undefined,
@@ -260,13 +56,21 @@ const PocMedia = ({
     objectFit,
     width: '100%',
   };
+  if (hasError) {
+    return (
+      <Typography role="alert">
+        {i18n.t('storyMap.media_unavailable')}
+      </Typography>
+    );
+  }
 
   if (mediaKind(item) === 'image') {
     return (
       <img
-        src={mediaSource(item)}
-        alt={mediaLabel(item)}
+        src={getMediaSource(item)}
+        alt={item.altText || label || mediaLabel(item)}
         onLoad={onImageLoad}
+        onError={() => setHasError(true)}
         style={{
           ...style,
           objectPosition: crop
@@ -287,7 +91,8 @@ const PocMedia = ({
       <audio
         aria-label={mediaLabel(item)}
         controls
-        src={mediaSource(item)}
+        onError={() => setHasError(true)}
+        src={getMediaSource(item)}
         style={{ ...style, height: '54px' }}
       />
     );
@@ -298,7 +103,8 @@ const PocMedia = ({
       <video
         aria-label={mediaLabel(item)}
         controls
-        src={mediaSource(item)}
+        onError={() => setHasError(true)}
+        src={getMediaSource(item)}
         style={style}
       />
     );
@@ -308,8 +114,8 @@ const PocMedia = ({
     <iframe
       allowFullScreen
       aria-label={mediaLabel(item)}
-      src={mediaSource(item)}
-      title={mediaTypeLabel(item)}
+      src={getMediaSource(item)}
+      title={item.title || mediaLabel(item)}
       style={{
         ...style,
         height: fill ? '100%' : compact ? '160px' : '300px',
@@ -318,21 +124,23 @@ const PocMedia = ({
   );
 };
 
-const CroppedImagePreview = ({ item, objectFit = 'contain' }) => {
+export const CroppedImagePreview = ({ item, label, objectFit = 'contain' }) => {
   const [fitScale, setFitScale] = useState();
   const isFit =
-    fitScale !== undefined && Math.abs(item.crop?.scale - fitScale) < 0.001;
+    !item.crop ||
+    (fitScale !== undefined && Math.abs(item.crop.scale - fitScale) < 0.001);
 
   if (isFit) {
     return (
       <Box
+        data-testid="image-fit-preview"
         sx={{
           height: '100%',
           overflow: 'hidden',
           position: 'relative',
           width: '100%',
           '&::before': {
-            backgroundImage: `url(${mediaSource(item)})`,
+            backgroundImage: `url(${getMediaSource(item)})`,
             backgroundPosition: 'center',
             backgroundSize: 'cover',
             content: '""',
@@ -343,10 +151,12 @@ const CroppedImagePreview = ({ item, objectFit = 'contain' }) => {
           },
         }}
       >
-        <PocMedia
+        <StoryMapMediaItem
+          key={getMediaSource(item)}
           fill
           imageStyle={{ position: 'relative', zIndex: 1 }}
           item={item}
+          label={label}
           objectFit="contain"
           onImageLoad={({ currentTarget }) =>
             setFitScale(calculateFitScale(currentTarget))
@@ -357,10 +167,12 @@ const CroppedImagePreview = ({ item, objectFit = 'contain' }) => {
   }
 
   return (
-    <PocMedia
+    <StoryMapMediaItem
+      key={getMediaSource(item)}
       crop={item.crop}
       fill
       item={item}
+      label={label}
       objectFit={item.crop ? 'cover' : objectFit}
       onImageLoad={({ currentTarget }) =>
         setFitScale(calculateFitScale(currentTarget))
@@ -388,7 +200,7 @@ const GalleryVideoPreview = ({ item }) => {
         data-testid="gallery-video-preview-fallback"
         sx={{
           alignItems: 'center',
-          bgcolor: POC_MEDIA_SURFACE,
+          bgcolor: 'var(--story-theme-background)',
           color: 'var(--story-theme-text)',
           display: 'flex',
           height: '100%',
@@ -396,6 +208,9 @@ const GalleryVideoPreview = ({ item }) => {
         }}
       >
         <PlayCircleOutlineIcon fontSize="large" />
+        <Typography role="alert">
+          {i18n.t('storyMap.media_video_unavailable')}
+        </Typography>
       </Box>
     );
   }
@@ -414,7 +229,7 @@ const GalleryVideoPreview = ({ item }) => {
         playsInline
         preload="metadata"
         ref={videoRef}
-        src={mediaSource(item)}
+        src={getMediaSource(item)}
         style={{
           display: 'block',
           height: '100%',
@@ -444,6 +259,10 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
   const [duration, setDuration] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const openViewer = () => {
+    audioRef.current?.pause();
+    onOpen();
+  };
 
   const stopPropagation = action => event => {
     event.stopPropagation();
@@ -457,7 +276,10 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
     }
 
     if (audio.paused) {
-      audio.play().catch(() => setHasError(true));
+      audio.play().catch(error => {
+        logger.error('Error playing Story Map audio', error);
+        setHasError(true);
+      });
       return;
     }
     audio.pause();
@@ -467,10 +289,13 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
     return (
       <Box
         data-testid="gallery-audio-preview-fallback"
-        onClick={onOpen}
+        component="button"
+        type="button"
+        aria-label={i18n.t('storyMap.media_open_audio')}
+        onClick={openViewer}
         sx={{
           alignItems: 'center',
-          bgcolor: POC_MEDIA_SURFACE,
+          bgcolor: 'var(--story-theme-background)',
           color: 'var(--story-theme-text)',
           cursor: 'pointer',
           display: 'flex',
@@ -482,7 +307,9 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
         }}
       >
         <VolumeUpIcon fontSize="large" />
-        <Typography variant="caption">Audio unavailable</Typography>
+        <Typography role="alert" variant="caption">
+          {i18n.t('storyMap.media_audio_unavailable')}
+        </Typography>
       </Box>
     );
   }
@@ -490,10 +317,10 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
   return (
     <Box
       data-testid="gallery-audio-preview"
-      onClick={onOpen}
+      onClick={openViewer}
       sx={{
         alignItems: 'center',
-        bgcolor: POC_MEDIA_SURFACE,
+        bgcolor: 'var(--story-theme-background)',
         color: 'var(--story-theme-text)',
         cursor: 'pointer',
         display: 'flex',
@@ -519,20 +346,22 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
         }
         preload="metadata"
         ref={audioRef}
-        src={mediaSource(item)}
+        src={getMediaSource(item)}
         style={{ display: 'none' }}
       />
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <IconButton
-          aria-label={isPlaying ? 'Pause audio' : 'Play audio'}
+          aria-label={
+            isPlaying
+              ? i18n.t('storyMap.media_pause_audio')
+              : i18n.t('storyMap.media_play_audio')
+          }
           onClick={stopPropagation(togglePlayback)}
           sx={{
-            bgcolor: 'var(--story-theme-text)',
+            ...STORY_MAP_OVERLAY_CONTROL_SX,
             borderRadius: '50%',
-            color: POC_MEDIA_SURFACE,
             height: 32,
             width: 32,
-            '&:hover': { bgcolor: 'var(--story-theme-link)' },
           }}
         >
           {isPlaying ? (
@@ -541,17 +370,15 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
             <PlayArrowIcon sx={{ fontSize: 18 }} />
           )}
         </IconButton>
-        <Tooltip title="Open audio viewer">
+        <Tooltip title={i18n.t('storyMap.media_open_audio')}>
           <IconButton
-            aria-label="Expand audio media"
-            onClick={stopPropagation(onOpen)}
+            aria-label={i18n.t('storyMap.media_expand_audio')}
+            onClick={stopPropagation(openViewer)}
             sx={{
-              bgcolor: 'var(--story-theme-text)',
+              ...STORY_MAP_OVERLAY_CONTROL_SX,
               borderRadius: '50%',
-              color: POC_MEDIA_SURFACE,
               height: 32,
               width: 32,
-              '&:hover': { bgcolor: 'var(--story-theme-link)' },
             }}
           >
             <OpenInFullIcon sx={{ fontSize: 17 }} />
@@ -571,7 +398,7 @@ const GalleryTilePreview = ({ item }) => {
       <Box
         sx={{
           alignItems: 'center',
-          bgcolor: POC_MEDIA_SURFACE,
+          bgcolor: 'var(--story-theme-background)',
           color: 'var(--story-theme-text)',
           display: 'flex',
           height: '100%',
@@ -590,7 +417,7 @@ const GalleryTilePreview = ({ item }) => {
   return <GalleryVideoPreview item={item} />;
 };
 
-const MediaViewer = ({ item, onClose }) => (
+export const MediaViewer = ({ item, onClose, theme }) => (
   <Dialog
     fullWidth
     maxWidth="md"
@@ -600,7 +427,7 @@ const MediaViewer = ({ item, onClose }) => (
       paper: {
         'aria-label': item ? mediaLabel(item) : undefined,
         sx: {
-          ...POC_THEME_STYLES,
+          ...getStoryMapThemeCssVariables({ themeId: theme?.id }),
           bgcolor: 'var(--story-theme-background)',
           boxShadow: 'none',
           maxHeight: 'calc(100dvh - 32px)',
@@ -639,17 +466,15 @@ const MediaViewer = ({ item, onClose }) => (
             '& > iframe': { aspectRatio: '16 / 9' },
           }}
         >
-          <PocMedia item={item} />
+          <StoryMapMediaItem item={item} />
         </Box>
-        <Tooltip placement="left" title="Close media viewer">
+        <Tooltip placement="left" title={i18n.t('storyMap.media_close_viewer')}>
           <IconButton
-            aria-label="Close media viewer"
+            aria-label={i18n.t('storyMap.media_close_viewer')}
             onClick={onClose}
             sx={{
-              '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-              bgcolor: 'rgba(33, 33, 33, 0.84)',
+              ...STORY_MAP_OVERLAY_CONTROL_SX,
               borderRadius: '50%',
-              color: 'white',
               height: 36,
               position: 'absolute',
               right: 8,
@@ -668,12 +493,12 @@ const MediaViewer = ({ item, onClose }) => (
 
 const MediaCollectionHeader = ({
   currentIndex,
-  footerAction,
+  headerAction,
   itemCount,
   presentationAction,
 }) => (
   <Stack
-    aria-label="Media collection actions"
+    aria-label={i18n.t('storyMap.media_collection_actions')}
     direction="row"
     role="toolbar"
     sx={{
@@ -686,18 +511,25 @@ const MediaCollectionHeader = ({
   >
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
       {presentationAction}
-      <Typography variant="caption" sx={{ whiteSpace: 'nowrap' }}>
-        Media {currentIndex + 1} of {itemCount}
-      </Typography>
+      {itemCount > 1 && (
+        <Typography variant="caption" sx={{ whiteSpace: 'nowrap' }}>
+          {i18n.t('storyMap.media_count', {
+            current: currentIndex + 1,
+            total: itemCount,
+          })}
+        </Typography>
+      )}
     </Stack>
-    {footerAction}
+    {headerAction}
   </Stack>
 );
 
 const MediaItemActions = ({ children, presentation, sx }) => (
   <Box
     aria-label={
-      presentation === 'toolbar' ? 'Current media actions' : undefined
+      presentation === 'toolbar'
+        ? i18n.t('storyMap.media_current_actions')
+        : undefined
     }
     role={presentation === 'toolbar' ? 'toolbar' : undefined}
     sx={{
@@ -717,8 +549,9 @@ const MediaItemActions = ({ children, presentation, sx }) => (
 );
 
 export const GalleryPresentation = ({
+  active = true,
   currentIndex: controlledCurrentIndex,
-  footerAction,
+  headerAction,
   items,
   itemActionsSx,
   onCurrentIndexChange,
@@ -726,12 +559,23 @@ export const GalleryPresentation = ({
   presentationAction,
   renderItemActions,
   renderItemStatus,
+  sx,
+  theme,
 }) => {
+  const mediaRef = usePlaybackBoundary(active);
   const [dragSourceIndex, setDragSourceIndex] = useState(null);
   const [dropTargetIndex, setDropTargetIndex] = useState(null);
   const [uncontrolledCurrentIndex, setUncontrolledCurrentIndex] = useState(0);
   const [selectedItem, setSelectedItem] = useState(null);
-  const currentIndex = controlledCurrentIndex ?? uncontrolledCurrentIndex;
+  useEffect(() => {
+    if (!active) {
+      setSelectedItem(null);
+    }
+  }, [active]);
+  const currentIndex = Math.min(
+    controlledCurrentIndex ?? uncontrolledCurrentIndex,
+    items.length - 1
+  );
   const closeViewer = () => setSelectedItem(null);
   const selectItem = (item, index) => {
     if (renderItemActions) {
@@ -759,7 +603,14 @@ export const GalleryPresentation = ({
   const onDrop = (event, destinationIndex) => {
     event.preventDefault();
     const sourceIndex = Number(event.dataTransfer.getData('text/plain'));
-    if (Number.isInteger(sourceIndex) && sourceIndex !== destinationIndex) {
+    if (
+      onItemsReorder &&
+      dragSourceIndex !== null &&
+      sourceIndex === dragSourceIndex &&
+      sourceIndex >= 0 &&
+      sourceIndex < items.length &&
+      sourceIndex !== destinationIndex
+    ) {
       onItemsReorder(sourceIndex, destinationIndex);
     }
     clearDrag();
@@ -778,7 +629,7 @@ export const GalleryPresentation = ({
       <Stack
         data-gallery-media-tile
         draggable={Boolean(onItemsReorder)}
-        key={mediaSource(item)}
+        key={item.id || item.contentId || index}
         onDragEnd={clearDrag}
         onDragStart={event => onDragStart(event, index)}
         spacing={0}
@@ -806,7 +657,9 @@ export const GalleryPresentation = ({
           </Box>
         ) : (
           <Box
-            aria-label={`Open ${mediaLabel(item, index)}`}
+            aria-label={i18n.t('storyMap.media_open', {
+              label: mediaLabel(item, index),
+            })}
             aria-current={renderItemActions && isCurrent ? 'true' : undefined}
             component="button"
             onDragEnter={event => onDragOver(event, index)}
@@ -815,14 +668,14 @@ export const GalleryPresentation = ({
             onClick={openItem}
             sx={{
               aspectRatio: '4 / 3',
-              background: POC_MEDIA_SURFACE,
+              background: 'var(--story-theme-background)',
               border: 0,
               cursor: 'pointer',
               overflow: 'hidden',
               p: 0,
               '&:focus-visible': {
                 outline: '3px solid',
-                outlineColor: 'storyTheme.highlight',
+                outlineColor: 'var(--story-theme-highlight)',
                 outlineOffset: 3,
               },
             }}
@@ -838,13 +691,15 @@ export const GalleryPresentation = ({
         )}
         {dropTargetIndex === index && dragSourceIndex !== index && (
           <Box
-            aria-label={`Drop ${mediaLabel(item, index)} here`}
+            aria-label={i18n.t('storyMap.media_drop_label', {
+              label: mediaLabel(item, index),
+            })}
             sx={{
               alignItems: 'center',
-              bgcolor: 'rgba(255, 246, 227, 0.72)',
+              bgcolor: 'var(--story-theme-highlight)',
               border: '3px solid',
               borderColor: 'var(--story-theme-link)',
-              color: 'var(--story-theme-text)',
+              color: 'var(--story-theme-highlight-text)',
               display: 'flex',
               inset: 0,
               justifyContent: 'center',
@@ -853,7 +708,9 @@ export const GalleryPresentation = ({
               zIndex: 3,
             }}
           >
-            <Typography variant="caption">Drop here</Typography>
+            <Typography variant="caption">
+              {i18n.t('storyMap.media_drop_here')}
+            </Typography>
           </Box>
         )}
         {renderItemActions && (
@@ -866,11 +723,20 @@ export const GalleryPresentation = ({
   };
 
   return (
-    <Stack spacing={renderItemActions ? 0.5 : 1.5}>
+    <Stack
+      data-testid="gallery-media-collection"
+      ref={mediaRef}
+      spacing={renderItemActions ? 0.5 : 1.5}
+      sx={[
+        theme && getStoryMapThemeCssVariables({ themeId: theme.id }),
+        { color: 'var(--story-theme-text)' },
+        sx,
+      ]}
+    >
       {renderItemActions && (
         <MediaCollectionHeader
           currentIndex={currentIndex}
-          footerAction={footerAction}
+          headerAction={headerAction}
           itemCount={items.length}
           presentationAction={presentationAction}
         />
@@ -885,7 +751,11 @@ export const GalleryPresentation = ({
       >
         {items.map((item, index) => renderItem(item, index))}
       </Box>
-      <MediaViewer item={selectedItem} onClose={closeViewer} />
+      <MediaViewer
+        item={active ? selectedItem : null}
+        onClose={closeViewer}
+        theme={theme}
+      />
     </Stack>
   );
 };
@@ -896,7 +766,7 @@ const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
   }
 
   if (mediaKind(item) !== 'audio') {
-    return <PocMedia fill item={item} objectFit={objectFit} />;
+    return <StoryMapMediaItem fill item={item} objectFit={objectFit} />;
   }
 
   return (
@@ -904,7 +774,7 @@ const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
       spacing={2}
       sx={{
         alignItems: 'center',
-        bgcolor: POC_MEDIA_SURFACE,
+        bgcolor: 'var(--story-theme-background)',
         color: 'var(--story-theme-text)',
         height: '100%',
         justifyContent: 'center',
@@ -916,7 +786,7 @@ const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
       <audio
         aria-label={mediaLabel(item)}
         controls
-        src={mediaSource(item)}
+        src={getMediaSource(item)}
         style={{ height: '54px', maxWidth: '420px', width: '100%' }}
       />
     </Stack>
@@ -928,53 +798,97 @@ const ExpandableCarouselStage = ({
   testId,
   onExpand,
   objectFit = 'contain',
-}) => (
-  <Box
-    aria-label={`Expand ${mediaLabel(item)}`}
-    component="button"
-    data-testid={testId}
-    onClick={onExpand}
-    sx={{
-      alignItems: 'center',
-      aspectRatio: '16 / 9',
-      background: 'none',
-      bgcolor: POC_MEDIA_SURFACE,
-      border: 0,
-      cursor: 'zoom-in',
-      display: 'flex',
-      justifyContent: 'center',
-      minWidth: 0,
-      overflow: 'hidden',
-      p: 0,
-      width: '100%',
-      '&:focus-visible': {
-        outline: '3px solid',
-        outlineColor: 'var(--story-theme-link)',
-        outlineOffset: 3,
-      },
-    }}
-    type="button"
-  >
-    <CarouselStageMedia item={item} objectFit={objectFit} />
-  </Box>
-);
+}) =>
+  mediaKind(item) === 'image' ? (
+    <Box
+      aria-label={i18n.t('storyMap.media_expand', { label: mediaLabel(item) })}
+      component="button"
+      data-testid={testId}
+      onClick={onExpand}
+      sx={{
+        alignItems: 'center',
+        aspectRatio: '16 / 9',
+        background: 'none',
+        bgcolor: 'var(--story-theme-background)',
+        border: 0,
+        cursor: 'zoom-in',
+        display: 'flex',
+        justifyContent: 'center',
+        minWidth: 0,
+        overflow: 'hidden',
+        p: 0,
+        width: '100%',
+        '&:focus-visible': {
+          outline: '3px solid',
+          outlineColor: 'var(--story-theme-link)',
+          outlineOffset: 3,
+        },
+      }}
+      type="button"
+    >
+      <CarouselStageMedia item={item} objectFit={objectFit} />
+    </Box>
+  ) : (
+    <Box
+      sx={{ aspectRatio: '16 / 9', position: 'relative', overflow: 'hidden' }}
+      data-testid={testId}
+    >
+      <CarouselStageMedia item={item} objectFit={objectFit} />
+      <IconButton
+        aria-label={i18n.t('storyMap.media_expand', {
+          label: mediaLabel(item),
+        })}
+        onClick={onExpand}
+        sx={{
+          ...STORY_MAP_OVERLAY_CONTROL_SX,
+          position: 'absolute',
+          top: 8,
+          right: 8,
+        }}
+      >
+        <OpenInFullIcon />
+      </IconButton>
+    </Box>
+  );
+
+const usePlaybackBoundary = active => {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!active) {
+      pauseMediaPlayback(ref.current);
+    }
+  }, [active]);
+  return ref;
+};
+
+export const pauseMediaPlayback = element =>
+  element?.querySelectorAll('audio, video').forEach(media => media.pause());
 
 export const CarouselPresentation = ({
-  footerAction,
+  active = true,
+  headerAction,
   items,
   currentIndex: controlledCurrentIndex,
   itemActionsSx,
   onCurrentIndexChange,
-  navigationColor,
   presentationAction,
   renderItemActions,
   renderItemStatus,
   sx,
   theme,
 }) => {
+  const mediaRef = usePlaybackBoundary(active);
   const [uncontrolledCurrentIndex, setUncontrolledCurrentIndex] = useState(0);
   const [expandedItem, setExpandedItem] = useState(null);
-  const currentIndex = controlledCurrentIndex ?? uncontrolledCurrentIndex;
+  useEffect(() => {
+    if (!active) {
+      setExpandedItem(null);
+    }
+  }, [active]);
+  const currentIndex = Math.min(
+    controlledCurrentIndex ?? uncontrolledCurrentIndex,
+    items.length - 1
+  );
   const currentItem = items[currentIndex];
   const setCurrentIndex = index => {
     if (onCurrentIndexChange) {
@@ -986,14 +900,22 @@ export const CarouselPresentation = ({
 
   const previous = () =>
     setCurrentIndex((currentIndex - 1 + items.length) % items.length);
-  const next = () => setCurrentIndex(index => (index + 1) % items.length);
+  const next = () => setCurrentIndex((currentIndex + 1) % items.length);
 
   return (
-    <Stack spacing={renderItemActions ? 0.5 : 1.5} sx={sx}>
+    <Stack
+      ref={mediaRef}
+      spacing={renderItemActions ? 0.5 : 1.5}
+      sx={[
+        theme && getStoryMapThemeCssVariables({ themeId: theme.id }),
+        { color: 'var(--story-theme-text)' },
+        sx,
+      ]}
+    >
       {renderItemActions && (
         <MediaCollectionHeader
           currentIndex={currentIndex}
-          footerAction={footerAction}
+          headerAction={headerAction}
           itemCount={items.length}
           presentationAction={presentationAction}
         />
@@ -1006,8 +928,12 @@ export const CarouselPresentation = ({
         )}
         <Box sx={{ position: 'relative' }}>
           <ExpandableCarouselStage
+            key={`${currentItem.id || currentItem.contentId || currentIndex}-${active}`}
             item={currentItem}
-            onExpand={() => setExpandedItem(currentItem)}
+            onExpand={() => {
+              pauseMediaPlayback(mediaRef.current);
+              setExpandedItem(currentItem);
+            }}
             testId="carousel-viewport"
           />
           {renderItemStatus && (
@@ -1020,7 +946,7 @@ export const CarouselPresentation = ({
       {items.length > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Stack
-            aria-label="Media navigation"
+            aria-label={i18n.t('storyMap.media_navigation')}
             direction="row"
             spacing={1}
             sx={{
@@ -1028,39 +954,34 @@ export const CarouselPresentation = ({
               justifyContent: 'center',
             }}
           >
-            <Tooltip title="Previous media">
+            <Tooltip title={i18n.t('storyMap.media_previous')}>
               <IconButton
-                aria-label="Previous media"
+                aria-label={i18n.t('storyMap.media_previous')}
                 onClick={previous}
-                sx={{
-                  '&:hover': {
-                    bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
-                  },
-                  color:
-                    navigationColor || theme?.text || 'var(--story-theme-text)',
-                }}
+                sx={STORY_MAP_CONTROL_SX}
               >
                 <NavigateBeforeIcon />
               </IconButton>
             </Tooltip>
-            <Stack aria-label="Media position" direction="row" spacing={0.75}>
+            <Stack
+              aria-label={i18n.t('storyMap.media_position')}
+              direction="row"
+              spacing={0.75}
+            >
               {items.map((item, index) => (
                 <Box
                   aria-current={index === currentIndex ? 'true' : undefined}
                   aria-label={mediaLabel(item, index)}
                   component="button"
-                  key={mediaSource(item)}
+                  key={item.id || item.contentId || index}
                   onClick={() => setCurrentIndex(index)}
                   sx={{
                     bgcolor:
                       index === currentIndex
-                        ? theme?.highlight || 'var(--story-theme-highlight)'
+                        ? 'var(--story-theme-highlight)'
                         : 'transparent',
                     border: '1px solid',
-                    borderColor:
-                      navigationColor ||
-                      theme?.text ||
-                      'var(--story-theme-text)',
+                    borderColor: 'var(--story-theme-text)',
                     borderRadius: '50%',
                     cursor: 'pointer',
                     height: 8,
@@ -1071,17 +992,11 @@ export const CarouselPresentation = ({
                 />
               ))}
             </Stack>
-            <Tooltip title="Next media">
+            <Tooltip title={i18n.t('storyMap.media_next')}>
               <IconButton
-                aria-label="Next media"
+                aria-label={i18n.t('storyMap.media_next')}
                 onClick={next}
-                sx={{
-                  '&:hover': {
-                    bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
-                  },
-                  color:
-                    navigationColor || theme?.text || 'var(--story-theme-text)',
-                }}
+                sx={STORY_MAP_CONTROL_SX}
               >
                 <NavigateNextIcon />
               </IconButton>
@@ -1089,209 +1004,11 @@ export const CarouselPresentation = ({
           </Stack>
         </Box>
       )}
-      <MediaViewer item={expandedItem} onClose={() => setExpandedItem(null)} />
-    </Stack>
-  );
-};
-
-const ThumbnailPreview = ({ item }) => {
-  if (mediaKind(item) === 'image') {
-    return <PocMedia fill item={item} />;
-  }
-
-  const Icon =
-    mediaKind(item) === 'audio' ? VolumeUpIcon : PlayCircleOutlineIcon;
-
-  return (
-    <Box
-      sx={{
-        alignItems: 'center',
-        bgcolor: POC_MEDIA_SURFACE,
-        color: 'var(--story-theme-text)',
-        display: 'flex',
-        height: '100%',
-        justifyContent: 'center',
-      }}
-    >
-      <Icon />
-    </Box>
-  );
-};
-
-const ThumbnailCarouselPresentation = ({ items }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [expandedItem, setExpandedItem] = useState(null);
-  const previewStripRef = useRef(null);
-  const currentItem = items[currentIndex];
-
-  const scrollPreviews = direction => {
-    const previewStrip = previewStripRef.current;
-
-    previewStrip?.scrollBy({
-      behavior: 'smooth',
-      left: direction * previewStrip.clientWidth * 0.8,
-    });
-  };
-
-  return (
-    <Stack spacing={1}>
-      <ExpandableCarouselStage
-        item={currentItem}
-        onExpand={() => setExpandedItem(currentItem)}
-        objectFit="cover"
-        testId="thumbnail-carousel-viewport"
+      <MediaViewer
+        item={active ? expandedItem : null}
+        onClose={() => setExpandedItem(null)}
+        theme={theme}
       />
-      <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
-        <Tooltip title="Previous previews">
-          <IconButton
-            aria-label="Previous previews"
-            onClick={() => scrollPreviews(-1)}
-            sx={{
-              bgcolor: 'transparent',
-              color: 'var(--story-theme-text)',
-              flex: '0 0 auto',
-              '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-            }}
-          >
-            <NavigateBeforeIcon />
-          </IconButton>
-        </Tooltip>
-        <Box
-          aria-label="Media previews"
-          data-testid="thumbnail-carousel-preview-strip"
-          ref={previewStripRef}
-          sx={{
-            display: 'flex',
-            flex: 1,
-            gap: 0.75,
-            minWidth: 0,
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-          }}
-        >
-          {items.map((item, index) => (
-            <Box
-              aria-current={index === currentIndex ? 'true' : undefined}
-              aria-label={`Show ${mediaLabel(item, index)}`}
-              component="button"
-              key={mediaSource(item)}
-              onClick={() => setCurrentIndex(index)}
-              sx={{
-                aspectRatio: '16 / 9',
-                background: POC_MEDIA_SURFACE,
-                border: '2px solid',
-                borderColor:
-                  index === currentIndex
-                    ? 'var(--story-theme-highlight)'
-                    : 'var(--story-theme-text)',
-                cursor: 'pointer',
-                flex: '0 0 96px',
-                opacity: index === currentIndex ? 1 : 0.6,
-                overflow: 'hidden',
-                p: 0,
-                '&:focus-visible': {
-                  outline: '3px solid',
-                  outlineColor: 'storyTheme.highlight',
-                  outlineOffset: 2,
-                },
-              }}
-              type="button"
-            >
-              <ThumbnailPreview item={item} />
-            </Box>
-          ))}
-        </Box>
-        <Tooltip title="Next previews">
-          <IconButton
-            aria-label="Next previews"
-            onClick={() => scrollPreviews(1)}
-            sx={{
-              bgcolor: 'transparent',
-              color: 'var(--story-theme-text)',
-              flex: '0 0 auto',
-              '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-            }}
-          >
-            <NavigateNextIcon />
-          </IconButton>
-        </Tooltip>
-      </Stack>
-      <MediaViewer item={expandedItem} onClose={() => setExpandedItem(null)} />
     </Stack>
   );
 };
-
-const StackPresentation = ({ items }) => (
-  <Stack spacing={2}>
-    {items.map(item => (
-      <PocMedia item={item} key={mediaSource(item)} maxHeight="none" />
-    ))}
-  </Stack>
-);
-
-const InlineEditorialPresentation = ({ blocks }) => (
-  <Stack spacing={2}>
-    {blocks.map((block, index) =>
-      block.type === 'media' ? (
-        <PocMedia
-          item={block.item}
-          key={mediaSource(block.item)}
-          maxHeight="none"
-        />
-      ) : (
-        <RichTextEditor
-          editable={false}
-          key={`rich-text-${index}`}
-          value={block.value}
-        />
-      )
-    )}
-  </Stack>
-);
-
-const PocChapter = ({ record, active }) => {
-  const presentation =
-    record.mediaPresentation === 'gallery' ? (
-      <GalleryPresentation items={record.mediaItems} />
-    ) : record.mediaPresentation === 'carousel' ? (
-      <CarouselPresentation items={record.mediaItems} />
-    ) : record.mediaPresentation === 'thumbnail-carousel' ? (
-      <ThumbnailCarouselPresentation items={record.mediaItems} />
-    ) : record.mediaPresentation === 'inline-editorial' ? (
-      <InlineEditorialPresentation blocks={record.inlineContent} />
-    ) : (
-      <StackPresentation items={record.mediaItems} />
-    );
-
-  return (
-    <Box
-      component="section"
-      aria-label={`Chapter: ${record.title}`}
-      className="step-container lefty"
-      sx={({ breakpoints }) => ({
-        [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
-      })}
-    >
-      <Stack
-        className="story-theme step-content"
-        spacing={1.5}
-        sx={{ width: '50vw' }}
-      >
-        <Typography component="h3" variant="h3">
-          {record.title}
-        </Typography>
-        {presentation}
-        {record.mediaPresentation !== 'inline-editorial' && (
-          <RichTextEditor editable={false} value={record.description} />
-        )}
-      </Stack>
-    </Box>
-  );
-};
-
-const StoryMapMediaPoc = () => (
-  <StoryMap config={POC_CONFIG} ChapterComponent={PocChapter} />
-);
-
-export default StoryMapMediaPoc;

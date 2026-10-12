@@ -17,9 +17,11 @@
 // Component for editing and uploading a pictures or a audio file
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import getVideoId from 'get-video-id';
+import i18n from 'i18next';
 import _ from 'lodash/fp';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
+import { v4 as uuidv4 } from 'uuid';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -62,11 +64,20 @@ import {
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   CarouselPresentation,
+  CroppedImagePreview,
   GalleryPresentation,
-} from 'terraso-web-client/storyMap/components/StoryMapMediaPoc';
+} from 'terraso-web-client/storyMap/components/StoryMapMedia';
+import {
+  calculateMediaFitScale as calculateFitScale,
+  MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
+  getMediaSource,
+  getMediaLabel as mediaLabel,
+} from 'terraso-web-client/storyMap/storyMapMediaUtils';
 import {
   getResolvedStoryMapTheme,
   getStoryMapThemeCssVariables,
+  STORY_MAP_CONTROL_SX,
+  STORY_MAP_OVERLAY_CONTROL_SX,
 } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 import {
@@ -84,27 +95,21 @@ const MEDIA_TYPES = {
   EMBEDDED: 'embedded',
 };
 
-const CAROUSEL_ASPECT_RATIO = 16 / 9;
 const DEFAULT_CROP = { position: { x: 0.5, y: 0.5 }, scale: 1 };
-
-const calculateFitScale = ({ naturalHeight, naturalWidth }) => {
-  if (!naturalHeight || !naturalWidth) {
-    return 1;
-  }
-
-  const imageAspectRatio = naturalWidth / naturalHeight;
-  return Math.min(
-    imageAspectRatio / CAROUSEL_ASPECT_RATIO,
-    CAROUSEL_ASPECT_RATIO / imageAspectRatio
-  );
+const MEDIA_PRESENTATION_BUTTON_SX = {
+  ...STORY_MAP_CONTROL_SX,
+  borderColor: 'var(--story-theme-text)',
+  height: 32,
+  minWidth: 36,
+  p: 0.5,
+  width: 36,
+  '&.Mui-selected, &.Mui-selected:hover': {
+    bgcolor: 'var(--story-theme-highlight)',
+    color: 'var(--story-theme-highlight-text)',
+  },
 };
 
 const MEDIA_CONFIG = {
-  [MEDIA_TYPES.IMAGE]: {
-    defaultHeight: 250,
-    minHeight: 200,
-    maxHeight: 400,
-  },
   [MEDIA_TYPES.AUDIO]: {
     defaultHeight: 130,
     controlsHeight: 54,
@@ -156,31 +161,10 @@ const useMediaLoad = (defaultHeight, elementRef, onLoadCallback) => {
   return [containerHeight, handleLoad, handleError, loadingState];
 };
 
-const getMediaSrc = (media, getMediaFile) => {
-  if (media.signedUrl) {
-    return media.signedUrl;
-  }
-  if (media.contentId) {
-    return getMediaFile(media.contentId);
-  }
-  return media.url || null;
-};
+const getMediaSrc = getMediaSource;
 
 // Calculate media height to avoid scroller jumps in story map editor
 // This is needed because media elements are loaded asynchronously
-const calculateImageHeight = imgElement => {
-  if (!imgElement || !imgElement.naturalWidth || !imgElement.naturalHeight) {
-    return MEDIA_CONFIG[MEDIA_TYPES.IMAGE].defaultHeight;
-  }
-
-  const aspectRatio = imgElement.naturalHeight / imgElement.naturalWidth;
-  const config = MEDIA_CONFIG[MEDIA_TYPES.IMAGE];
-  return Math.max(
-    config.minHeight,
-    Math.min(config.maxHeight, imgElement.offsetWidth * aspectRatio)
-  );
-};
-
 const calculateVideoHeight = videoElement => {
   if (!videoElement || !videoElement.videoWidth || !videoElement.videoHeight) {
     return MEDIA_CONFIG[MEDIA_TYPES.VIDEO].defaultHeight;
@@ -541,21 +525,12 @@ export const AddMediaDialog = memo(({ open, onClose, onAdd }) => {
 
 const EditableImage = memo(
   ({ label, image, onUpdate, onDelete, processing }) => {
-    const { t } = useTranslation();
     const { getMediaFile } = useStoryMapMediaContext();
-    const imageRef = useRef(null);
 
     const imageSrc = useMemo(
       () => getMediaSrc(image, getMediaFile),
       [image, getMediaFile]
     );
-
-    const [containerHeight, handleImageLoad, handleError, loadingState] =
-      useMediaLoad(
-        MEDIA_CONFIG[MEDIA_TYPES.IMAGE].defaultHeight,
-        imageRef,
-        calculateImageHeight
-      );
 
     const deleteConfirmProps = useMemo(
       () => ({
@@ -567,54 +542,26 @@ const EditableImage = memo(
     );
 
     return (
-      <Stack sx={{ position: 'relative', height: `${containerHeight}px` }}>
-        <img
-          ref={imageRef}
-          src={imageSrc}
-          alt={label}
-          onLoad={handleImageLoad}
-          onError={handleError}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
-          }}
-          loading="lazy"
-        />
-        {loadingState === LOADING_STATES.ERROR && (
-          <Stack
-            sx={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.3)',
-              color: 'white',
-            }}
-          >
-            <Typography variant="body2">
-              {t('storyMap.form_media_image_error')}
-            </Typography>
-          </Stack>
-        )}
-        <Stack
+      <Stack>
+        <Box
+          data-testid="single-image-viewport"
           sx={{
-            position: 'absolute',
-            bottom: 0,
-            width: '100%',
+            aspectRatio: '16 / 9',
+            overflow: 'hidden',
+            position: 'relative',
           }}
         >
-          <MediaActionBar
-            onUpdate={onUpdate}
-            onDelete={onDelete}
-            processing={processing}
-            deleteConfirmProps={deleteConfirmProps}
+          <CroppedImagePreview
+            item={{ ...image, url: imageSrc }}
+            label={label}
           />
-        </Stack>
+        </Box>
+        <MediaActionBar
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          processing={processing}
+          deleteConfirmProps={deleteConfirmProps}
+        />
       </Stack>
     );
   }
@@ -794,9 +741,6 @@ const EditableEmbedded = memo(
   }
 );
 
-const mediaLabel = (media, index) =>
-  `${media.type.split('/')[0]} media ${index + 1}`;
-
 const moveMedia = (mediaItems, index, direction) => {
   const nextIndex = index + direction;
   if (nextIndex < 0 || nextIndex >= mediaItems.length) {
@@ -848,12 +792,18 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
   const imageSrc = getMediaSrc(image, getMediaFile);
 
   return (
-    <Dialog fullWidth maxWidth="md" open onClose={onClose}>
+    <Dialog
+      fullWidth
+      maxWidth="md"
+      open
+      onClose={onClose}
+      slotProps={{ paper: { 'aria-label': i18n.t('storyMap.media_crop') } }}
+    >
       <DialogContent>
         <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
           <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
             <img
-              alt="Crop source"
+              alt={i18n.t('storyMap.media_crop_source')}
               onLoad={({ currentTarget }) => {
                 const nextFitScale = calculateFitScale(currentTarget);
                 setFitScale(nextFitScale);
@@ -866,6 +816,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               style={{ display: 'none' }}
             />
             <AvatarEditor
+              style={{ maxWidth: '100%', height: 'auto' }}
               image={imageSrc}
               width={640}
               height={640 / CAROUSEL_ASPECT_RATIO}
@@ -883,7 +834,9 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
             spacing={2}
             sx={{ alignItems: 'center', width: '100%' }}
           >
-            <Typography id="carousel-crop-zoom-label">Zoom</Typography>
+            <Typography id="carousel-crop-zoom-label">
+              {i18n.t('storyMap.media_zoom')}
+            </Typography>
             <Slider
               aria-labelledby="carousel-crop-zoom-label"
               min={fitScale}
@@ -892,7 +845,9 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               value={crop.scale}
               valueLabelDisplay="auto"
               valueLabelFormat={scale =>
-                scale === fitScale ? 'Fit image' : `${scale}x`
+                scale === fitScale
+                  ? i18n.t('storyMap.media_fit_image')
+                  : `${scale}x`
               }
               onChange={(event, scale) =>
                 setCrop(currentCrop => ({ ...currentCrop, scale }))
@@ -901,22 +856,25 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
           </Stack>
           <OutlinedInput
             fullWidth
-            inputProps={{ maxLength: 1000 }}
+            inputProps={{
+              maxLength: 1000,
+              'aria-label': i18n.t('storyMap.media_alt_placeholder'),
+            }}
             multiline
             onChange={event => setAltText(event.target.value)}
-            placeholder="Describe this image for people with visual impairments"
+            placeholder={i18n.t('storyMap.media_alt_placeholder')}
             rows={3}
             value={altText}
           />
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{i18n.t('storyMap.media_cancel')}</Button>
         <Button
           variant="contained"
           onClick={() => onSave(crop, altText.trim())}
         >
-          Done
+          {i18n.t('storyMap.media_done')}
         </Button>
       </DialogActions>
     </Dialog>
@@ -924,9 +882,20 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
 };
 
 const ImageAltTextBadge = ({ hasAltText, label, onClick }) => (
-  <Tooltip title={hasAltText ? 'Edit alt text' : 'Add alt text'}>
+  <Tooltip
+    title={
+      hasAltText
+        ? i18n.t('storyMap.media_edit_alt')
+        : i18n.t('storyMap.media_add_alt')
+    }
+  >
     <Button
-      aria-label={`${hasAltText ? 'Edit' : 'Add'} alt text for ${label}`}
+      aria-label={i18n.t(
+        hasAltText
+          ? 'storyMap.media_edit_alt_label'
+          : 'storyMap.media_add_alt_label',
+        { label }
+      )}
       color={hasAltText ? 'inherit' : 'warning'}
       onClick={event => {
         event.stopPropagation();
@@ -937,9 +906,9 @@ const ImageAltTextBadge = ({ hasAltText, label, onClick }) => (
         !hasAltText && <ReportProblemOutlinedIcon sx={{ fontSize: 14 }} />
       }
       sx={{
-        bgcolor: hasAltText ? 'rgba(33, 33, 33, 0.88)' : 'warning.main',
+        bgcolor: hasAltText ? 'var(--story-theme-text)' : 'warning.main',
         borderRadius: 0.5,
-        color: 'white',
+        color: hasAltText ? 'var(--story-theme-background)' : 'white',
         fontSize: 11,
         lineHeight: 1,
         minHeight: 24,
@@ -947,7 +916,8 @@ const ImageAltTextBadge = ({ hasAltText, label, onClick }) => (
         px: 0.5,
         '& .MuiButton-startIcon': { marginLeft: 0, marginRight: 0.25 },
         '&:hover': {
-          bgcolor: hasAltText ? 'rgba(33, 33, 33, 0.96)' : 'warning.dark',
+          bgcolor: hasAltText ? 'var(--story-theme-highlight)' : 'warning.dark',
+          color: hasAltText ? 'var(--story-theme-highlight-text)' : 'white',
         },
       }}
     >
@@ -956,10 +926,35 @@ const ImageAltTextBadge = ({ hasAltText, label, onClick }) => (
   </Tooltip>
 );
 
+const EmptyMediaPlaceholder = ({ onUpload }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Stack
+      spacing={2}
+      component={Paper}
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'blue.mid',
+        minHeight: 150,
+        p: 2,
+      }}
+    >
+      <Typography variant="caption" sx={{ textAlign: 'center' }}>
+        {t('storyMap.form_media_placeholder')}
+      </Typography>
+      <Button variant="outlined" onClick={onUpload}>
+        {t('storyMap.form_media_upload')}
+      </Button>
+    </Stack>
+  );
+};
+
 const AddMediaButton = ({ compact = false, onClick }) => (
-  <Tooltip title="Add media">
+  <Tooltip title={i18n.t('storyMap.media_add')}>
     <Button
-      aria-label="Add media"
+      aria-label={i18n.t('storyMap.media_add')}
       onClick={onClick}
       size="small"
       sx={{
@@ -973,7 +968,7 @@ const AddMediaButton = ({ compact = false, onClick }) => (
           },
         }),
       }}
-      variant="outlined"
+      variant="contained"
     >
       <AddIcon fontSize="small" />
       <Box
@@ -986,7 +981,7 @@ const AddMediaButton = ({ compact = false, onClick }) => (
           }),
         }}
       >
-        Add media
+        {i18n.t('storyMap.media_add')}
       </Box>
     </Button>
   </Tooltip>
@@ -1013,18 +1008,16 @@ const MediaActionsMenu = ({
   return (
     <>
       <IconButton
-        aria-label={`Actions for ${label}`}
+        aria-label={i18n.t('storyMap.media_actions_for', { label: label })}
         onClick={event => {
           event.stopPropagation();
           setAnchorElement(event.currentTarget);
         }}
         size="small"
         sx={{
-          bgcolor: 'rgba(33, 33, 33, 0.88)',
-          color: 'white',
+          ...STORY_MAP_OVERLAY_CONTROL_SX,
           height: 32,
           width: 32,
-          '&:hover': { bgcolor: 'rgba(33, 33, 33, 0.96)' },
         }}
       >
         <MoreVertIcon fontSize="small" />
@@ -1050,7 +1043,7 @@ const MediaActionsMenu = ({
               component="span"
               sx={{ fontSize: 14, lineHeight: '20px' }}
             >
-              Crop
+              {i18n.t('storyMap.media_crop')}
             </Typography>
           </MenuItem>
         )}
@@ -1066,7 +1059,7 @@ const MediaActionsMenu = ({
             component="span"
             sx={{ fontSize: 14, lineHeight: '20px' }}
           >
-            Move earlier
+            {i18n.t('storyMap.media_move_earlier')}
           </Typography>
         </MenuItem>
         <MenuItem
@@ -1081,11 +1074,11 @@ const MediaActionsMenu = ({
             component="span"
             sx={{ fontSize: 14, lineHeight: '20px' }}
           >
-            Move later
+            {i18n.t('storyMap.media_move_later')}
           </Typography>
         </MenuItem>
         <ConfirmButton
-          ariaLabel="Delete"
+          ariaLabel={i18n.t('storyMap.media_delete')}
           buttonProps={{
             role: 'menuitem',
             sx: {
@@ -1111,7 +1104,7 @@ const MediaActionsMenu = ({
             component="span"
             sx={{ fontSize: 14, lineHeight: '20px' }}
           >
-            Delete
+            {i18n.t('storyMap.media_delete')}
           </Typography>
         </ConfirmButton>
       </Menu>
@@ -1128,21 +1121,36 @@ const MediaActionsToolbar = ({
   onDelete,
   onMoveEarlier,
   onMoveLater,
+  onUpdate,
 }) => {
   const { t } = useTranslation();
   const actionButtonSx = {
     color: 'white',
     height: 36,
     width: 36,
+    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' },
     '&.Mui-disabled': { color: 'rgba(255, 255, 255, 0.45)' },
   };
 
   return (
     <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+      {onUpdate && (
+        <Button
+          onClick={onUpdate}
+          size="small"
+          sx={{ ...actionButtonSx, width: 'auto', px: 1, whiteSpace: 'nowrap' }}
+          variant="text"
+        >
+          {t('storyMap.form_media_update_label')}
+        </Button>
+      )}
       {onCrop && (
-        <Tooltip placement="top" title={`Crop ${label}`}>
+        <Tooltip
+          placement="top"
+          title={i18n.t('storyMap.media_crop_label', { label: label })}
+        >
           <IconButton
-            aria-label={`Crop ${label}`}
+            aria-label={i18n.t('storyMap.media_crop_label', { label: label })}
             onClick={onCrop}
             size="small"
             sx={actionButtonSx}
@@ -1151,41 +1159,49 @@ const MediaActionsToolbar = ({
           </IconButton>
         </Tooltip>
       )}
-      <Tooltip placement="top" title="Move earlier">
-        <span>
-          <IconButton
-            aria-label={`Move ${label} earlier`}
-            disabled={!canMoveEarlier}
-            onClick={onMoveEarlier}
-            size="small"
-            sx={actionButtonSx}
-          >
-            <ArrowUpwardIcon fontSize="small" />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip placement="top" title="Move later">
-        <span>
-          <IconButton
-            aria-label={`Move ${label} later`}
-            disabled={!canMoveLater}
-            onClick={onMoveLater}
-            size="small"
-            sx={actionButtonSx}
-          >
-            <ArrowDownwardIcon fontSize="small" />
-          </IconButton>
-        </span>
-      </Tooltip>
+      {onMoveEarlier && (
+        <Tooltip placement="top" title={i18n.t('storyMap.media_move_earlier')}>
+          <span>
+            <IconButton
+              aria-label={i18n.t('storyMap.media_move_earlier_label', {
+                label: label,
+              })}
+              disabled={!canMoveEarlier}
+              onClick={onMoveEarlier}
+              size="small"
+              sx={actionButtonSx}
+            >
+              <ArrowUpwardIcon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
+      )}
+      {onMoveLater && (
+        <Tooltip placement="top" title={i18n.t('storyMap.media_move_later')}>
+          <span>
+            <IconButton
+              aria-label={i18n.t('storyMap.media_move_later_label', {
+                label: label,
+              })}
+              disabled={!canMoveLater}
+              onClick={onMoveLater}
+              size="small"
+              sx={actionButtonSx}
+            >
+              <ArrowDownwardIcon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
+      )}
       <ConfirmButton
-        ariaLabel={`Remove ${label}`}
+        ariaLabel={i18n.t('storyMap.media_remove_label', { label: label })}
         buttonProps={{ sx: { ...actionButtonSx, minWidth: 36, p: 0 } }}
         confirmButton={t(deleteConfirmProps.button)}
         confirmButtonDestructive
         confirmMessage={t(deleteConfirmProps.message)}
         confirmTitle={t(deleteConfirmProps.title)}
         onConfirm={onDelete}
-        tooltip={`Remove ${label}`}
+        tooltip={i18n.t('storyMap.media_remove_label', { label: label })}
         tooltipPlacement="top"
         variant="text"
       >
@@ -1196,7 +1212,6 @@ const MediaActionsToolbar = ({
 };
 
 const EditableMediaList = ({
-  label,
   onChange,
   onPresentationChange,
   presentation,
@@ -1204,10 +1219,13 @@ const EditableMediaList = ({
 }) => {
   const { t } = useTranslation();
   const { config } = useStoryMapConfigDataContext();
+  const { getMediaFile } = useStoryMapMediaContext();
   const [cropIndex, setCropIndex] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [replaceIndex, setReplaceIndex] = useState(null);
   const mediaItems = value || [];
+  const hasMultipleItems = mediaItems.length > 1;
   const carouselThemeStyles = useMemo(
     () => getStoryMapThemeCssVariables(config),
     [config]
@@ -1216,9 +1234,10 @@ const EditableMediaList = ({
     () => getResolvedStoryMapTheme(config),
     [config]
   );
-  const selectedMedia = mediaItems[selectedIndex];
   const Presentation =
-    presentation === 'gallery' ? GalleryPresentation : CarouselPresentation;
+    hasMultipleItems && presentation === 'gallery'
+      ? GalleryPresentation
+      : CarouselPresentation;
 
   const updateImage = (crop, altText) => {
     onChange(
@@ -1257,97 +1276,93 @@ const EditableMediaList = ({
   };
 
   return (
-    <Stack spacing={2}>
+    <Stack
+      spacing={2}
+      sx={{ ...carouselThemeStyles, color: 'var(--story-theme-text)' }}
+    >
       {open && (
         <AddMediaDialog
           open={open}
-          onClose={() => setOpen(false)}
+          onClose={() => {
+            setOpen(false);
+            setReplaceIndex(null);
+          }}
           onAdd={media => {
             const nextMedia = {
               ...media,
-              id: media.contentId || media.url,
+              id: mediaItems[replaceIndex]?.id || media.contentId || uuidv4(),
             };
-            onChange([...mediaItems, nextMedia]);
+            onChange(
+              replaceIndex === null
+                ? [...mediaItems, nextMedia]
+                : mediaItems.map((item, index) =>
+                    index === replaceIndex ? nextMedia : item
+                  )
+            );
             setOpen(false);
+            setReplaceIndex(null);
           }}
         />
       )}
       {!mediaItems.length && (
-        <Stack
-          spacing={2}
-          component={Paper}
-          sx={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: 'blue.mid',
-            minHeight: 150,
-            p: 2,
-          }}
-        >
-          <Typography variant="caption" sx={{ textAlign: 'center' }}>
-            Upload or link images, audio recordings or video files.
-          </Typography>
-          <Button variant="outlined" onClick={() => setOpen(true)}>
-            Add media
-          </Button>
-        </Stack>
+        <EmptyMediaPlaceholder onUpload={() => setOpen(true)} />
       )}
-      {mediaItems.length === 1 && (
-        <Stack spacing={1}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <AddMediaButton onClick={() => setOpen(true)} />
-          </Box>
-          <EditableSingleMedia
-            label={label}
-            onChange={media => onChange(media ? [media] : [])}
-            value={mediaItems[0]}
-          />
-        </Stack>
-      )}
-      {mediaItems.length > 1 && (
+      {mediaItems.length > 0 && (
         <Stack spacing={1}>
           <Presentation
             currentIndex={selectedIndex}
-            footerAction={
+            headerAction={
               <AddMediaButton compact onClick={() => setOpen(true)} />
             }
-            items={mediaItems}
-            navigationColor="#212121"
+            items={mediaItems.map(media => ({
+              ...media,
+              url: media.url || getMediaFile(media.contentId),
+            }))}
             onCurrentIndexChange={setSelectedIndex}
             onItemsReorder={
-              presentation === 'gallery' ? reorderMediaAtIndex : undefined
+              hasMultipleItems && presentation === 'gallery'
+                ? reorderMediaAtIndex
+                : undefined
             }
             presentationAction={
-              <ToggleButtonGroup
-                aria-label="Display media as"
-                exclusive
-                onChange={(_event, nextPresentation) => {
-                  if (nextPresentation) {
-                    onPresentationChange(nextPresentation);
-                  }
-                }}
-                size="small"
-                value={presentation}
-              >
-                <Tooltip placement="top" title="Display as carousel">
-                  <ToggleButton
-                    aria-label="Display as carousel"
-                    sx={{ height: 32, minWidth: 36, p: 0.5, width: 36 }}
-                    value="carousel"
+              hasMultipleItems && (
+                <ToggleButtonGroup
+                  aria-label={i18n.t('storyMap.media_display_as')}
+                  exclusive
+                  onChange={(_event, nextPresentation) => {
+                    if (nextPresentation) {
+                      onPresentationChange(nextPresentation);
+                    }
+                  }}
+                  size="small"
+                  value={presentation}
+                >
+                  <Tooltip
+                    placement="top"
+                    title={i18n.t('storyMap.media_display_carousel')}
                   >
-                    <ViewCarouselOutlinedIcon fontSize="small" />
-                  </ToggleButton>
-                </Tooltip>
-                <Tooltip placement="top" title="Display as gallery">
-                  <ToggleButton
-                    aria-label="Display as gallery"
-                    sx={{ height: 32, minWidth: 36, p: 0.5, width: 36 }}
-                    value="gallery"
+                    <ToggleButton
+                      aria-label={i18n.t('storyMap.media_display_carousel')}
+                      sx={MEDIA_PRESENTATION_BUTTON_SX}
+                      value="carousel"
+                    >
+                      <ViewCarouselOutlinedIcon fontSize="small" />
+                    </ToggleButton>
+                  </Tooltip>
+                  <Tooltip
+                    placement="top"
+                    title={i18n.t('storyMap.media_display_gallery')}
                   >
-                    <GridViewOutlinedIcon fontSize="small" />
-                  </ToggleButton>
-                </Tooltip>
-              </ToggleButtonGroup>
+                    <ToggleButton
+                      aria-label={i18n.t('storyMap.media_display_gallery')}
+                      sx={MEDIA_PRESENTATION_BUTTON_SX}
+                      value="gallery"
+                    >
+                      <GridViewOutlinedIcon fontSize="small" />
+                    </ToggleButton>
+                  </Tooltip>
+                </ToggleButtonGroup>
+              )
             }
             sx={carouselThemeStyles}
             theme={carouselTheme}
@@ -1362,8 +1377,18 @@ const EditableMediaList = ({
                   ? () => setCropIndex(index)
                   : null,
                 onDelete: () => removeMediaAtIndex(index),
-                onMoveEarlier: () => moveMediaAtIndex(index, -1),
-                onMoveLater: () => moveMediaAtIndex(index, 1),
+                onMoveEarlier: hasMultipleItems
+                  ? () => moveMediaAtIndex(index, -1)
+                  : null,
+                onMoveLater: hasMultipleItems
+                  ? () => moveMediaAtIndex(index, 1)
+                  : null,
+                onUpdate: hasMultipleItems
+                  ? null
+                  : () => {
+                      setReplaceIndex(index);
+                      setOpen(true);
+                    },
               };
 
               if (actionPresentation === 'toolbar') {
@@ -1396,7 +1421,6 @@ const EditableMediaList = ({
 };
 
 const EditableSingleMedia = memo(({ label, value, onChange }) => {
-  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   const onAdd = useCallback(
@@ -1444,26 +1468,7 @@ const EditableSingleMedia = memo(({ label, value, onChange }) => {
     <>
       {open && <AddMediaDialog open={open} onClose={onClose} onAdd={onAdd} />}
       {renderMediaComponent}
-      {!value && (
-        <Stack
-          spacing={2}
-          component={Paper}
-          sx={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: 'blue.mid',
-            minHeight: 150,
-            p: 2,
-          }}
-        >
-          <Typography variant="caption" sx={{ textAlign: 'center' }}>
-            {t('storyMap.form_media_placeholder')}
-          </Typography>
-          <Button variant="outlined" onClick={onOpen}>
-            {t('storyMap.form_media_upload')}
-          </Button>
-        </Stack>
-      )}
+      {!value && <EmptyMediaPlaceholder onUpload={onOpen} />}
     </>
   );
 });
