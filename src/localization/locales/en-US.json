@@ -923,6 +923,7 @@
         "media_edit_alt": "Edit alt text",
         "media_add_alt": "Add alt text",
         "media_add": "Add media",
+        "media_limit_reached": "Maximum of 6 media items per chapter.",
         "media_crop": "Crop",
         "media_move_earlier": "Move earlier",
         "media_move_later": "Move later",

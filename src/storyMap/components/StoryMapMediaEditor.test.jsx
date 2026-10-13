@@ -260,6 +260,92 @@ test.each([1, 2])(
   }
 );
 
+test.each([
+  {
+    language: 'en-US',
+    explanation: 'Maximum of 6 media items per chapter.',
+    position: 'Media 1 of 6',
+  },
+  {
+    language: 'es-ES',
+    explanation: 'Máximo de 6 elementos multimedia por capítulo.',
+    position: 'Elemento multimedia 1 de 6',
+  },
+])(
+  'StoryMapMediaEditor: the add action is disabled with a localized explanation at six items in $language',
+  async ({ language, explanation, position }) => {
+    const previousLanguage = i18n.language;
+    try {
+      await act(() => i18n.changeLanguage(language));
+      await render(<StoryMapMediaEditor />);
+
+      const addMediaButton = screen.getByRole('button', {
+        name: /Add media|Agregar multimedia/,
+      });
+      expect(addMediaButton).toBeDisabled();
+      expect(addMediaButton).toHaveAttribute('aria-description', explanation);
+      fireEvent.mouseOver(addMediaButton);
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(explanation);
+      fireEvent.click(addMediaButton);
+      expect(
+        screen.queryByRole('dialog', { name: /Add media|Agregar multimedia/ })
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(position)).toBeInTheDocument();
+    } finally {
+      await act(() => i18n.changeLanguage(previousLanguage));
+    }
+  }
+);
+
+test('StoryMapMediaEditor: adding media to a five-item chapter reaches six and preserves all media', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 5),
+      }}
+    />
+  );
+
+  const addMediaButton = screen.getByRole('button', { name: 'Add media' });
+  expect(addMediaButton).toBeEnabled();
+  fireEvent.click(addMediaButton);
+  const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  const input = within(dialog).getByRole('textbox', {
+    name: 'Link to a YouTube or Vimeo video',
+  });
+  fireEvent.change(input, {
+    target: { value: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' },
+  });
+  fireEvent.blur(input);
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Add media' }));
+
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeDisabled();
+});
+
+test('StoryMapMediaEditor: existing chapters above six retain their media and cannot add more', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: [
+          ...INITIAL_CHAPTER.mediaItems,
+          { ...INITIAL_CHAPTER.mediaItems[0], id: 'legacy-seventh-item' },
+        ],
+      }}
+    />
+  );
+
+  expect(screen.getByText('Media 1 of 7')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: 'Next media' }));
+  expect(screen.getByText('Media 2 of 7')).toBeInTheDocument();
+});
+
 test.each(['theme-1', 'theme-7'])(
   'StoryMapMediaEditor: empty media retains the original upload placeholder in %s',
   async themeId => {
