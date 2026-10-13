@@ -71,6 +71,7 @@ import {
   calculateMediaFitScale as calculateFitScale,
   MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
   getMediaSource,
+  MAX_CHAPTER_MEDIA_ITEMS,
   getMediaLabel as mediaLabel,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
 import {
@@ -298,7 +299,8 @@ const AddSectionTitle = memo(({ checked, value, onChange, label, labelId }) => (
   />
 ));
 
-export const AddMediaDialog = memo(({ open, onClose, onAdd }) => {
+export const AddMediaDialog = memo(props => {
+  const { canAdd = true, open, onClose, onAdd } = props;
   const { t } = useTranslation();
   const { addMediaFile } = useStoryMapMediaContext();
 
@@ -504,8 +506,10 @@ export const AddMediaDialog = memo(({ open, onClose, onAdd }) => {
               'storyMap.form_media_add_dialog_link_media_placeholder'
             )}
           />
-          {embeddedError && (
-            <FormHelperText error>{embeddedError}</FormHelperText>
+          {(embeddedError || !canAdd) && (
+            <FormHelperText error>
+              {embeddedError || t('storyMap.media_limit_reached')}
+            </FormHelperText>
           )}
         </Paper>
       </DialogContent>
@@ -514,7 +518,7 @@ export const AddMediaDialog = memo(({ open, onClose, onAdd }) => {
         <Button
           variant="contained"
           onClick={onAddWrapper}
-          disabled={addDisabled}
+          disabled={addDisabled || !canAdd}
         >
           {t('storyMap.form_media_add_dialog_add')}
         </Button>
@@ -951,41 +955,50 @@ const EmptyMediaPlaceholder = ({ onUpload }) => {
   );
 };
 
-const AddMediaButton = ({ compact = false, onClick }) => (
-  <Tooltip title={i18n.t('storyMap.media_add')}>
-    <Button
-      aria-label={i18n.t('storyMap.media_add')}
-      onClick={onClick}
-      size="small"
-      sx={{
-        minWidth: compact ? 32 : { xs: 32, sm: 64 },
-        px: compact ? 0.5 : { xs: 0.5, sm: 1.25 },
-        whiteSpace: 'nowrap',
-        ...(compact && {
-          '@container (min-width: 300px)': {
-            minWidth: 64,
-            px: 1.25,
-          },
-        }),
-      }}
-      variant="contained"
-    >
-      <AddIcon fontSize="small" />
-      <Box
-        component="span"
-        sx={{
-          display: compact ? 'none' : { xs: 'none', sm: 'inline' },
-          ml: 1,
-          ...(compact && {
-            '@container (min-width: 300px)': { display: 'inline' },
-          }),
-        }}
-      >
-        {i18n.t('storyMap.media_add')}
-      </Box>
-    </Button>
-  </Tooltip>
-);
+const AddMediaButton = ({ compact = false, disabled = false, onClick }) => {
+  const limitMessage = i18n.t('storyMap.media_limit_reached');
+  const addLabel = i18n.t('storyMap.media_add');
+
+  return (
+    <Tooltip title={disabled ? limitMessage : addLabel}>
+      <span>
+        <Button
+          aria-description={disabled ? limitMessage : undefined}
+          aria-label={addLabel}
+          disabled={disabled}
+          onClick={onClick}
+          size="small"
+          sx={{
+            minWidth: compact ? 32 : { xs: 32, sm: 64 },
+            px: compact ? 0.5 : { xs: 0.5, sm: 1.25 },
+            whiteSpace: 'nowrap',
+            ...(compact && {
+              '@container (min-width: 300px)': {
+                minWidth: 64,
+                px: 1.25,
+              },
+            }),
+          }}
+          variant="contained"
+        >
+          <AddIcon fontSize="small" />
+          <Box
+            component="span"
+            sx={{
+              display: compact ? 'none' : { xs: 'none', sm: 'inline' },
+              ml: 1,
+              ...(compact && {
+                '@container (min-width: 300px)': { display: 'inline' },
+              }),
+            }}
+          >
+            {addLabel}
+          </Box>
+        </Button>
+      </span>
+    </Tooltip>
+  );
+};
 
 const MediaActionsMenu = ({
   canMoveEarlier,
@@ -1225,6 +1238,8 @@ const EditableMediaList = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [replaceIndex, setReplaceIndex] = useState(null);
   const mediaItems = value || [];
+  const canAddMedia =
+    replaceIndex !== null || mediaItems.length < MAX_CHAPTER_MEDIA_ITEMS;
   const hasMultipleItems = mediaItems.length > 1;
   const carouselThemeStyles = useMemo(
     () => getStoryMapThemeCssVariables(config),
@@ -1282,12 +1297,16 @@ const EditableMediaList = ({
     >
       {open && (
         <AddMediaDialog
+          canAdd={canAddMedia}
           open={open}
           onClose={() => {
             setOpen(false);
             setReplaceIndex(null);
           }}
           onAdd={media => {
+            if (!canAddMedia) {
+              return;
+            }
             const nextMedia = {
               ...media,
               id: mediaItems[replaceIndex]?.id || media.contentId || uuidv4(),
@@ -1312,7 +1331,11 @@ const EditableMediaList = ({
           <Presentation
             currentIndex={selectedIndex}
             headerAction={
-              <AddMediaButton compact onClick={() => setOpen(true)} />
+              <AddMediaButton
+                compact
+                disabled={!canAddMedia}
+                onClick={() => setOpen(true)}
+              />
             }
             items={mediaItems.map(media => ({
               ...media,
