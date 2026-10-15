@@ -1,0 +1,24 @@
+name: Monthly SEO Reminder
+
+on:
+  schedule:
+    - cron: "0 13 1 * *"   # 1st of every month, 13:00 UTC (9:00 AM Eastern during daylight time)
+  workflow_dispatch:        # adds a "Run workflow" button for testing
+
+permissions:
+  issues: write
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "Monthly SEO check – $(date +'%B %Y')" \
+            --body "Phase 5 Tracker tasks https://docs.google.com/document/d/1IVOPMzR6uXD6zhsT0NF5EE5m0vso4T_WhG7Jq5ijyNE/edit?usp=sharing" \
+            --assignee CourtneyLee333 \
+            --label "product"
