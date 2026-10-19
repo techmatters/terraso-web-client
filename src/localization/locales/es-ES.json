@@ -918,7 +918,7 @@
         "form_publish_button": "Publicar",
         "form_republish_button": "Publicar cambios",
         "form_publication_options": "Opciones de publicación",
-        "form_unpublish_menu": "Retirar publicación…",
+        "form_unpublish_menu": "Retirar publicación",
         "form_unpublish_button": "Retirar publicación",
         "form_unpublish_confirm_title": "¿Retirar la publicación de \"{{name}}\"?",
         "form_unpublish_confirm_message": "Tu story map volverá al estado de borrador y dejará de estar disponible públicamente mediante su enlace o versiones insertadas. Se conservarán el contenido y los colaboradores. Puedes volver a publicarlo con el mismo enlace.",

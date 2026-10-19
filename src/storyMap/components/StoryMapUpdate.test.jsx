@@ -295,7 +295,12 @@ test.each([false, true])(
     fireEvent.click(
       screen.getByRole('button', { name: 'Publication options' })
     );
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish…' }));
+    expect(screen.getByRole('menuitem', { name: 'Unpublish' })).toHaveStyle({
+      paddingTop: '4px',
+      paddingBottom: '4px',
+      outline: 'none',
+    });
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
     let dialog = screen.getByRole('dialog', {
       name: 'Unpublish "Story Map Title"?',
     });
@@ -311,7 +316,7 @@ test.each([false, true])(
     fireEvent.click(
       screen.getByRole('button', { name: 'Publication options' })
     );
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish…' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
     dialog = screen.getByRole('dialog');
     await act(async () => {
       fireEvent.click(
@@ -354,7 +359,7 @@ test('StoryMapUpdate: failed unpublish keeps the published state and allows retr
   await setup({ id: API_STORY_MAP.createdBy.id });
 
   fireEvent.click(screen.getByRole('button', { name: 'Publication options' }));
-  fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish…' }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
   await act(async () => {
     fireEvent.click(
       within(screen.getByRole('dialog')).getByRole('button', {
@@ -411,7 +416,7 @@ test('StoryMapUpdate: a late draft save cannot restore publication after unpubli
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   fireEvent.click(screen.getByRole('button', { name: 'Publication options' }));
-  fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish…' }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
   await act(async () => {
     fireEvent.click(
       within(screen.getByRole('dialog')).getByRole('button', {

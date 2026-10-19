@@ -76,9 +76,12 @@ const PublicationButton = ({ onPublish, isPublishing }) => {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
-        slotProps={{ list: { 'aria-labelledby': optionsId } }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{ list: { dense: true, 'aria-labelledby': optionsId } }}
       >
         <MenuItem
+          sx={{ '&:focus': { outline: 'none' } }}
           onClick={() => {
             setAnchorEl(null);
             setConfirming(true);
