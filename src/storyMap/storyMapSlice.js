@@ -415,11 +415,18 @@ const storyMapSlice = createSlice({
         saving: true,
       },
     }));
-    builder.addCase(addMapLayer.fulfilled, state => ({
+    builder.addCase(addMapLayer.fulfilled, (state, action) => ({
       ...state,
       dataLayers: {
         ...state.dataLayers,
         saving: false,
+        // A created layer is immediately part of the layer tree source (the
+        // fetched list), so it survives pruning of the config payload when it
+        // is removed from a chapter — it can be re-toggled at any time.
+        list: [
+          ...state.dataLayers.list.filter(({ id }) => id !== action.payload.id),
+          action.payload,
+        ],
       },
     }));
     builder.addCase(addMapLayer.rejected, state => ({

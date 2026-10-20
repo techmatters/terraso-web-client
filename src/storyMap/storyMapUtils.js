@@ -22,8 +22,13 @@ import {
   extractAccountMembership,
   extractMembershipInfo,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
+import logger from 'terraso-client-shared/monitoring/logger';
 
-import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
+import {
+  isChapterOnly,
+  isMapOnly,
+  STORY_MAP_TITLE_ID,
+} from 'terraso-web-client/storyMap/storyMapConstants';
 
 import { REACT_APP_BASE_URL } from 'terraso-web-client/config';
 
@@ -33,6 +38,13 @@ export const chapterHasVisualMedia = chapter => {
 };
 
 export const isChapterEmpty = chapter => {
+  // A "just" render mode IS the chapter's content: a bare-map beat (just
+  // `location` + layer events — the primary `justMap` use case) or an empty
+  // `justChapter` beat keeps its scroll span, its turn as the current step
+  // and its camera/layer transition instead of being dropped before render.
+  if (isMapOnly(chapter.alignment) || isChapterOnly(chapter.alignment)) {
+    return false;
+  }
   const { title, description, media } = chapter;
   return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(media);
 };
@@ -91,11 +103,44 @@ export const extractStoryMap = storyMap => ({
  * @returns {ChapterConfig | Transition | undefined}
  */
 export const getTransition = ({ config, id }) => {
-  const isTitle = id === STORY_MAP_TITLE_ID;
-  if (isTitle) {
+  if (id === STORY_MAP_TITLE_ID) {
     return config.titleTransition;
   }
-  const chapterIndex = config.chapters.findIndex(chapter => chapter.id === id);
-  const chapter = config.chapters[chapterIndex];
-  return chapter;
+  return config.chapters.find(chapter => chapter.id === id);
+};
+
+/**
+ * Immutably updates the transition targeted by `id` — a chapter id or
+ * STORY_MAP_TITLE_ID for the title transition. `update` receives the current
+ * transition (an empty object when the title transition does not exist yet)
+ * and returns the next one.
+ *
+ * @param {{ config: StoryMapConfig, id: string, update: (transition: ChapterConfig | Transition) => ChapterConfig | Transition }} options
+ * @returns {StoryMapConfig}
+ */
+export const updateTransition = ({ config, id, update }) => {
+  const isTitle = id === STORY_MAP_TITLE_ID;
+  if (isTitle) {
+    return {
+      ...config,
+      titleTransition: update(config.titleTransition ?? {}),
+    };
+  }
+  if (!config.chapters.some(chapter => chapter.id === id)) {
+    // SILENT DROPS ARE FORBIDDEN: an unmatched id means the edit target
+    // vanished (e.g. its chapter was deleted while the map was being
+    // dragged). Callers must handle that explicitly (the camera recorder
+    // falls back to the title step); if one slips through, the write is
+    // dropped — loudly.
+    logger.warn(
+      `updateTransition: no step with id ${id} in this story map config`
+    );
+    return config;
+  }
+  return {
+    ...config,
+    chapters: config.chapters.map(chapter =>
+      chapter.id === id ? update(chapter) : chapter
+    ),
+  };
 };

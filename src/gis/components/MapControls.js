@@ -28,14 +28,18 @@ const MapControls = props => {
     if (!map) {
       return;
     }
-    map.addControl(
-      new mapboxgl.NavigationControl({
-        showCompass,
-        showZoom,
-        visualizePitch,
-      }),
-      'top-left'
-    );
+    const navigationControl = new mapboxgl.NavigationControl({
+      showCompass,
+      showZoom,
+      visualizePitch,
+    });
+    map.addControl(navigationControl, 'top-left');
+
+    return () => {
+      // Shared maps (e.g. the story map editor map) outlive this control's
+      // mount: remove it so re-mounting does not stack up controls.
+      map.removeControl(navigationControl);
+    };
   }, [map, showCompass, showZoom, visualizePitch]);
 
   return null;
