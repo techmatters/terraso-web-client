@@ -30,6 +30,8 @@ import { changeCombobox } from 'terraso-web-client/tests/uiUtils';
 
 import i18n from 'terraso-web-client/localization/i18n';
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
+import PublicationButton from 'terraso-web-client/storyMap/components/StoryMapForm/PublicationButton';
+import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapUpdate from 'terraso-web-client/storyMap/components/StoryMapUpdate';
 import { MEMBERSHIP_ROLE_EDITOR } from 'terraso-web-client/storyMap/storyMapConstants';
 
@@ -147,6 +149,32 @@ beforeEach(() => {
   });
 });
 
+test.each([API_STORY_MAP.id, 'another-map'])(
+  'PublicationButton: a remounted control uses processing status for its own map (%s)',
+  async pendingMapId => {
+    await render(
+      <StoryMapConfigContextProvider
+        storyMap={PUBLISHED_API_STORY_MAP}
+        baseConfig={CONFIG}
+      >
+        <PublicationButton onPublish={jest.fn()} isPublishing={false} />
+      </StoryMapConfigContextProvider>,
+      {
+        storyMap: {
+          unpublish: { [pendingMapId]: { unpublishing: true } },
+        },
+      }
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Publish Changes' })
+    ).toHaveProperty('disabled', pendingMapId === API_STORY_MAP.id);
+    expect(
+      screen.getByRole('button', { name: 'Publication options' })
+    ).toHaveProperty('disabled', pendingMapId === API_STORY_MAP.id);
+  }
+);
+
 const setup = async user => {
   await render(<StoryMapUpdate />, {
     account: {
@@ -245,6 +273,170 @@ test('StoryMapUpdate: Republish tracks an update event', async () => {
       map: PUBLISHED_API_STORY_MAP.id,
     },
   });
+});
+
+test.each([false, true])(
+  'StoryMapUpdate: unpublish returns to draft without saving configuration (preview: %s)',
+  async preview => {
+    terrasoApi.requestGraphQL.mockResolvedValue({
+      storyMaps: { edges: [{ node: PUBLISHED_API_STORY_MAP }] },
+    });
+    terrasoApi.request.mockResolvedValue({
+      id: API_STORY_MAP.id,
+      is_published: false,
+      published_at: null,
+      configuration: { ...CONFIG, title: 'Older server draft' },
+    });
+    await setup({ id: API_STORY_MAP.createdBy.id });
+    if (preview) {
+      fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }));
+    }
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Publication options' })
+    );
+    expect(screen.getByRole('menuitem', { name: 'Unpublish' })).toHaveStyle({
+      paddingTop: '4px',
+      paddingBottom: '4px',
+      outline: 'none',
+    });
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
+    let dialog = screen.getByRole('dialog', {
+      name: 'Unpublish "Story Map Title"?',
+    });
+    expect(terrasoApi.request).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    );
+    expect(
+      screen.getByRole('button', { name: 'Publish Changes' })
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Publication options' })
+    );
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
+    dialog = screen.getByRole('dialog');
+    await act(async () => {
+      fireEvent.click(
+        within(dialog).getByRole('button', { name: 'Unpublish' })
+      );
+    });
+
+    expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+    const { path, body } = terrasoApi.request.mock.calls[0][0];
+    expect(path).toBe('/story-map/update/');
+    expect([...body.entries()]).toEqual([
+      ['id', API_STORY_MAP.id],
+      ['unpublish', 'true'],
+    ]);
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    );
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeEnabled();
+    expect(
+      screen.queryByRole('button', { name: 'Publication options' })
+    ).not.toBeInTheDocument();
+    expect(
+      within(
+        screen.getByRole('region', { name: 'Story editor Header' })
+      ).getByRole('heading', { name: new RegExp(CONFIG.title) })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Older server draft')).not.toBeInTheDocument();
+    if (preview) {
+      fireEvent.click(screen.getByRole('button', { name: 'Exit Preview' }));
+    }
+    expect(screen.getByText('Draft')).toBeInTheDocument();
+  }
+);
+
+test('StoryMapUpdate: failed unpublish keeps the published state and allows retry', async () => {
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: { edges: [{ node: PUBLISHED_API_STORY_MAP }] },
+  });
+  terrasoApi.request.mockRejectedValue('Unable to unpublish');
+  await setup({ id: API_STORY_MAP.createdBy.id });
+
+  fireEvent.click(screen.getByRole('button', { name: 'Publication options' }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
+  await act(async () => {
+    fireEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', {
+        name: 'Unpublish',
+      })
+    );
+  });
+
+  expect(
+    screen.getByRole('button', { name: 'Publish Changes', hidden: true })
+  ).toBeEnabled();
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(
+    within(screen.getByRole('dialog')).getByRole('button', {
+      name: 'Unpublish',
+    })
+  ).toBeEnabled();
+  fireEvent.click(
+    within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' })
+  );
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  expect(
+    screen.getByText('Could not unpublish your story map. Please try again.')
+  ).toBeInTheDocument();
+});
+
+test('StoryMapUpdate: a late draft save cannot restore publication after unpublish', async () => {
+  jest.useFakeTimers();
+  const draftSave = createDeferred();
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: { edges: [{ node: PUBLISHED_API_STORY_MAP }] },
+  });
+  terrasoApi.request
+    .mockImplementationOnce(() => draftSave.promise)
+    .mockResolvedValueOnce({
+      id: API_STORY_MAP.id,
+      is_published: false,
+      published_at: null,
+    });
+  await setup({ id: API_STORY_MAP.createdBy.id });
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+  fireEvent.click(
+    within(titleSection).getByRole('heading', { name: 'Story Map Title' })
+  );
+  const titleInput = within(titleSection).getByRole('textbox', {
+    name: 'Story map title (Required)',
+  });
+  fireEvent.change(titleInput, { target: { value: 'Latest draft' } });
+  await act(async () => jest.advanceTimersByTime(1500));
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Publication options' }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Unpublish' }));
+  await act(async () => {
+    fireEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', {
+        name: 'Unpublish',
+      })
+    );
+  });
+  await act(async () => jest.advanceTimersByTime(500));
+  await act(async () => {
+    draftSave.resolve({
+      ...PUBLISHED_API_STORY_MAP,
+      configuration: { ...CONFIG, title: 'Latest draft' },
+    });
+  });
+
+  expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
+  expect(screen.getByText('Draft')).toBeInTheDocument();
+  expect(titleInput).toHaveValue('Latest draft');
+  await act(async () => jest.runOnlyPendingTimers());
+  jest.useRealTimers();
 });
 
 test('StoryMapUpdate: stale draft save response does not overwrite newer local edits', async () => {

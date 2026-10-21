@@ -18,6 +18,7 @@
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Grid, Typography } from '@mui/material';
 
+import PublicationButton from 'terraso-web-client/storyMap/components/StoryMapForm/PublicationButton';
 import {
   useStoryMapConfigDataContext,
   useStoryMapPreviewContext,
@@ -26,11 +27,9 @@ import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm
 
 const TopBarPreview = props => {
   const { t } = useTranslation();
-  const { storyMap, config } = useStoryMapConfigDataContext();
+  const { config } = useStoryMapConfigDataContext();
   const { setPreview } = useStoryMapPreviewContext();
   const { onPublish, isPublishing } = props;
-
-  const isPublished = storyMap?.isPublished;
   const hasTitle = Boolean(config.title);
 
   return (
@@ -66,17 +65,7 @@ const TopBarPreview = props => {
         >
           {t('storyMap.form_preview_close')}
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onPublish}
-          disabled={isPublishing}
-          sx={{ ml: 2 }}
-        >
-          {isPublished
-            ? t('storyMap.form_republish_button')
-            : t('storyMap.form_publish_button')}
-        </Button>
+        <PublicationButton onPublish={onPublish} isPublishing={isPublishing} />
       </Grid>
     </TopBarContainer>
   );
