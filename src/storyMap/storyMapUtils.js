@@ -28,14 +28,35 @@ import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstant
 import { REACT_APP_BASE_URL } from 'terraso-web-client/config';
 
 export const chapterHasVisualMedia = chapter => {
-  const { media } = chapter;
-  return media && _.includes(media.type, ['image', 'embedded']);
+  const { mediaItems } = normalizeChapterMedia(chapter);
+  return mediaItems.some(media =>
+    ['image', 'video', 'embedded'].some(type => media.type.startsWith(type))
+  );
 };
 
 export const isChapterEmpty = chapter => {
-  const { title, description, media } = chapter;
-  return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(media);
+  const { title, description, mediaItems } = normalizeChapterMedia(chapter);
+  return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(mediaItems);
 };
+
+export const normalizeChapterMedia = chapter => {
+  const { media, ...rest } = chapter;
+  return {
+    ...rest,
+    mediaItems: chapter.mediaItems ?? (media ? [media] : []),
+    mediaPresentation: chapter.mediaPresentation ?? 'carousel',
+  };
+};
+
+export const normalizeStoryMapConfig = config =>
+  config
+    ? {
+        ...config,
+        ...(config.chapters && {
+          chapters: config.chapters.map(normalizeChapterMedia),
+        }),
+      }
+    : config;
 
 export const generateStoryMapUrl = storyMap => {
   const { storyMapId, slug } = storyMap;
@@ -74,7 +95,9 @@ export const parseStoryMapConfiguration = configuration => {
 };
 
 export const getStoryMapConfig = storyMap =>
-  storyMap?.config || parseStoryMapConfiguration(storyMap?.configuration);
+  normalizeStoryMapConfig(
+    storyMap?.config || parseStoryMapConfiguration(storyMap?.configuration)
+  );
 
 export const compareStoryMapsByUpdatedAt = (left, right) =>
   new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
