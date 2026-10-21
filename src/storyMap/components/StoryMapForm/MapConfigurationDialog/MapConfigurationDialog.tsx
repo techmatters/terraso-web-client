@@ -15,20 +15,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { StoryMapNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useSelector } from 'terraso-web-client/terrasoApi/store';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
+  Grid,
   IconButton,
   Paper,
+  Portal,
   Stack,
   Typography,
 } from '@mui/material';
@@ -38,20 +45,64 @@ import {
   useCollaborationContext,
 } from 'terraso-web-client/collaboration/collaborationContext';
 import HelperText from 'terraso-web-client/common/components/HelperText';
-import Map, { useMap } from 'terraso-web-client/gis/components/Map';
+import { useMap } from 'terraso-web-client/gis/components/Map';
 import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
 import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
-import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerDialog';
-import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import {
-  MapBounds,
+  MapConfigLayerStack,
+  usePublishMapConfigLayerStack,
+} from 'terraso-web-client/storyMap/components/mapConfigLayerStack';
+import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
+import {
+  isMapLayerFileAccepted,
+  mapLayerFileRejectionMessage,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+import {
+  MapLayersPanel,
+  SIDEBAR_WIDTH,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
+import { useLayerDraft } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/useLayerDraft';
+import {
+  useStoryMapConfigActionsContext,
+  useStoryMapConfigDataContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarContainer';
+import {
+  addMapLayerId,
+  moveMapLayerId,
+  removeMapLayerId,
+  resolveMapLayers,
+  toMapLayers,
+} from 'terraso-web-client/storyMap/mapLayerUtils';
+import {
+  cancelPendingRotateAnimation,
+  locationFitViewport,
+  recordContentRegionBounds,
+} from 'terraso-web-client/storyMap/mapUtils';
+import {
+  ChapterAlignment,
+  MapConfigurationConfirm,
   MapLayerConfig,
+  MapLayerDraftRow,
+  MapLayerTransition,
   MapPosition,
   StoryMapConfig,
+  Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
+
+export type { MapConfigurationConfirm };
+
+// Keyboard-reachable elements, for the overlay's focus trap.
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
 
 const BearingIcon = () => {
   const { t } = useTranslation();
@@ -129,81 +180,34 @@ const SetMapHelperText = () => {
   );
 };
 
-type MapLayerProps = {
-  title: string;
-  onConfirm: (mapLayerConfig: MapLayerConfig | null) => void;
-  mapLayerConfig: MapLayerConfig | null;
-};
-const MapLayer = ({ title, onConfirm, mapLayerConfig }: MapLayerProps) => {
-  const { t } = useTranslation();
-  const { owner } = useCollaborationContext();
-  const [open, setOpen] = useState(false);
-
-  const onConfirmWrapper = useCallback(
-    (mapLayerConfig: MapLayerConfig) => {
-      onConfirm(mapLayerConfig);
-      setOpen(false);
-    },
-    [onConfirm]
-  );
-
-  const onRemove = useCallback(() => {
-    onConfirm(null);
-  }, [onConfirm]);
-
-  return (
-    <>
-      <Paper
-        variant="outlined"
-        sx={theme => ({
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
-          backgroundColor: 'gray.lite2',
-          p: theme.spacing(1, 2, 1, 2),
-          minHeight: '40px',
-          display: 'flex',
-          alignItems: 'center',
-        })}
-      >
-        {mapLayerConfig ? (
-          <>
-            <Trans
-              i18nKey="storyMap.form_location_add_data_layer_current"
-              values={{ title: mapLayerConfig.title }}
-            >
-              prefix
-              <Typography sx={{ fontWeight: 700, ml: 1 }}>title</Typography>
-            </Trans>
-            <IconButton onClick={onRemove}>
-              <DeleteIcon sx={{ color: 'blue.dark3' }} />
-            </IconButton>
-          </>
-        ) : (
-          <Button
-            variant="outlined"
-            size="small"
-            sx={{ color: 'blue.dark2', borderColor: 'blue.dark2' }}
-            onClick={() => setOpen(true)}
-            disabled={!owner}
-          >
-            {t('storyMap.form_location_add_data_layer_button')}
-          </Button>
-        )}
-      </Paper>
-      <MapLayerDialog
-        title={title}
-        open={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onConfirmWrapper}
-      />
-    </>
-  );
-};
-
+/**
+ * Records the map's camera on every user move (programmatic fits are
+ * filtered out via `programmaticMoveRef`). Writes to the dialog's
+ * `positionRef`: dragging must NOT re-render the overlay ~60x/s — the
+ * position is only read at confirm.
+ */
 type MapLocationChangeProps = {
   onPositionChange: (position: MapPosition) => void;
+  /**
+   * Programmatic map moves (chapter camera fits for added layers) must not be
+   * recorded as user camera edits. While the counter is > 0, `move` updates
+   * are skipped; it is cleared on `moveend` and on real user interaction
+   * (pointer/wheel), so only genuinely user-driven moves are recorded.
+   */
+  programmaticMoveRef: MutableRefObject<number>;
+  /**
+   * Chapter alignment for the recorded bounds: the recorder stores the
+   * content region (the strip the chapter panel leaves uncovered), the exact
+   * inverse of the playback expansion, so the saved location reproduces the
+   * framed camera. Title transitions are centered (undefined).
+   */
+  alignment?: ChapterAlignment;
 };
-const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
+const MapLocationChange = ({
+  onPositionChange,
+  programmaticMoveRef,
+  alignment,
+}: MapLocationChangeProps) => {
   const { map } = useMap();
 
   useEffect(() => {
@@ -211,34 +215,79 @@ const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
       return;
     }
     const updatePosition = () => {
+      if (programmaticMoveRef.current > 0) {
+        return;
+      }
       onPositionChange({
         center: map.getCenter(),
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
-        bounds: _.flatten(map.getBounds().toArray()) as MapBounds,
+        // NOT the raw camera bounds: the content region of the map container,
+        // so playback — which expands the recorded bounds again to compensate
+        // for the chapter panel — reproduces exactly what was framed here.
+        bounds: recordContentRegionBounds(map, alignment),
       });
+    };
+    const endProgrammaticMove = () => {
+      programmaticMoveRef.current = 0;
+    };
+    // The final camera is settled at `moveend`: mapbox's terrain correction
+    // adjusts the zoom there (after the last `move`), so recording only
+    // `move` would persist a camera the user never ended on — and the
+    // playback fit would land on it, moving the map after Save.
+    const onMoveEnd = () => {
+      if (programmaticMoveRef.current > 0) {
+        programmaticMoveRef.current = 0;
+        return;
+      }
+      updatePosition();
     };
     map.on('load', updatePosition);
     map.on('move', updatePosition);
+    map.on('moveend', onMoveEnd);
+    const userInteractionEvents = [
+      'dragstart',
+      'mousedown',
+      'touchstart',
+      'wheel',
+    ];
+    userInteractionEvents.forEach(event => map.on(event, endProgrammaticMove));
+    // The shared editor map is already loaded when the overlay opens (no
+    // `load` event will fire), so record the starting camera right away.
+    updatePosition();
 
     return () => {
       map.off('load', updatePosition);
       map.off('move', updatePosition);
+      map.off('moveend', onMoveEnd);
+      userInteractionEvents.forEach(event =>
+        map.off(event, endProgrammaticMove)
+      );
     };
-  }, [map, onPositionChange]);
+  }, [map, onPositionChange, programmaticMoveRef, alignment]);
 
   return null;
 };
 
+/**
+ * One overlay session over the shared editor map: owns the draft (layers,
+ * basemap, camera) and restores the map on every non-confirm exit.
+ */
+
 type MapConfigurationDialogProps = {
   open: boolean;
   onClose: () => void;
-  onConfirm: (_: unknown) => void;
-  location: MapPosition;
-  title: string;
-  chapterId: string;
-  mapLayerConfig: MapLayerConfig | null;
+  onConfirm: (_: MapConfigurationConfirm) => void;
+  location?: MapPosition;
+  title?: string;
+  chapterId?: string;
+  /** Chapter alignment for the recorded content-region bounds (title: undefined). */
+  alignment?: ChapterAlignment;
+  /** Chapter/titleTransition `mapLayers` (legacy chapters pass undefined). */
+  mapLayers?: MapLayerTransition[];
+  /** Chapter/titleTransition `dataLayerConfigId`. */
+  dataLayerConfigId?: string;
 };
 export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const { t } = useTranslation();
@@ -246,18 +295,104 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     config: StoryMapConfig;
     storyMap: StoryMapNode;
   };
-  const { open, onClose, onConfirm, location, title, chapterId } = props;
+  const { setConfig, registerSessionDataLayers } =
+    useStoryMapConfigActionsContext();
+  const { open, onClose, onConfirm, location, title, chapterId, alignment } =
+    props;
 
-  const [mapCenter, setMapCenter] = useState(location?.center);
-  const [mapZoom, setMapZoom] = useState(location?.zoom);
-  const [mapPitch, setMapPitch] = useState(location?.pitch);
-  const [mapBearing, setMapBearing] = useState(location?.bearing);
-  const [mapBounds, setMapBounds] = useState(location?.bounds);
-  const [mapStyle, setMapStyle] = useState<string | undefined>();
-  const [changeBounds, setChangeBounds] = useState(false);
-  const [mapLayerConfig, setMapLayerConfig] = useState(props.mapLayerConfig);
+  // Programmatic-fit suppression for camera recording (see MapLocationChange).
+  const programmaticMoveRef = useRef(0);
+  const beginProgrammaticMove = useCallback(() => {
+    programmaticMoveRef.current += 1;
+  }, []);
 
-  const mapRef = useRef(null);
+  // Camera edits are recorded in a ref, read at confirm — nothing renders
+  // them, so dragging must not re-render the overlay ~60x/s.
+  const positionRef = useRef<MapPosition | undefined>(location);
+  const handlePositionChange = useCallback((position: MapPosition) => {
+    positionRef.current = position;
+  }, []);
+
+  // The drafted basemap (applied to the SHARED map live by the style
+  // switcher). Ref: only confirm and the teardown read it.
+  const styleDraftedRef = useRef<string | undefined>(undefined);
+
+  const [changeBoundsLayerId, setChangeBoundsLayerId] = useState<
+    string | undefined
+  >();
+  // Explicit state for the stacked sub-dialogs (Escape routing and window
+  // drops): the create layer modal, the set-map helper and the basemap menu
+  // each flag themselves here — no DOM probing for foreign modal roots.
+  // True while CreateMapLayerDialog is open: window drops must never swap
+  // the file mid-form.
+  const [createFlowActive, setCreateFlowActive] = useState(false);
+  const [helperOpen, setHelperOpen] = useState(false);
+  const [styleMenuOpen, setStyleMenuOpen] = useState(false);
+
+  const { map, mapDimensions, changeStyle } = useMap();
+
+  const user = useSelector((state: any) => state.account.currentUser);
+
+  // Draft layer state + layer index fetch (useLayerDraft keeps the fetch
+  // wiring host-agnostic — a persistent host passes fetchEnabled=true). The
+  // draft is an ordered layer id list, index 0 topmost; it is only written
+  // back to the config on confirm — except layers created through the create
+  // flow, which are committed immediately (see onCreateLayer). The draft
+  // knows nothing about the compat fields.
+  const {
+    draftLayerIds,
+    setDraftLayerIds,
+    draftRows,
+    draftMapLayerConfigs,
+    layerConfigsById,
+    resolveLayerConfig,
+    fetching,
+    error,
+  } = useLayerDraft({
+    storyMapId: storyMap?.id,
+    email: user?.data?.email,
+    fetchEnabled: open,
+    mapLayers: props.mapLayers,
+    dataLayerConfigId: props.dataLayerConfigId,
+    dataLayers: config.dataLayers,
+  });
+
+  // Publish the draft layer stack to the map host: `StoryMap` renders it on
+  // the one-and-only mount per mapbox layer id (the draft is a different
+  // DATASET feeding the same mounts — never a parallel stack).
+  //
+  // The publish is CONTENT gated and independent of hook identities: an
+  // unstable memo upstream (or an unstable provider callback) must degrade
+  // to a skipped compare — never to a publish → host render → dialog render
+  // → publish loop, and never to a spurious mid-session `null` (which would
+  // unmount the shared map's layer mounts and refetch their GeoJSON).
+  const publishLayerStack = usePublishMapConfigLayerStack();
+  const publishLayerStackRef = useRef(publishLayerStack);
+  publishLayerStackRef.current = publishLayerStack;
+  const layerStack = useMemo<MapConfigLayerStack>(
+    () => ({
+      configs: draftMapLayerConfigs,
+      order: draftMapLayerConfigs.map(({ id }) => ({ layerId: id })),
+      changeBoundsLayerId,
+    }),
+    [draftMapLayerConfigs, changeBoundsLayerId]
+  );
+  const lastPublishedStackRef = useRef<MapConfigLayerStack | null>(null);
+  useEffect(() => {
+    if (_.isEqual(lastPublishedStackRef.current, layerStack)) {
+      return;
+    }
+    lastPublishedStackRef.current = layerStack;
+    publishLayerStackRef.current(layerStack);
+  }, [layerStack]);
+  // Session end (unmount/target swap): the host drops the draft dataset.
+  useEffect(
+    () => () => {
+      lastPublishedStackRef.current = null;
+      publishLayerStackRef.current(null);
+    },
+    []
+  );
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -286,136 +421,602 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     return firstChapterWithLocation?.location;
   }, [location, config.chapters, config.titleTransition?.location, chapterId]);
 
+  // --- session lifecycle ----------------------------------------------------
+  //
+  // The overlay mutates a long-lived shared map. Exactly ONE teardown path
+  // restores it when the session ends WITHOUT confirm — covering every exit:
+  // Cancel, X, Escape, target swap (remount via key) and component unmount
+  // (navigate away mid-edit). Confirm arms `confirmedRef` to skip it.
+  const confirmedRef = useRef(false);
+  const cameraSnapshotRef = useRef<{
+    center: unknown;
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  } | null>(null);
+  const configStyleRef = useRef(config.style);
+  configStyleRef.current = config.style;
+  const changeStyleRef = useRef(changeStyle);
+  changeStyleRef.current = changeStyle;
+
+  useEffect(() => {
+    if (!open || !map) {
+      return;
+    }
+    confirmedRef.current = false;
+    // Snapshot the camera BEFORE the camera init below moves it: the
+    // teardown replays this snapshot on every non-confirm exit. (Camera
+    // restore used to ride on MapTransitionController re-running, which
+    // no-ops for location-less chapters.)
+    cameraSnapshotRef.current = {
+      center: map.getCenter(),
+      zoom: map.getZoom(),
+      pitch: map.getPitch(),
+      bearing: map.getBearing(),
+    };
+    // The session owns the camera from here: stop in-flight animations and
+    // drop a pending rotateAnimation moveend handler — its 30s rotation
+    // would fire on the camera-init move below and be what Save captures.
+    map.stop();
+    cancelPendingRotateAnimation(map);
+    return () => {
+      if (confirmedRef.current) {
+        return;
+      }
+      // Discard the basemap draft (the style switcher styled the shared map
+      // live) …
+      const draftedStyle = styleDraftedRef.current;
+      if (draftedStyle && draftedStyle !== configStyleRef.current) {
+        changeStyleRef.current(configStyleRef.current);
+      }
+      // … and the camera draft. (Transition replay on close may animate on
+      // top of this.)
+      const snapshot = cameraSnapshotRef.current;
+      if (snapshot) {
+        map.jumpTo(snapshot);
+      }
+    };
+  }, [open, map]);
+
+  // The overlay reuses the live editor map: place the shared camera at the
+  // transition's starting position (the standalone dialog's initial map
+  // view — the chapter's own location, or the closest previous one) before
+  // the user starts dragging. Once per overlay session (the ref is per
+  // dialog instance — a target swap remounts it) so later config commits
+  // never yank the camera back mid-edit.
+  const cameraInitializedRef = useRef(false);
+  useEffect(() => {
+    if (!map || cameraInitializedRef.current) {
+      return;
+    }
+    cameraInitializedRef.current = true;
+    const { center, zoom, pitch, bearing, bounds } = initialLocation ?? {};
+    // The stored bounds are the CONTENT region: re-expand them with the same
+    // math playback uses (`locationFitViewport`) so the overlay opens on the
+    // exact camera the editor/viewer shows — `map.fitBounds` would fit the
+    // perspective/terrain footprint and drift.
+    const viewport = locationFitViewport(bounds, alignment, mapDimensions);
+    if (viewport) {
+      map.jumpTo({
+        center: viewport.center,
+        zoom: viewport.zoom,
+        pitch: pitch ?? 0,
+        bearing: bearing ?? 0,
+      });
+      return;
+    }
+    if (center) {
+      map.jumpTo({
+        center,
+        zoom: zoom ?? 1,
+        pitch: pitch ?? 0,
+        bearing: bearing ?? 0,
+      });
+    }
+  }, [map, mapDimensions, initialLocation, alignment]);
+
   const handleConfirm = useCallback(() => {
-    const location = _.omitBy(_.isNil, {
-      center: mapCenter,
-      zoom: mapZoom,
-      pitch: mapPitch,
-      bearing: mapBearing,
-      bounds: mapBounds,
-    });
+    confirmedRef.current = true;
+    const location = _.omitBy(
+      _.isNil,
+      positionRef.current ?? {}
+    ) as MapPosition;
     onConfirm({
       location,
-      mapStyle: mapStyle || config.style,
-      dataLayerConfig: mapLayerConfig,
+      mapStyle: styleDraftedRef.current || config.style,
+      mapLayerRows: draftRows,
     });
-  }, [
-    onConfirm,
-    mapCenter,
-    mapZoom,
-    mapPitch,
-    mapBearing,
-    mapBounds,
-    mapStyle,
-    config.style,
-    mapLayerConfig,
-  ]);
+  }, [onConfirm, config.style, draftRows]);
 
+  // Cancel/X/Escape just end the session: the shared map is restored by the
+  // single teardown above when the session unwinds.
   const handleCancel = useCallback(() => {
     onClose();
   }, [onClose]);
 
-  const handlePositionChange = useCallback((position: MapPosition) => {
-    setMapCenter(position.center);
-    setMapZoom(position.zoom);
-    setMapPitch(position.pitch);
-    setMapBearing(position.bearing);
-    setMapBounds(position.bounds);
-  }, []);
+  // Escape cancels the overlay (X close button = Cancel). While a stacked
+  // sub-dialog is open (the create layer modal, the set-map helper, the
+  // basemap menu) its own Escape handling wins — it closes itself first,
+  // exactly like branch 1's stacked dialog behavior. The flags are the
+  // explicit source of truth: a self-closing sub-dialog clears its flag
+  // before the NEXT Escape reaches here, so the race is deterministic.
+  const subDialogOpen = createFlowActive || helperOpen || styleMenuOpen;
+  const overlayRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') {
+        return;
+      }
+      if (subDialogOpen) {
+        // The topmost sub-dialog owns this Escape.
+        return;
+      }
+      handleCancel();
+    };
+    // Capture phase: decide before the sub-dialogs process their own Escape
+    // handling (which may close them synchronously).
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, [open, handleCancel, subDialogOpen]);
+
+  // --- modal semantics -----------------------------------------------------
+  //
+  // While open, keyboard/AT must not reach the underlying editor (its
+  // content is `inert` — see StoryMap/index): move focus into the overlay,
+  // keep Tab inside it (plus the shared map canvas — the editing surface
+  // itself, so arrow keys still pan), and restore focus on close.
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const focusables = () => {
+      const overlayFocusables = Array.from(
+        overlayRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ??
+          []
+      );
+      const canvas = map?.getCanvas?.() ?? null;
+      const targets = canvas
+        ? [...overlayFocusables, canvas]
+        : overlayFocusables;
+      // DOM order (the overlay lives in a portal beside the app tree).
+      return targets.sort((a, b) =>
+        a === b
+          ? 0
+          : a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING
+            ? -1
+            : 1
+      );
+    };
+    const initialFocus = focusables()[0] ?? overlayRef.current;
+    initialFocus?.focus?.();
+    const trapTab = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab' || subDialogOpen) {
+        // A stacked sub-dialog is a modal of its own: it owns Tab.
+        return;
+      }
+      const targets = focusables();
+      if (targets.length === 0) {
+        return;
+      }
+      event.preventDefault();
+      const activeIndex = targets.indexOf(
+        document.activeElement as HTMLElement
+      );
+      const delta = event.shiftKey ? -1 : 1;
+      // A selector match can still be unable to take focus (the layer drop
+      // zone's visually-hidden file input matches but the browser silently
+      // refuses it). Walk the cycle until a candidate accepts focus — one
+      // dead target must not wedge the trap on its predecessor.
+      let candidateIndex =
+        activeIndex === -1 ? (event.shiftKey ? 0 : -1) : activeIndex;
+      for (let attempt = 0; attempt < targets.length; attempt++) {
+        candidateIndex =
+          (candidateIndex + delta + targets.length) % targets.length;
+        const candidate = targets[candidateIndex];
+        candidate?.focus();
+        if (document.activeElement === candidate) {
+          break;
+        }
+      }
+    };
+    window.addEventListener('keydown', trapTab, true);
+    return () => {
+      window.removeEventListener('keydown', trapTab, true);
+      previousFocus?.focus?.();
+    };
+  }, [open, map, subDialogOpen]);
 
   const onStyleChange = useCallback(
     ({ newStyle }: { newStyle: MapboxStyle }) => {
-      setMapStyle(newStyle.data);
+      styleDraftedRef.current = newStyle.data;
     },
     []
   );
 
-  const onAddMapLayer = useCallback((mapLayerConfig: MapLayerConfig | null) => {
-    setChangeBounds(true);
-    setMapLayerConfig(mapLayerConfig);
-  }, []);
+  const onToggleLayer = useCallback(
+    (layerId: string) => {
+      const isOn = draftLayerIds.includes(layerId);
+      if (isOn) {
+        setDraftLayerIds(current => removeMapLayerId(current, layerId));
+        return;
+      }
+      if (!resolveLayerConfig(layerId)) {
+        return;
+      }
+      // The preview fits the added layer — a programmatic move that must not
+      // rewrite the chapter camera.
+      beginProgrammaticMove();
+      setChangeBoundsLayerId(layerId);
+      setDraftLayerIds(current => addMapLayerId(current, layerId));
+    },
+    [draftLayerIds, resolveLayerConfig, beginProgrammaticMove, setDraftLayerIds]
+  );
+
+  const onRemoveLayer = useCallback(
+    (layerId: string) => {
+      setDraftLayerIds(current => removeMapLayerId(current, layerId));
+    },
+    [setDraftLayerIds]
+  );
+
+  const onReorder = useCallback(
+    (sourceIndex: number, destIndex: number) => {
+      setDraftLayerIds(current =>
+        moveMapLayerId(current, sourceIndex, destIndex)
+      );
+    },
+    [setDraftLayerIds]
+  );
+
+  /**
+   * COMMIT CONTRACT (product spec): a layer created through the create flow
+   * is committed to the config IMMEDIATELY — its payload goes into
+   * `dataLayers` and its id is prepended onto the target transition's
+   * `mapLayers` — so it survives a later dialog Cancel. Only `mapLayers` +
+   * `dataLayers` are written; the compat fields (dataLayerConfigId,
+   * onChapterEnter/onChapterExit) are derived from them at the config write
+   * boundary. Removing the layer from the chapter and saving only DETACHES
+   * it: the created asset is registered as session-created (exempt from
+   * save-time pruning) and appended to the fetched layer list, so it stays
+   * available in the tree and re-toggling it re-adds its payload to
+   * `dataLayers` — it is never destroyed.
+   */
+  const onCreateLayer = useCallback(
+    (mapLayerConfig: MapLayerConfig) => {
+      registerSessionDataLayers([mapLayerConfig.id]);
+      setConfig((currentConfig: StoryMapConfig) => {
+        const applyAdd = (transition?: Transition) => ({
+          ...transition,
+          mapLayers: toMapLayers(
+            addMapLayerId(
+              resolveMapLayers(transition).map(({ layerId }) => layerId),
+              mapLayerConfig.id
+            )
+          ),
+        });
+
+        return {
+          ...currentConfig,
+          dataLayers: {
+            ...currentConfig.dataLayers,
+            [mapLayerConfig.id]: mapLayerConfig,
+          },
+          ...(chapterId
+            ? {
+                chapters: currentConfig.chapters.map(chapter =>
+                  chapter.id === chapterId ? applyAdd(chapter) : chapter
+                ),
+              }
+            : { titleTransition: applyAdd(currentConfig.titleTransition) }),
+        };
+      });
+      beginProgrammaticMove();
+      setChangeBoundsLayerId(mapLayerConfig.id);
+      setDraftLayerIds(current => addMapLayerId(current, mapLayerConfig.id));
+    },
+    [
+      setConfig,
+      registerSessionDataLayers,
+      chapterId,
+      beginProgrammaticMove,
+      setDraftLayerIds,
+    ]
+  );
+
+  // While the dialog is open, the whole window accepts file drops to start
+  // the create-new-layer flow preloaded with the dropped file.
+  const [pendingFile, setPendingFile] = useState<File | undefined>();
+  const [dropError, setDropError] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const startCreateFlow = useCallback(
+    (file: File) => {
+      if (createFlowActive) {
+        return;
+      }
+      setDropError(null);
+      setPendingFile(file);
+    },
+    [createFlowActive]
+  );
+  const onRejectFile = useCallback(
+    (file: File) => {
+      setDropError(mapLayerFileRejectionMessage(file, t));
+    },
+    [t]
+  );
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const onDragOver = (event: DragEvent) => {
+      if (event.dataTransfer?.types?.includes('Files')) {
+        event.preventDefault();
+        setDragActive(true);
+      }
+    };
+    const onDragLeave = (event: DragEvent) => {
+      // Inner dragleave events fire for every element crossed; only leaving
+      // the window (no relatedTarget) cancels the affordance.
+      if (!event.relatedTarget) {
+        setDragActive(false);
+      }
+    };
+    const onDrop = (event: DragEvent) => {
+      setDragActive(false);
+      const files = event.dataTransfer?.files;
+      if (!files?.length) {
+        return;
+      }
+      event.preventDefault();
+      if (createFlowActive) {
+        // The create dialog is open: ignore the drop entirely (no file swap).
+        return;
+      }
+      // Multi-file drop: take the first file and ignore the rest.
+      const file = files[0];
+      if (isMapLayerFileAccepted(file)) {
+        startCreateFlow(file);
+      } else {
+        onRejectFile(file);
+      }
+    };
+    window.addEventListener('dragover', onDragOver);
+    window.addEventListener('dragleave', onDragLeave);
+    window.addEventListener('drop', onDrop);
+    return () => {
+      window.removeEventListener('dragover', onDragOver);
+      window.removeEventListener('dragleave', onDragLeave);
+      window.removeEventListener('drop', onDrop);
+    };
+  }, [open, startCreateFlow, onRejectFile, createFlowActive]);
 
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
-      <Dialog
-        open={open}
-        onClose={handleCancel}
-        aria-labelledby="map-location-dialog-title"
-        aria-describedby="map-location-dialog-content-text"
-        maxWidth="sm"
-        fullWidth
-      >
-        <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-          <Stack>
-            <DialogTitle
-              component="h1"
-              id="map-location-dialog-title"
-              sx={{ pb: 0 }}
+      <Portal>
+        <Box
+          ref={overlayRef}
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
+          aria-labelledby="map-location-dialog-title"
+          aria-describedby="map-location-dialog-content-text"
+          data-testid="map-config-overlay"
+          sx={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: theme => theme.zIndex.drawer + 1,
+            display: 'flex',
+            flexDirection: 'column',
+            // Everything not covered by the bars/sidebars shows — and lets
+            // the user drag — the live editor map underneath.
+            pointerEvents: 'none',
+          }}
+        >
+          <Box data-testid="map-config-top-bar" sx={{ pointerEvents: 'auto' }}>
+            <TopBarContainer
+              id="map-config-header"
+              ariaLabel={t('storyMap.form_location_dialog_header_label')}
             >
-              {title ? (
-                <Trans
-                  i18nKey="storyMap.form_location_dialog_title"
-                  values={{ title: title }}
+              <Grid size={10} sx={{ pl: 2 }}>
+                <Typography
+                  variant="h3"
+                  component="h1"
+                  id="map-location-dialog-title"
+                  sx={{ pt: 0 }}
                 >
-                  prefix
-                  <i>italic</i>
-                </Trans>
-              ) : (
-                <>{t('storyMap.form_location_dialog_title_blank')}</>
-              )}
-            </DialogTitle>
-            <DialogContent sx={{ pb: 0 }}>
+                  {title ? (
+                    <Trans
+                      i18nKey="storyMap.form_location_dialog_title"
+                      values={{ title: title }}
+                    >
+                      prefix
+                      <i>italic</i>
+                    </Trans>
+                  ) : (
+                    <>{t('storyMap.form_location_dialog_title_blank')}</>
+                  )}
+                </Typography>
+              </Grid>
+              <Grid
+                size={2}
+                sx={{
+                  pr: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <IconButton
+                  aria-label={t('common.dialog_close_label')}
+                  onClick={handleCancel}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
+            </TopBarContainer>
+          </Box>
+          <Stack direction="row" sx={{ flex: 1, minHeight: 0 }}>
+            {/* Left sidebar: the invitation to drag the shared map (it covers
+                the chapters list while the overlay is open). */}
+            <Box
+              data-testid="map-config-position-panel"
+              sx={{
+                width: 200,
+                // Cover exactly the chapters sidebar area (200px total).
+                boxSizing: 'border-box',
+                flexShrink: 0,
+                bgcolor: 'white',
+                overflowY: 'auto',
+                p: 2,
+                pointerEvents: 'auto',
+              }}
+            >
+              <Typography variant="h3" gutterBottom>
+                {t('storyMap.form_location_dialog_drag_title')}
+              </Typography>
+              <Typography
+                id="map-location-dialog-content-text"
+                variant="body2"
+                sx={{ mb: 2 }}
+              >
+                {t('storyMap.form_location_dialog_drag_text')}
+              </Typography>
               <HelperText
                 showLabel
                 maxWidth={586}
                 label={t('storyMap.form_location_dialog_helper_text_label')}
                 Component={SetMapHelperText}
+                onOpenChange={setHelperOpen}
                 buttonProps={{
                   sx: { pl: 0, color: 'gray.dark1' },
                 }}
               />
-            </DialogContent>
-          </Stack>
-          <DialogActions sx={{ pr: 3 }}>
-            <Button size="small" onClick={handleCancel}>
-              {t('storyMap.location_dialog_cancel_button')}
-            </Button>
-            <Button size="small" onClick={handleConfirm} variant="contained">
-              {t('storyMap.location_dialog_confirm_button')}
-            </Button>
-          </DialogActions>
-        </Stack>
-
-        <DialogContent>
-          <MapLayer
-            title={title}
-            mapLayerConfig={mapLayerConfig}
-            onConfirm={onAddMapLayer}
-          />
-          <Map
-            ref={mapRef}
-            use3dTerrain
-            initialLocation={initialLocation}
-            projection={config.projection}
-            mapStyle={config.style}
-          >
-            <MapControls showCompass visualizePitch />
-            <MapGeocoder position="top-right" />
-            <MapStyleSwitcher
-              position="top-right"
-              onStyleChange={onStyleChange}
-            />
-            <MapLocationChange onPositionChange={handlePositionChange} />
-            {mapLayerConfig && (
-              <StoryMapLayer
-                config={mapLayerConfig}
-                useConfigBounds={true}
-                changeBounds={changeBounds}
+            </Box>
+            {/* Transparent, click-through map window: the live editor map
+                below is what gets dragged to set the chapter position. The
+                bottom action bar sits in this middle column (between the
+                sidebars), so both sidebars keep running to the bottom of the
+                viewport. */}
+            <Stack
+              direction="column"
+              sx={{ flex: 1, minWidth: 0, minHeight: 0 }}
+            >
+              <Box
+                data-testid="map-config-map-window"
+                sx={{ flex: 1, pointerEvents: 'none' }}
               />
-            )}
-          </Map>
-        </DialogContent>
-      </Dialog>
+              {/* Bottom bar: the Save/Cancel action bar (8px vertical padding,
+                  same as the top bar). */}
+              <Stack
+                data-testid="map-config-bottom-bar"
+                direction="row"
+                spacing={2}
+                sx={{
+                  bgcolor: 'white',
+                  borderTop: '1px solid',
+                  borderColor: 'gray.lite1',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  py: 1,
+                  px: 3,
+                  pointerEvents: 'auto',
+                }}
+              >
+                <Button size="large" onClick={handleCancel}>
+                  {t('storyMap.location_dialog_cancel_button')}
+                </Button>
+                <Button
+                  size="large"
+                  onClick={handleConfirm}
+                  variant="contained"
+                >
+                  {t('storyMap.location_dialog_confirm_button')}
+                </Button>
+              </Stack>
+            </Stack>
+            {/* Right sidebar: the layers panel at the story map configuration
+                right sidebar width. */}
+            <Box
+              data-testid="map-config-layers-panel"
+              sx={{
+                width: SIDEBAR_WIDTH,
+                // Same dimensions as the story map configuration right
+                // sidebar (RightSidebar SIDEBAR_WIDTH = 300, padding inside).
+                boxSizing: 'border-box',
+                flexShrink: 0,
+                bgcolor: 'white',
+                overflowY: 'auto',
+                p: 2,
+                pointerEvents: 'auto',
+              }}
+            >
+              <MapLayersPanel
+                sx={{ width: '100%' }}
+                rows={draftRows}
+                activeLayerIds={draftLayerIds}
+                treeLayers={Object.values(layerConfigsById)}
+                fetching={fetching}
+                error={error}
+                dropError={dropError}
+                onDismissDropError={() => setDropError(null)}
+                onFile={startCreateFlow}
+                onReject={onRejectFile}
+                onToggleLayer={onToggleLayer}
+                onReorder={onReorder}
+                onRemove={onRemoveLayer}
+              />
+            </Box>
+          </Stack>
+          {dragActive && (
+            <Box
+              data-testid="window-drop-overlay"
+              aria-hidden
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none',
+                border: '3px dashed',
+                borderColor: 'blue.dark',
+                bgcolor: 'blue.lite',
+              }}
+            >
+              <Typography variant="h3">
+                {t('storyMap.form_map_layers_add_drop_text')}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </Portal>
+      {/* Map-scoped children: this component is hosted INSIDE the shared
+          editor map (StoryMap renders it within its Map), so these controls
+          attach to the live map instead of mounting a second one. */}
+      <MapControls showCompass visualizePitch />
+      <MapGeocoder position="top-right" />
+      <MapStyleSwitcher
+        position="top-right"
+        onStyleChange={onStyleChange}
+        onOpenChange={setStyleMenuOpen}
+      />
+      <MapLocationChange
+        onPositionChange={handlePositionChange}
+        programmaticMoveRef={programmaticMoveRef}
+        alignment={alignment}
+      />
+      <CreateMapLayerFileUpload
+        title={title}
+        onCreate={onCreateLayer}
+        externalFile={pendingFile}
+        showDropZone={false}
+        onCreateDialogOpenChange={setCreateFlowActive}
+      />
     </CollaborationContextProvider>
   );
 };

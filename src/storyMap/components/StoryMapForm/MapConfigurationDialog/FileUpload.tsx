@@ -15,12 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { FileRejection } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 import { DataEntryNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
+import { Alert } from '@mui/material';
 
 import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
 import DropZone from 'terraso-web-client/common/components/DropZone';
@@ -37,16 +38,20 @@ import {
   uploadSharedDataFile,
 } from 'terraso-web-client/sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'terraso-web-client/sharedData/visualization/visualizationContext';
-import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-
 import {
   MAP_LAYER_ACCEPTED_EXTENSIONS,
   MAP_LAYER_ACCEPTED_TYPES,
+  mapLayerFileValidator,
   SHARED_DATA_MAX_SIZE,
-} from 'terraso-web-client/config';
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 type FileUploadProps = {
   onCompleteSuccess: (dataEntry: DataEntryNode) => void;
+  /** File to upload immediately (e.g. dropped outside the drop zone). */
+  externalFile?: File;
+  /** When false, only the upload state/errors are rendered (no drop zone). */
+  showDropZone?: boolean;
 };
 export const FileUpload = (props: FileUploadProps) => {
   const { t } = useTranslation();
@@ -57,7 +62,7 @@ export const FileUpload = (props: FileUploadProps) => {
   } = useStoryMapConfigDataContext();
   const [dropzoneErrors, setDropzoneErrors] = useState<string[]>([]);
 
-  const { onCompleteSuccess } = props;
+  const { onCompleteSuccess, externalFile, showDropZone = true } = props;
 
   useEffect(() => {
     dispatch(resetUploads());
@@ -70,8 +75,8 @@ export const FileUpload = (props: FileUploadProps) => {
     file ? state.sharedData.uploads.files[file.id].status : undefined
   );
 
-  const onDropAccepted = useCallback(
-    ([bareFile]: File[]) => {
+  const processFile = useCallback(
+    (bareFile: File) => {
       const file = fileWrapper(bareFile);
       setFile(file);
       setDropzoneErrors([]);
@@ -104,6 +109,21 @@ export const FileUpload = (props: FileUploadProps) => {
     },
     [onCompleteSuccess, trackEvent, dispatch, entityType, id, slug, t]
   );
+
+  const onDropAccepted = useCallback(
+    ([bareFile]: File[]) => {
+      processFile(bareFile);
+    },
+    [processFile]
+  );
+
+  const processedExternalFileRef = useRef<File | undefined>(undefined);
+  useEffect(() => {
+    if (externalFile && processedExternalFileRef.current !== externalFile) {
+      processedExternalFileRef.current = externalFile;
+      processFile(externalFile);
+    }
+  }, [externalFile, processFile]);
 
   const onDropRejected = useCallback(
     (rejections: FileRejection[]) => {
@@ -146,20 +166,33 @@ export const FileUpload = (props: FileUploadProps) => {
   );
 
   return (
-    <DropZone
-      loading={
-        uploadingStatus === UPLOAD_STATUS_UPLOADING ||
-        (uploadingStatus === UPLOAD_STATUS_SUCCESS && loadingFile)
-      }
-      errors={errors}
-      onDropAccepted={onDropAccepted}
-      onDropRejected={onDropRejected}
-      maxSize={SHARED_DATA_MAX_SIZE}
-      fileTypes={MAP_LAYER_ACCEPTED_TYPES}
-      fileExtensions={MAP_LAYER_ACCEPTED_EXTENSIONS}
-      buttonLabel={t('storyMap.form_upload_file_button_label')}
-      instructions={t('storyMap.drop_zone_instructions')}
-      acceptedFormats={t('storyMap.drop_zone_format')}
-    />
+    <>
+      {showDropZone && (
+        <DropZone
+          loading={
+            uploadingStatus === UPLOAD_STATUS_UPLOADING ||
+            (uploadingStatus === UPLOAD_STATUS_SUCCESS && loadingFile)
+          }
+          errors={errors}
+          onDropAccepted={onDropAccepted}
+          onDropRejected={onDropRejected}
+          // Same accept rule as the compact add control and the window-wide
+          // drop target (mapLayerFileDrop.ts).
+          validator={mapLayerFileValidator}
+          maxSize={SHARED_DATA_MAX_SIZE}
+          fileTypes={MAP_LAYER_ACCEPTED_TYPES}
+          fileExtensions={MAP_LAYER_ACCEPTED_EXTENSIONS}
+          buttonLabel={t('storyMap.form_upload_file_button_label')}
+          instructions={t('storyMap.drop_zone_instructions')}
+          acceptedFormats={t('storyMap.drop_zone_format')}
+        />
+      )}
+      {!showDropZone &&
+        errors.map((error, index) => (
+          <Alert key={index} severity="error">
+            {error}
+          </Alert>
+        ))}
+    </>
   );
 };
