@@ -39,13 +39,35 @@ const MAP_PADDING = {
 const FileContextSource = props => {
   const { visualizationConfig, sampleSize } = props;
   const { fileContext, isMapFile } = useVisualizationContext();
+  const hasDatasetConfig = Boolean(visualizationConfig?.datasetConfig);
+  const { latitude, longitude } = visualizationConfig?.datasetConfig || {};
+  const { annotationTitle, dataPoints } =
+    visualizationConfig?.annotateConfig || {};
 
   const geoJson = useMemo(
     () =>
       isMapFile
         ? fileContext.geojson
-        : sheetToGeoJSON(fileContext, visualizationConfig, sampleSize),
-    [isMapFile, fileContext, visualizationConfig, sampleSize]
+        : sheetToGeoJSON(
+            fileContext,
+            {
+              datasetConfig: hasDatasetConfig
+                ? { latitude, longitude }
+                : undefined,
+              annotateConfig: { annotationTitle, dataPoints },
+            },
+            sampleSize
+          ),
+    [
+      isMapFile,
+      fileContext,
+      hasDatasetConfig,
+      latitude,
+      longitude,
+      annotationTitle,
+      dataPoints,
+      sampleSize,
+    ]
   );
 
   return (
