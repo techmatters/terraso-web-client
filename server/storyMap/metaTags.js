@@ -26,12 +26,10 @@ const escapeAttributeValue = str => {
 };
 
 const REGEX = {
-  ogTitle: /<meta property="og:title" content="[^"]*" data-rh="true"\s*\/?>/g,
-  ogDescription:
-    /<meta property="og:description" content="[^"]*" data-rh="true"\s*\/?>/g,
-  ogImage: /<meta property="og:image" content="[^"]*" data-rh="true"\s*\/?>/g,
-  description:
-    /<meta name="description" content="[^"]*" data-rh="true"\s*\/?>/g,
+  ogTitle: /<meta(?=[^>]*\bproperty="og:title")[^>]*>/g,
+  ogDescription: /<meta(?=[^>]*\bproperty="og:description")[^>]*>/g,
+  ogImage: /<meta(?=[^>]*\bproperty="og:image")[^>]*>/g,
+  description: /<meta(?=[^>]*\bname="description")[^>]*>/g,
   title: /<title>[^<]*<\/title>/,
 };
 
