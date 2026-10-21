@@ -22,13 +22,14 @@ import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import ShareIcon from '@mui/icons-material/Share';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { Box, Button, Divider, Drawer, Stack, Typography } from '@mui/material';
+import { Button, Divider, Stack, Typography } from '@mui/material';
 
 import SocialShare, {
   useSocialShareContext,
 } from 'terraso-web-client/common/components/SocialShare';
 import { createAbsoluteUrl } from 'terraso-web-client/common/utils/urlUtils';
 import FeaturedImage from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImage';
+import FormSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/FormSidebar';
 import ShareDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShareDialog';
 import ShortDescription from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescription';
 import {
@@ -42,7 +43,6 @@ import {
   isStoryMapPublished,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
-const SIDEBAR_WIDTH = 300;
 const ACTION_BUTTON_SX = {
   justifyContent: 'flex-start',
   px: 0,
@@ -233,58 +233,31 @@ const RightSidebar = props => {
   }, [open]);
 
   return (
-    <Drawer
-      anchor="right"
+    <FormSidebar
       open={open}
       onClose={onClose}
-      variant="persistent"
-      ModalProps={{ keepMounted: true }}
-      transitionDuration={{ enter: 150, exit: 150 }}
-      sx={theme => ({
-        zIndex,
-        width: open ? SIDEBAR_WIDTH : 0,
-        flexShrink: 0,
-        overflowX: 'hidden',
-        '& .MuiDrawer-paper': {
-          width: SIDEBAR_WIDTH,
-          // reset position to static:
-          //   MUI applies 'fixed', which isn't desired here because
-          //   the sidebar will end up behind the top bar
-          position: 'static',
-          borderLeft: `1px solid ${theme.palette.gray.lite1}`,
-          boxSizing: 'border-box',
-        },
-      })}
+      zIndex={zIndex}
+      title={t('storyMap.form_settings_sidebar_title')}
+      sectionLabel={t('storyMap.form_right_sidebar_section_label')}
+      closeLabel={t('storyMap.form_settings_sidebar_close')}
+      contentRef={contentRef}
     >
       <ShareDialog
         open={openShareDialog && Boolean(storyMap)}
         onClose={() => setOpenShareDialog(false)}
       />
-      <Box
-        role="complementary"
-        aria-label={t('storyMap.form_right_sidebar_section_label')}
-        ref={contentRef}
-        sx={{
-          px: 3,
-          py: 1,
-          height: '100%',
-          overflowY: 'auto',
-          bgcolor: 'white',
-        }}
-      >
-        <Stack spacing={2} sx={{ my: 1 }}>
-          <FeaturedImage />
-          <ShortDescription />
-          <Divider />
-          <PublishedActions storyMap={storyMap} onPreview={handlePreview} />
-          <Divider />
-          <ShareAction
-            storyMap={storyMap}
-            onShare={() => setOpenShareDialog(true)}
-          />
-        </Stack>
-      </Box>
-    </Drawer>
+      <Stack spacing={2} sx={{ my: 1 }}>
+        <FeaturedImage />
+        <ShortDescription />
+        <Divider />
+        <PublishedActions storyMap={storyMap} onPreview={handlePreview} />
+        <Divider />
+        <ShareAction
+          storyMap={storyMap}
+          onShare={() => setOpenShareDialog(true)}
+        />
+      </Stack>
+    </FormSidebar>
   );
 };
 

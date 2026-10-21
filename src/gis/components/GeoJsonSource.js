@@ -21,7 +21,7 @@ import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const GeoJsonSource = props => {
   const { id, geoJson, geoJsonUrl, onError } = props;
-  const { map, addSource } = useMap();
+  const { map, addSource, removeSource } = useMap();
 
   const handleSourceError = useCallback(
     event => {
@@ -48,6 +48,19 @@ const GeoJsonSource = props => {
       data: sourceData,
     });
   }, [id, map, addSource, geoJson, geoJsonUrl]);
+
+  // Symmetric teardown: the shared map outlives this component (the editor
+  // map hosts the map configuration overlay's drafts), so a source must not
+  // leak into the style — and into the next style switch's merge — after its
+  // owner unmounts.
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    return () => {
+      removeSource(id);
+    };
+  }, [map, id, removeSource]);
 
   // Listen for source errors
   useEffect(() => {

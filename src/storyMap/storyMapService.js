@@ -465,6 +465,8 @@ export const fetchDataLayers = ({ ownerId, email }) => {
         tilesetId: entry.node.mapboxTilesetId,
         geojsonSignedUrl: entry.node.geojsonSignedUrl,
         ownerType: entry.node.owner?.__typename,
+        ownerId: entry.node.owner?.id,
+        ownerName: entry.node.owner?.name,
         ...JSON.parse(entry.node.configuration),
       })),
     hasGroups: lists.myGroups?.edges?.some(

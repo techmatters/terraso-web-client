@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SyncIcon from '@mui/icons-material/Sync';
 import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
@@ -76,8 +77,10 @@ const TopBar = props => {
     isDirty,
     isPublishing,
     requestStatus,
-    onToggleRightSidebar,
-    isRightSidebarOpen,
+    onToggleSettings,
+    isSettingsOpen,
+    onToggleConfigureChapter,
+    isConfigureChapterOpen,
   } = props;
 
   const isPublished = storyMap?.isPublished;
@@ -119,28 +122,49 @@ const TopBar = props => {
             alignItems: 'center',
           }}
         >
-          <SaveStatus isDirty={isDirty} requestStatus={requestStatus} />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={onPublish}
-            disabled={isPublishing}
-            sx={{ ml: 2 }}
+          <Stack
+            role="group"
+            aria-label={t('storyMap.form_topbar_chapter_group_label')}
+            direction="row"
+            sx={{ alignItems: 'center' }}
           >
-            {isPublished
-              ? t('storyMap.form_republish_button')
-              : t('storyMap.form_publish_button')}
-          </Button>
-          <IconButton
-            aria-label={
-              isRightSidebarOpen
-                ? t('storyMap.form_right_sidebar_close')
-                : t('storyMap.form_right_sidebar_open')
-            }
-            onClick={onToggleRightSidebar}
+            <Button
+              variant="outlined"
+              onClick={onToggleConfigureChapter}
+              aria-pressed={isConfigureChapterOpen}
+              startIcon={<GpsFixedIcon />}
+            >
+              {t('storyMap.form_edit_chapter_button')}
+            </Button>
+          </Stack>
+          <Stack
+            role="group"
+            aria-label={t('storyMap.form_topbar_tools_group_label')}
+            direction="row"
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+            }}
           >
-            <SettingsIcon />
-          </IconButton>
+            <SaveStatus isDirty={isDirty} requestStatus={requestStatus} />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onPublish}
+              disabled={isPublishing}
+            >
+              {isPublished
+                ? t('storyMap.form_republish_button')
+                : t('storyMap.form_publish_button')}
+            </Button>
+            <IconButton
+              aria-label={t('storyMap.form_settings_sidebar_title')}
+              aria-pressed={isSettingsOpen}
+              onClick={onToggleSettings}
+            >
+              <SettingsIcon />
+            </IconButton>
+          </Stack>
         </Stack>
       </Grid>
     </TopBarContainer>

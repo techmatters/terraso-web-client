@@ -77,6 +77,14 @@ export const visualizationConfigWithStoryMapContext = /* GraphQL */ `
     ...visualizationConfigWithConfiguration
     owner {
       __typename
+      ... on GroupNode {
+        id
+        name
+      }
+      ... on LandscapeNode {
+        id
+        name
+      }
     }
   }
 `;

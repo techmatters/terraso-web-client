@@ -18,14 +18,14 @@
 import { useTranslation } from 'react-i18next';
 import { Grid } from '@mui/material';
 
-const TopBarContainer = ({ children }) => {
+const TopBarContainer = ({ children, id = 'form-header', ariaLabel }) => {
   const { t } = useTranslation();
   return (
     <Grid
-      id="form-header"
+      id={id}
       container
       component="section"
-      aria-label={t('storyMap.form_header_section_label')}
+      aria-label={ariaLabel ?? t('storyMap.form_header_section_label')}
       sx={theme => ({
         borderBottom: `1px solid ${theme.palette.gray.lite1}`,
         display: 'flex',
