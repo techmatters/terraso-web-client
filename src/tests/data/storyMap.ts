@@ -71,7 +71,9 @@ export const createTestStoryMap = (): StoryMapNode => ({
   featured: false,
 });
 
-export const createTestDataEntryNode = (): DataEntryNode => ({
+export const createTestDataEntryNode = (
+  overrides: Partial<DataEntryNode> = {}
+): DataEntryNode => ({
   id: 'test-data-entry-id',
   name: 'test title',
   description: 'test description',
@@ -82,6 +84,7 @@ export const createTestDataEntryNode = (): DataEntryNode => ({
   entryType: 'FILE',
   url: 'https://test.com',
   visualizations: createTestGraphQLConnection([]),
+  ...overrides,
 });
 
 export const createTestVisualizationConfigNode = (

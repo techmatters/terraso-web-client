@@ -48,3 +48,13 @@ export const FormContextProvider = ({ children }: React.PropsWithChildren) => {
 
 export const useFormSetContext = () => useContext(FormPropsSetContext);
 export const useFormGetContext = () => useContext(FormPropsGetContext);
+
+/**
+ * Typed access to the form's validation trigger. Returns undefined while no
+ * `<Form>` has registered itself yet — instead of callers duck-typing the
+ * context shape.
+ */
+export const useFormTrigger = (): FormContext['trigger'] | undefined => {
+  const formContext = useContext(FormPropsGetContext);
+  return 'trigger' in formContext ? formContext.trigger : undefined;
+};
