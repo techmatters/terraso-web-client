@@ -21,9 +21,10 @@ import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SyncIcon from '@mui/icons-material/Sync';
-import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Grid, IconButton, Stack, Typography } from '@mui/material';
 
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
+import PublicationButton from 'terraso-web-client/storyMap/components/StoryMapForm/PublicationButton';
 import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarContainer';
 
@@ -70,7 +71,7 @@ const SaveStatus = props => {
 
 const TopBar = props => {
   const { t } = useTranslation();
-  const { storyMap, config } = useStoryMapConfigDataContext();
+  const { config } = useStoryMapConfigDataContext();
   const {
     onPublish,
     isDirty,
@@ -79,8 +80,6 @@ const TopBar = props => {
     onToggleRightSidebar,
     isRightSidebarOpen,
   } = props;
-
-  const isPublished = storyMap?.isPublished;
 
   return (
     <TopBarContainer>
@@ -120,17 +119,10 @@ const TopBar = props => {
           }}
         >
           <SaveStatus isDirty={isDirty} requestStatus={requestStatus} />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={onPublish}
-            disabled={isPublishing}
-            sx={{ ml: 2 }}
-          >
-            {isPublished
-              ? t('storyMap.form_republish_button')
-              : t('storyMap.form_publish_button')}
-          </Button>
+          <PublicationButton
+            onPublish={onPublish}
+            isPublishing={isPublishing}
+          />
           <IconButton
             aria-label={
               isRightSidebarOpen

@@ -36,7 +36,10 @@ import {
 const normalizeUpdatedStoryMap = (storyMap, response = {}) => ({
   ...response,
   storyMapId: response.storyMapId || response.story_map_id,
-  publishedAt: response.publishedAt || response.published_at,
+  publishedAt:
+    response.publishedAt !== undefined
+      ? response.publishedAt
+      : response.published_at,
   configuration: response.configuration || storyMap.config,
   config: getStoryMapConfig({
     ...response,
@@ -44,7 +47,8 @@ const normalizeUpdatedStoryMap = (storyMap, response = {}) => ({
     configuration: response.configuration || storyMap.config,
   }),
   isPublished:
-    response.isPublished ||
+    response.isPublished ??
+    response.is_published ??
     Boolean(response.publishedAt || response.published_at || storyMap.publish),
 });
 
@@ -160,12 +164,16 @@ export const updateStoryMap = async ({ storyMap, files }) => {
 
   const storyMapForm = new FormData();
   storyMapForm.append('id', storyMap.id);
-  storyMapForm.append(
-    'title',
-    generateValidTitle(_.getOr('', 'config.title', storyMap))
-  );
-  storyMapForm.append('publish', storyMap.publish);
-  storyMapForm.append('configuration', JSON.stringify(storyMap.config));
+  if (storyMap.unpublish) {
+    storyMapForm.append('unpublish', true);
+  } else {
+    storyMapForm.append(
+      'title',
+      generateValidTitle(_.getOr('', 'config.title', storyMap))
+    );
+    storyMapForm.append('publish', storyMap.publish);
+    storyMapForm.append('configuration', JSON.stringify(storyMap.config));
+  }
   Object.keys(files).forEach((fileId, index) => {
     const file = files[fileId].file;
     storyMapForm.append('files', file, fileId);
@@ -177,7 +185,10 @@ export const updateStoryMap = async ({ storyMap, files }) => {
     await Promise.reject(Object.values(jsonResponse.error).join('. '));
   }
 
-  return normalizeUpdatedStoryMap(storyMap, jsonResponse);
+  const updatedStoryMap = normalizeUpdatedStoryMap(storyMap, jsonResponse);
+  return storyMap.unpublish
+    ? _.pick(['id', 'isPublished', 'publishedAt'], updatedStoryMap)
+    : updatedStoryMap;
 };
 
 export const deleteStoryMap = ({ storyMap }) => {
