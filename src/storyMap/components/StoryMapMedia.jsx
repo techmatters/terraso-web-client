@@ -1,3 +1,20 @@
+/*
+ * Copyright © 2026 Technology Matters
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import { useEffect, useRef, useState } from 'react';
 import i18n from 'i18next';
 import logger from 'terraso-client-shared/monitoring/logger';
@@ -18,6 +35,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import AudioWaveform from 'terraso-web-client/storyMap/components/AudioWaveform';
 import EmbeddedVideoPreview from 'terraso-web-client/storyMap/components/EmbeddedVideoPreview';
 import {
   calculateMediaFitScale as calculateFitScale,
@@ -54,6 +72,7 @@ const StoryMapMediaItem = ({
   crop,
   imageStyle,
   onImageLoad,
+  showWaveform = false,
 }) => {
   const [hasError, setHasError] = useState(false);
   const style = {
@@ -94,6 +113,16 @@ const StoryMapMediaItem = ({
   }
 
   if (mediaKind(item) === 'audio') {
+    if (showWaveform) {
+      return (
+        <AudioWaveform
+          key={getMediaSource(item)}
+          label={mediaLabel(item)}
+          onError={() => setHasError(true)}
+          src={getMediaSource(item)}
+        />
+      );
+    }
     return (
       <audio
         aria-label={mediaLabel(item)}
@@ -356,6 +385,7 @@ const GalleryAudioPreview = ({ item, onOpen, dragCursor }) => {
         src={getMediaSource(item)}
         style={{ display: 'none' }}
       />
+      <VolumeUpIcon sx={{ fontSize: 32 }} />
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <IconButton
           aria-label={
@@ -476,7 +506,11 @@ export const MediaViewer = ({ item, onClose, theme }) => (
             '& > iframe': { aspectRatio: '16 / 9' },
           }}
         >
-          <StoryMapMediaItem item={item} />
+          <StoryMapMediaItem
+            key={getMediaSource(item)}
+            item={item}
+            showWaveform
+          />
         </Box>
         <Tooltip placement="left" title={i18n.t('storyMap.media_close_viewer')}>
           <IconButton

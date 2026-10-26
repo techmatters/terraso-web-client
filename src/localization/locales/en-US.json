@@ -902,6 +902,7 @@
         "media_unavailable": "Media unavailable",
         "media_video_unavailable": "Video preview unavailable",
         "media_audio_unavailable": "Audio unavailable",
+        "media_waveform_unavailable": "Waveform unavailable. You can still use the audio controls.",
         "media_play_audio": "Play audio",
         "media_pause_audio": "Pause audio",
         "media_open_audio": "Open audio viewer",
