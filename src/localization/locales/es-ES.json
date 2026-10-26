@@ -906,6 +906,7 @@
         "media_unavailable": "Contenido multimedia no disponible",
         "media_video_unavailable": "Vista previa del video no disponible",
         "media_audio_unavailable": "Audio no disponible",
+        "media_waveform_unavailable": "Forma de onda no disponible. Puedes seguir usando los controles de audio.",
         "media_play_audio": "Reproducir audio",
         "media_pause_audio": "Pausar audio",
         "media_open_audio": "Abrir reproductor de audio",
