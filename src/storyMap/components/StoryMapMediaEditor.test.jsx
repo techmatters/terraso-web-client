@@ -19,6 +19,17 @@ import {
 } from 'terraso-web-client/storyMap/components/StoryMapMedia';
 import { STORY_MAP_THEME_OPTIONS } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
+const originalFetch = global.fetch;
+beforeEach(() => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ title: 'YouTube video title' }),
+  });
+});
+afterAll(() => {
+  global.fetch = originalFetch;
+});
+
 const MEDIA_ERROR_MESSAGES = [
   {
     language: 'en-US',
@@ -105,8 +116,8 @@ test.each([
     });
     expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Update Media' })
-    ).toBeInTheDocument();
+      screen.queryByRole('button', { name: 'Update Media' })
+    ).not.toBeInTheDocument();
     expect(image).not.toHaveProperty('crop');
     unmount();
     await render(
@@ -311,6 +322,19 @@ test('StoryMapMediaEditor: adding media to a five-item chapter reaches six and p
   expect(addMediaButton).toBeEnabled();
   fireEvent.click(addMediaButton);
   const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  expect(
+    within(dialog).getByRole('link', {
+      name: /Learn how to add images, videos, and audio to your story/,
+    })
+  ).toHaveAttribute('href', 'https://terraso.org/help/chapters/#add-media');
+  expect(within(dialog).getByRole('link')).toHaveAttribute('target', '_blank');
+  expect(within(dialog).getByRole('link')).toHaveStyle({
+    display: 'block',
+    marginBottom: '16px',
+  });
+  expect(within(dialog).getByRole('link').parentElement).toContainElement(
+    within(dialog).getByRole('button', { name: /Upload a photo or audio file/ })
+  );
   const input = within(dialog).getByRole('textbox', {
     name: 'Link to a YouTube or Vimeo video',
   });
@@ -323,8 +347,128 @@ test('StoryMapMediaEditor: adding media to a five-item chapter reaches six and p
   await waitFor(() =>
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   );
-  expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
+  expect(screen.getByText('Media 6 of 6')).toBeInTheDocument();
+  expect(await screen.findByText('YouTube video title')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Add media' })).toBeDisabled();
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Expand Embedded video' })
+  );
+  expect(
+    within(screen.getByRole('dialog')).getByTitle('Embedded video')
+  ).toHaveAttribute('src', 'https://www.youtube.com/embed/aqz-KE-bpKQ');
+});
+
+test('StoryMapMedia: YouTube Gallery preview still opens playback when metadata fails', async () => {
+  global.fetch.mockRejectedValue(new Error('Video is unavailable'));
+  await render(<GalleryPresentation items={[INITIAL_CHAPTER.mediaItems[5]]} />);
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    'Video preview unavailable'
+  );
+  const preview = screen.getByRole('button', { name: /Open/ });
+  expect(within(preview).getByRole('presentation')).toHaveAttribute(
+    'src',
+    'https://i.ytimg.com/vi/aqz-KE-bpKQ/hqdefault.jpg'
+  );
+  fireEvent.click(preview);
+  expect(
+    within(screen.getByRole('dialog')).getByTitle(/embedded/i)
+  ).toHaveAttribute('src', INITIAL_CHAPTER.mediaItems[5].url);
+});
+
+test.each([
+  { name: 'Gallery', Presentation: GalleryPresentation },
+  { name: 'Carousel', Presentation: CarouselPresentation },
+])(
+  'StoryMapMedia: $name Vimeo preview shows title and thumbnail and retains playback after a thumbnail error',
+  async ({ Presentation }) => {
+    const item = {
+      type: 'embedded',
+      source: 'vimeo',
+      url: 'https://player.vimeo.com/video/1084537',
+    };
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        title: 'Big Buck Bunny',
+        thumbnail_url: 'https://i.vimeocdn.com/video/bunny.jpg',
+      }),
+    });
+    await render(<Presentation items={[item]} />);
+    expect(await screen.findByText('Big Buck Bunny')).toBeInTheDocument();
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F1084537',
+      expect.objectContaining({ signal: expect.anything() })
+    );
+    const thumbnail = screen.getByRole('presentation');
+    expect(thumbnail).toHaveAttribute(
+      'src',
+      'https://i.vimeocdn.com/video/bunny.jpg'
+    );
+    fireEvent.error(thumbnail);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Video preview unavailable'
+    );
+    fireEvent.click(screen.getByRole('button', { name: /^(Open|Expand) / }));
+    expect(
+      within(screen.getByRole('dialog')).getByTitle(/embedded/i)
+    ).toHaveAttribute('src', item.url);
+  }
+);
+
+test('StoryMapMedia: unavailable Vimeo metadata leaves a usable playback preview', async () => {
+  const item = {
+    type: 'embedded',
+    source: 'vimeo',
+    url: 'https://player.vimeo.com/video/1084537',
+  };
+  global.fetch.mockResolvedValue({ ok: false, status: 404 });
+  await render(<GalleryPresentation items={[item]} />);
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    'Video preview unavailable'
+  );
+  fireEvent.click(screen.getByRole('button', { name: /^Open / }));
+  expect(
+    within(screen.getByRole('dialog')).getByTitle(/embedded/i)
+  ).toHaveAttribute('src', item.url);
+});
+
+test('StoryMapMediaEditor: choosing a link after dropping a file submits only the link without radios', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 1),
+      }}
+    />
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
+  const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
+  const dropZone = within(dialog).getByRole('button', {
+    name: /Upload a photo or audio file/,
+  });
+  const file = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
+  await act(async () =>
+    fireEvent.drop(dropZone, {
+      dataTransfer: {
+        files: [file],
+        items: [{ kind: 'file', type: file.type, getAsFile: () => file }],
+        types: ['Files'],
+      },
+    })
+  );
+  const submit = within(dialog).getByRole('button', { name: 'Add media' });
+  await waitFor(() => expect(submit).toBeEnabled());
+  const input = within(dialog).getByRole('textbox', {
+    name: 'Link to a YouTube or Vimeo video',
+  });
+  fireEvent.change(input, {
+    target: { value: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' },
+  });
+  fireEvent.blur(input);
+  fireEvent.click(submit);
+  expect(await screen.findByText('YouTube video title')).toBeInTheDocument();
+  expect(screen.getByText('Media 2 of 2')).toBeInTheDocument();
 });
 
 test('StoryMapMediaEditor: existing chapters above six retain their media and cannot add more', async () => {
@@ -397,6 +541,16 @@ test('StoryMapMediaEditor: single-media controls remain visible on a dark theme'
 
 test('StoryMapMediaEditor: next and previous controls navigate the controlled media collection', async () => {
   await render(<StoryMapMediaEditor />);
+  expect(
+    within(
+      screen.getByRole('button', { name: 'Move image media 1 earlier' })
+    ).getByTestId('NavigateBeforeIcon')
+  ).toBeInTheDocument();
+  expect(
+    within(
+      screen.getByRole('button', { name: 'Move image media 1 later' })
+    ).getByTestId('NavigateNextIcon')
+  ).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Next media' }));
   expect(screen.getByText('Media 2 of 6')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Previous media' }));
@@ -729,6 +883,10 @@ test('StoryMapMediaEditor: switches presentation while sharing contextual media 
     name: 'Open image media 2',
   });
   const firstSource = within(firstMedia).getByRole('img').getAttribute('src');
+  expect(firstMedia).toHaveStyle({ cursor: 'grab' });
+  expect(firstMedia.parentElement).toHaveStyle({
+    backgroundColor: 'var(--story-theme-background)',
+  });
   const secondSource = within(secondMedia).getByRole('img').getAttribute('src');
   const dataTransfer = {
     effectAllowed: 'move',
@@ -737,6 +895,7 @@ test('StoryMapMediaEditor: switches presentation while sharing contextual media 
     setDragImage: jest.fn(),
   };
   fireEvent.dragStart(firstMedia.parentElement, { dataTransfer });
+  expect(firstMedia).toHaveStyle({ cursor: 'grabbing' });
   fireEvent.dragOver(secondMedia, { dataTransfer });
   fireEvent.drop(secondMedia, { dataTransfer });
 
@@ -760,6 +919,11 @@ test('StoryMapMediaEditor: switches presentation while sharing contextual media 
   expect(
     screen.getByRole('menuitem', { name: 'Move earlier' })
   ).not.toHaveAttribute('aria-disabled', 'true');
+  expect(
+    within(screen.getByRole('menuitem', { name: 'Move earlier' })).getByTestId(
+      'ArrowUpwardIcon'
+    )
+  ).toBeInTheDocument();
   expect(
     screen.getByRole('menuitem', { name: 'Move later' })
   ).not.toHaveAttribute('aria-disabled', 'true');
@@ -848,11 +1012,8 @@ test('StoryMapMediaEditor: uses the production editor for one media item', async
     within(toolbar).getByRole('button', { name: 'Crop image media 1' })
   ).toBeInTheDocument();
   expect(
-    within(toolbar).getByRole('button', { name: 'Update Media' })
-  ).toHaveTextContent('Update Media');
-  expect(
-    within(toolbar).getByRole('button', { name: 'Update Media' })
-  ).toHaveClass('MuiButton-text');
+    within(toolbar).queryByRole('button', { name: 'Update Media' })
+  ).not.toBeInTheDocument();
   expect(
     within(toolbar).getByRole('button', { name: 'Remove image media 1' })
   ).toBeInTheDocument();
@@ -861,8 +1022,8 @@ test('StoryMapMediaEditor: uses the production editor for one media item', async
   ).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Add media' })).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Update Media' })
-  ).toBeInTheDocument();
+    screen.queryByRole('button', { name: 'Update Media' })
+  ).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Remove image media 1' }));
   fireEvent.click(screen.getByRole('button', { name: 'Delete image' }));
   await waitFor(() =>
@@ -889,14 +1050,14 @@ test('StoryMapMediaEditor: uses production actions for one embedded item', async
   );
 
   expect(
-    screen.getByRole('button', { name: 'Update Media' })
-  ).toBeInTheDocument();
+    screen.queryByRole('button', { name: 'Update Media' })
+  ).not.toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Remove Embedded video 1' })
   ).toBeInTheDocument();
 });
 
-test('StoryMapMediaEditor: replacing a failed uncropped image renders the new upload', async () => {
+test('StoryMapMediaEditor: deleting a failed image and adding a new upload renders it', async () => {
   const { crop, ...image } = INITIAL_CHAPTER.mediaItems[0];
   await render(
     <StoryMapMediaEditor
@@ -908,11 +1069,21 @@ test('StoryMapMediaEditor: replacing a failed uncropped image renders the new up
   );
   fireEvent.error(screen.getByRole('img'));
   expect(screen.getByRole('alert')).toHaveTextContent('Media unavailable');
-  fireEvent.click(screen.getByRole('button', { name: 'Update Media' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Remove image media 1' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Delete image' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
   const dialog = screen.getByRole('dialog', { name: 'Add media' });
   const dropZone = within(dialog).getByRole('button', {
     name: /Upload a photo or audio file/,
   });
+  expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
+  expect(dropZone).toHaveStyle({ borderStyle: 'dashed' });
+  expect(
+    within(dropZone).getByTestId('CloudUploadOutlinedIcon')
+  ).toBeInTheDocument();
   const file = new File(['replacement'], 'replacement.jpg', {
     type: 'image/jpeg',
   });
@@ -939,7 +1110,7 @@ test('StoryMapMediaEditor: replacing a failed uncropped image renders the new up
   expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
 });
 
-test('StoryMapMediaEditor: replacing single media preserves collection size', async () => {
+test('StoryMapMediaEditor: deleting single media and adding a link keeps a single-item collection', async () => {
   await render(
     <StoryMapMediaEditor
       initialChapter={{
@@ -948,7 +1119,12 @@ test('StoryMapMediaEditor: replacing single media preserves collection size', as
       }}
     />
   );
-  fireEvent.click(screen.getByRole('button', { name: 'Update Media' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Remove image media 1' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Delete image' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
   const dialog = screen.getByRole('dialog', { name: 'Add media' });
   const input = within(dialog).getByRole('textbox', {
     name: 'Link to a YouTube or Vimeo video',
@@ -1006,8 +1182,8 @@ test('StoryMapMediaEditor: removing the second item keeps the shared layout and 
   ).toBeInTheDocument();
   expect(screen.getByTestId('carousel-viewport')).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Update Media' })
-  ).toHaveTextContent('Update Media');
+    screen.queryByRole('button', { name: 'Update Media' })
+  ).not.toBeInTheDocument();
   expect(
     screen.queryByRole('button', { name: 'Display as gallery' })
   ).not.toBeInTheDocument();
@@ -1034,5 +1210,33 @@ test('StoryMapMediaEditor: removing the second item keeps the shared layout and 
   expect(
     screen.getByRole('button', { name: 'Display as gallery' })
   ).toHaveAttribute('aria-pressed', 'true');
-  expect(screen.getByText('Media 1 of 2')).toBeInTheDocument();
+  expect(screen.queryByText(/Media \d of 2/)).not.toBeInTheDocument();
 });
+
+test('StoryMapMediaEditor: Gallery hides the position counter while Carousel retains it', async () => {
+  await render(<StoryMapMediaEditor />);
+  expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+  expect(screen.queryByText(/Media \d of 6/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Display as carousel' }));
+  expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
+});
+
+test.each([3, 4, 5])(
+  'StoryMapMedia: non-image item %s has a full tinted Carousel stage and Gallery preview',
+  async index => {
+    const item = INITIAL_CHAPTER.mediaItems[index];
+    const background =
+      'color-mix(in srgb, var(--story-theme-text) 8%, var(--story-theme-background))';
+    const { unmount } = await render(<CarouselPresentation items={[item]} />);
+    expect(screen.getByTestId('carousel-viewport')).toHaveStyle({
+      backgroundColor: background,
+    });
+    unmount();
+    await render(<GalleryPresentation items={[item]} />);
+    const preview = item.type.startsWith('audio')
+      ? screen.getByTestId('gallery-audio-preview')
+      : screen.getByRole('button', { name: /Open/ });
+    expect(preview).toHaveStyle({ backgroundColor: background });
+  }
+);

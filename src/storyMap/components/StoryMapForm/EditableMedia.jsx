@@ -25,10 +25,14 @@ import { v4 as uuidv4 } from 'uuid';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import OpenInNew from '@mui/icons-material/OpenInNew';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import ViewCarouselOutlinedIcon from '@mui/icons-material/ViewCarouselOutlined';
 import {
@@ -38,15 +42,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
   FormHelperText,
   IconButton,
+  Link,
   ListItemIcon,
   Menu,
   MenuItem,
   OutlinedInput,
   Paper,
-  Radio,
   Slider,
   Stack,
   ToggleButton,
@@ -86,8 +89,6 @@ import {
   STORY_MAP_MEDIA_ACCEPTED_TYPES,
   STORY_MAP_MEDIA_MAX_SIZE,
 } from 'terraso-web-client/config';
-
-import theme from 'terraso-web-client/theme';
 
 const MEDIA_TYPES = {
   IMAGE: 'image',
@@ -271,34 +272,6 @@ const getDataFromEmbedded = value => {
   };
 };
 
-const AddSectionTitle = memo(({ checked, value, onChange, label, labelId }) => (
-  <FormControlLabel
-    sx={{ width: '100%', ml: 0, mr: 0 }}
-    onClick={event => event.stopPropagation()}
-    control={
-      <Radio
-        name="add-media-radio-selected"
-        checked={checked}
-        value={value}
-        onChange={onChange}
-      />
-    }
-    label={
-      <Typography
-        id={labelId}
-        variant="h3"
-        sx={{
-          width: '100%',
-          p: 0,
-          fontWeight: 500,
-        }}
-      >
-        {label}
-      </Typography>
-    }
-  />
-));
-
 export const AddMediaDialog = memo(props => {
   const { canAdd = true, open, onClose, onAdd } = props;
   const { t } = useTranslation();
@@ -413,29 +386,10 @@ export const AddMediaDialog = memo(props => {
     validateEmbedded(embeddedInputValue);
   }, [validateEmbedded, embeddedInputValue]);
 
-  const onRadioChange = useCallback(event => {
-    setSelected(_.toNumber(event.target.value));
-  }, []);
-
   const onAddWrapper = useCallback(() => {
     const media = selected === 0 ? droppedMedia : embeddedMedia;
     onAdd(media);
   }, [selected, droppedMedia, embeddedMedia, onAdd]);
-
-  const selectedSx = useMemo(
-    () => ({
-      bgcolor: 'blue.lite',
-      border: `2px solid ${theme.palette.blue.dark}`,
-    }),
-    []
-  );
-  const notSelectedSx = useMemo(
-    () => ({
-      bgcolor: 'white',
-      border: `1px solid ${theme.palette.gray.lite1}`,
-    }),
-    []
-  );
 
   const addDisabled = useMemo(() => {
     if (selected === 0) {
@@ -449,17 +403,31 @@ export const AddMediaDialog = memo(props => {
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
-      <DialogTitle>{t('storyMap.form_media_add_dialog_title')}</DialogTitle>
+      <DialogTitle sx={{ pb: 1 }}>
+        {t('storyMap.form_media_add_dialog_title')}
+      </DialogTitle>
       <DialogContent>
+        <Link
+          href="https://terraso.org/help/chapters/#add-media"
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ display: 'block', mb: 2 }}
+        >
+          {t('storyMap.form_media_add_dialog_help_text')}{' '}
+          <OpenInNew fontSize="inherit" sx={{ verticalAlign: 'middle' }} />
+        </Link>
         <DropZone
           label={
-            <AddSectionTitle
-              checked={selected === 0}
-              value={0}
-              onChange={onRadioChange}
-              label={t('storyMap.form_media_add_dialog_dropzone_label')}
-            />
+            <Stack spacing={1} sx={{ alignItems: 'center' }}>
+              <CloudUploadOutlinedIcon
+                sx={{ color: 'blue.dark', fontSize: 40 }}
+              />
+              <Typography variant="h3" sx={{ fontWeight: 500 }}>
+                {t('storyMap.form_media_add_dialog_dropzone_label')}
+              </Typography>
+            </Stack>
           }
+          multiple={false}
           maxSize={STORY_MAP_MEDIA_MAX_SIZE}
           fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
           fileExtensions={STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS}
@@ -468,8 +436,10 @@ export const AddMediaDialog = memo(props => {
           errors={dropErrors}
           currentFile={currentFile}
           containerProps={{
+            onClickCapture: () => setSelected(0),
+            onFocusCapture: () => setSelected(0),
             sx: {
-              ...(selected === 0 ? selectedSx : notSelectedSx),
+              opacity: selected === 0 ? 1 : 0.7,
             },
           }}
         />
@@ -481,23 +451,23 @@ export const AddMediaDialog = memo(props => {
             borderRadius: 0,
             display: 'flex',
             flexDirection: 'column',
-            ...(selected === 1 ? selectedSx : notSelectedSx),
+            bgcolor: selected === 1 ? 'blue.lite' : 'white',
           }}
         >
-          <AddSectionTitle
-            labelId="embedded-media-label"
-            checked={selected === 1}
-            value={1}
-            onChange={onRadioChange}
-            label={t('storyMap.form_media_add_dialog_link_media')}
-          />
+          <Typography
+            component="label"
+            htmlFor="embedded-media-input"
+            variant="h3"
+            sx={{ fontWeight: 500, mb: 1 }}
+          >
+            {t('storyMap.form_media_add_dialog_link_media')}
+          </Typography>
           <OutlinedInput
-            inputProps={{
-              'aria-labelledby': 'embedded-media-label',
-            }}
+            id="embedded-media-input"
             size="small"
             fullWidth
             onClick={() => setSelected(1)}
+            onFocus={() => setSelected(1)}
             onChange={onEmbeddedInputChange}
             onBlur={onEmbeddedInputBlur}
             value={embeddedInputValue}
@@ -1134,7 +1104,6 @@ const MediaActionsToolbar = ({
   onDelete,
   onMoveEarlier,
   onMoveLater,
-  onUpdate,
 }) => {
   const { t } = useTranslation();
   const actionButtonSx = {
@@ -1147,16 +1116,6 @@ const MediaActionsToolbar = ({
 
   return (
     <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-      {onUpdate && (
-        <Button
-          onClick={onUpdate}
-          size="small"
-          sx={{ ...actionButtonSx, width: 'auto', px: 1, whiteSpace: 'nowrap' }}
-          variant="text"
-        >
-          {t('storyMap.form_media_update_label')}
-        </Button>
-      )}
       {onCrop && (
         <Tooltip
           placement="top"
@@ -1184,7 +1143,7 @@ const MediaActionsToolbar = ({
               size="small"
               sx={actionButtonSx}
             >
-              <ArrowUpwardIcon fontSize="small" />
+              <NavigateBeforeIcon fontSize="small" />
             </IconButton>
           </span>
         </Tooltip>
@@ -1201,7 +1160,7 @@ const MediaActionsToolbar = ({
               size="small"
               sx={actionButtonSx}
             >
-              <ArrowDownwardIcon fontSize="small" />
+              <NavigateNextIcon fontSize="small" />
             </IconButton>
           </span>
         </Tooltip>
@@ -1236,10 +1195,8 @@ const EditableMediaList = ({
   const [cropIndex, setCropIndex] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [replaceIndex, setReplaceIndex] = useState(null);
   const mediaItems = value || [];
-  const canAddMedia =
-    replaceIndex !== null || mediaItems.length < MAX_CHAPTER_MEDIA_ITEMS;
+  const canAddMedia = mediaItems.length < MAX_CHAPTER_MEDIA_ITEMS;
   const hasMultipleItems = mediaItems.length > 1;
   const carouselThemeStyles = useMemo(
     () => getStoryMapThemeCssVariables(config),
@@ -1301,7 +1258,6 @@ const EditableMediaList = ({
           open={open}
           onClose={() => {
             setOpen(false);
-            setReplaceIndex(null);
           }}
           onAdd={media => {
             if (!canAddMedia) {
@@ -1309,17 +1265,11 @@ const EditableMediaList = ({
             }
             const nextMedia = {
               ...media,
-              id: mediaItems[replaceIndex]?.id || media.contentId || uuidv4(),
+              id: media.contentId || uuidv4(),
             };
-            onChange(
-              replaceIndex === null
-                ? [...mediaItems, nextMedia]
-                : mediaItems.map((item, index) =>
-                    index === replaceIndex ? nextMedia : item
-                  )
-            );
+            onChange([...mediaItems, nextMedia]);
+            setSelectedIndex(mediaItems.length);
             setOpen(false);
-            setReplaceIndex(null);
           }}
         />
       )}
@@ -1406,12 +1356,6 @@ const EditableMediaList = ({
                 onMoveLater: hasMultipleItems
                   ? () => moveMediaAtIndex(index, 1)
                   : null,
-                onUpdate: hasMultipleItems
-                  ? null
-                  : () => {
-                      setReplaceIndex(index);
-                      setOpen(true);
-                    },
               };
 
               if (actionPresentation === 'toolbar') {
