@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import EmbeddedVideoPreview from 'terraso-web-client/storyMap/components/EmbeddedVideoPreview';
 import {
   calculateMediaFitScale as calculateFitScale,
   MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
@@ -30,6 +31,12 @@ import {
   STORY_MAP_CONTROL_SX,
   STORY_MAP_OVERLAY_CONTROL_SX,
 } from 'terraso-web-client/storyMap/storyMapThemeUtils';
+
+const MEDIA_PREVIEW_BACKGROUND =
+  'color-mix(in srgb, var(--story-theme-text) 8%, var(--story-theme-background))';
+
+const hasEmbeddedVideoPreview = item =>
+  ['youtube', 'vimeo'].includes(item.source);
 
 const formatAudioTime = seconds => {
   const roundedSeconds = Math.max(0, Math.floor(seconds || 0));
@@ -200,7 +207,7 @@ const GalleryVideoPreview = ({ item }) => {
         data-testid="gallery-video-preview-fallback"
         sx={{
           alignItems: 'center',
-          bgcolor: 'var(--story-theme-background)',
+          bgcolor: MEDIA_PREVIEW_BACKGROUND,
           color: 'var(--story-theme-text)',
           display: 'flex',
           height: '100%',
@@ -253,7 +260,7 @@ const GalleryVideoPreview = ({ item }) => {
   );
 };
 
-const GalleryAudioPreview = ({ item, onOpen }) => {
+const GalleryAudioPreview = ({ item, onOpen, dragCursor }) => {
   const audioRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -295,9 +302,9 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
         onClick={openViewer}
         sx={{
           alignItems: 'center',
-          bgcolor: 'var(--story-theme-background)',
+          bgcolor: MEDIA_PREVIEW_BACKGROUND,
           color: 'var(--story-theme-text)',
-          cursor: 'pointer',
+          cursor: dragCursor || 'pointer',
           display: 'flex',
           flexDirection: 'column',
           gap: 1,
@@ -320,9 +327,9 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
       onClick={openViewer}
       sx={{
         alignItems: 'center',
-        bgcolor: 'var(--story-theme-background)',
+        bgcolor: MEDIA_PREVIEW_BACKGROUND,
         color: 'var(--story-theme-text)',
-        cursor: 'pointer',
+        cursor: dragCursor || 'pointer',
         display: 'flex',
         flexDirection: 'column',
         gap: 1,
@@ -393,12 +400,15 @@ const GalleryAudioPreview = ({ item, onOpen }) => {
 };
 
 const GalleryTilePreview = ({ item }) => {
+  if (hasEmbeddedVideoPreview(item)) {
+    return <EmbeddedVideoPreview item={item} />;
+  }
   if (mediaKind(item) === 'embedded') {
     return (
       <Box
         sx={{
           alignItems: 'center',
-          bgcolor: 'var(--story-theme-background)',
+          bgcolor: MEDIA_PREVIEW_BACKGROUND,
           color: 'var(--story-theme-text)',
           display: 'flex',
           height: '100%',
@@ -474,6 +484,10 @@ export const MediaViewer = ({ item, onClose, theme }) => (
             onClick={onClose}
             sx={{
               ...STORY_MAP_OVERLAY_CONTROL_SX,
+              '&:hover': {
+                bgcolor: 'var(--story-theme-background)',
+                color: 'var(--story-theme-text)',
+              },
               borderRadius: '50%',
               height: 36,
               position: 'absolute',
@@ -496,6 +510,7 @@ const MediaCollectionHeader = ({
   headerAction,
   itemCount,
   presentationAction,
+  showCounter = true,
 }) => (
   <Stack
     aria-label={i18n.t('storyMap.media_collection_actions')}
@@ -511,7 +526,7 @@ const MediaCollectionHeader = ({
   >
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
       {presentationAction}
-      {itemCount > 1 && (
+      {showCounter && itemCount > 1 && (
         <Typography variant="caption" sx={{ whiteSpace: 'nowrap' }}>
           {i18n.t('storyMap.media_count', {
             current: currentIndex + 1,
@@ -625,6 +640,11 @@ export const GalleryPresentation = ({
   const renderItem = (item, index) => {
     const isCurrent = index === currentIndex;
     const openItem = () => selectItem(item, index);
+    const dragCursor = onItemsReorder
+      ? dragSourceIndex === index
+        ? 'grabbing'
+        : 'grab'
+      : undefined;
     return (
       <Stack
         data-gallery-media-tile
@@ -634,6 +654,8 @@ export const GalleryPresentation = ({
         onDragStart={event => onDragStart(event, index)}
         spacing={0}
         sx={{
+          bgcolor: 'var(--story-theme-background)',
+          cursor: dragCursor,
           minWidth: 0,
           opacity: dragSourceIndex === index ? 0.4 : 1,
           overflow: 'hidden',
@@ -653,7 +675,11 @@ export const GalleryPresentation = ({
               position: 'relative',
             }}
           >
-            <GalleryAudioPreview item={item} onOpen={openItem} />
+            <GalleryAudioPreview
+              dragCursor={dragCursor}
+              item={item}
+              onOpen={openItem}
+            />
           </Box>
         ) : (
           <Box
@@ -668,9 +694,12 @@ export const GalleryPresentation = ({
             onClick={openItem}
             sx={{
               aspectRatio: '4 / 3',
-              background: 'var(--story-theme-background)',
+              bgcolor:
+                mediaKind(item) === 'image'
+                  ? 'var(--story-theme-background)'
+                  : MEDIA_PREVIEW_BACKGROUND,
               border: 0,
-              cursor: 'pointer',
+              cursor: dragCursor || 'pointer',
               overflow: 'hidden',
               p: 0,
               '&:focus-visible': {
@@ -739,6 +768,7 @@ export const GalleryPresentation = ({
           headerAction={headerAction}
           itemCount={items.length}
           presentationAction={presentationAction}
+          showCounter={false}
         />
       )}
       <Box
@@ -761,6 +791,9 @@ export const GalleryPresentation = ({
 };
 
 const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
+  if (hasEmbeddedVideoPreview(item)) {
+    return <EmbeddedVideoPreview item={item} />;
+  }
   if (mediaKind(item) === 'image') {
     return <CroppedImagePreview item={item} objectFit={objectFit} />;
   }
@@ -774,7 +807,7 @@ const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
       spacing={2}
       sx={{
         alignItems: 'center',
-        bgcolor: 'var(--story-theme-background)',
+        bgcolor: MEDIA_PREVIEW_BACKGROUND,
         color: 'var(--story-theme-text)',
         height: '100%',
         justifyContent: 'center',
@@ -799,7 +832,7 @@ const ExpandableCarouselStage = ({
   onExpand,
   objectFit = 'contain',
 }) =>
-  mediaKind(item) === 'image' ? (
+  mediaKind(item) === 'image' || hasEmbeddedVideoPreview(item) ? (
     <Box
       aria-label={i18n.t('storyMap.media_expand', { label: mediaLabel(item) })}
       component="button"
@@ -809,7 +842,9 @@ const ExpandableCarouselStage = ({
         alignItems: 'center',
         aspectRatio: '16 / 9',
         background: 'none',
-        bgcolor: 'var(--story-theme-background)',
+        bgcolor: hasEmbeddedVideoPreview(item)
+          ? MEDIA_PREVIEW_BACKGROUND
+          : 'var(--story-theme-background)',
         border: 0,
         cursor: 'zoom-in',
         display: 'flex',
@@ -830,7 +865,12 @@ const ExpandableCarouselStage = ({
     </Box>
   ) : (
     <Box
-      sx={{ aspectRatio: '16 / 9', position: 'relative', overflow: 'hidden' }}
+      sx={{
+        aspectRatio: '16 / 9',
+        bgcolor: MEDIA_PREVIEW_BACKGROUND,
+        position: 'relative',
+        overflow: 'hidden',
+      }}
       data-testid={testId}
     >
       <CarouselStageMedia item={item} objectFit={objectFit} />

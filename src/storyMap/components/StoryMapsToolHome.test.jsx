@@ -27,6 +27,7 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'terraso-web-client/tests/apiUtils';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
+import StoryMapHomeListItem from 'terraso-web-client/storyMap/components/StoryMapHomeListItem';
 import { STORY_MAP_CARD_IMAGE_ASPECT_RATIO } from 'terraso-web-client/storyMap/components/storyMapHomeListItemUtils';
 import StoryMapsToolsHome from 'terraso-web-client/storyMap/components/StoryMapsToolHome';
 
@@ -92,6 +93,42 @@ test('StoryMapsToolHome: community story maps are not rendered', async () => {
   ).not.toBeInTheDocument();
 });
 
+test('StoryMapHomeListItem: chapter reordering updates the cover after an image-load failure', async () => {
+  const first = {
+    type: 'image/jpeg',
+    signedUrl: 'https://example.com/first.jpg',
+  };
+  const second = {
+    type: 'image/jpeg',
+    signedUrl: 'https://example.com/second.jpg',
+  };
+  const storyMap = {
+    id: 'cover-test',
+    storyMapId: 'cover-test',
+    slug: 'cover-test',
+    title: 'Cover test',
+    updatedAt: '2023-01-31T22:25:42.916303+00:00',
+    membershipInfo: { memberships: [] },
+  };
+  const renderCard = images => (
+    <StoryMapHomeListItem
+      storyMap={{
+        ...storyMap,
+        config: { chapters: images.map(media => ({ mediaItems: [media] })) },
+      }}
+    />
+  );
+  const { rerender } = await render(renderCard([first, second]));
+  expect(screen.getByRole('img')).toHaveAttribute('src', first.signedUrl);
+  fireEvent.error(screen.getByRole('img'));
+  expect(screen.getByRole('img')).toHaveAttribute(
+    'src',
+    '/storyMap/terraso-story-maps-img.jpg'
+  );
+  rerender(renderCard([second, first]));
+  expect(screen.getByRole('img')).toHaveAttribute('src', second.signedUrl);
+});
+
 test('StoryMapsToolHome: user story maps render correctly', async () => {
   mockTerrasoAPIrequestGraphQL({
     'query userStoryMapsHome': Promise.resolve({
@@ -109,6 +146,13 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
                   signedUrl: 'https://example.com/story-map-1.png',
                   description: 'Story 1 featured image',
                 },
+                chapters: [
+                  {
+                    mediaItems: [
+                      { type: 'image/png', signedUrl: 'chapter-image.png' },
+                    ],
+                  },
+                ],
               }),
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
               createdBy: {
@@ -125,6 +169,20 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
               storyMapId: 'lftawa9',
               title: 'Story 2',
               isPublished: true,
+              configuration: JSON.stringify({
+                chapters: [
+                  {
+                    mediaItems: [
+                      { type: 'audio/mpeg', signedUrl: 'audio.mp3' },
+                      {
+                        type: 'image/jpeg',
+                        signedUrl: 'https://example.com/chapter.jpg',
+                        altText: 'Chapter cover',
+                      },
+                    ],
+                  },
+                ],
+              }),
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
               createdBy: {
                 userId: 'user-2',
@@ -177,8 +235,8 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
   const link2 = within(items[0]).getByRole('link', { name: 'Story 1' });
   expect(link2).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
   expect(
-    within(items[1]).getByRole('img', { name: 'Story 2' })
-  ).toHaveAttribute('src', '/storyMap/terraso-story-maps-img.jpg');
+    within(items[1]).getByRole('img', { name: 'Chapter cover' })
+  ).toHaveAttribute('src', 'https://example.com/chapter.jpg');
   const link1 = within(items[1]).getByRole('link', { name: 'Story 2' });
   expect(link1).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2/edit');
   const image = within(items[0]).getByRole('img', {
