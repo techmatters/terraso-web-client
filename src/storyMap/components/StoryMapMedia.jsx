@@ -17,6 +17,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import i18n from 'i18next';
+import logger from 'terraso-client-shared/monitoring/logger';
 import CloseIcon from '@mui/icons-material/Close';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -63,6 +64,7 @@ const StoryMapMediaItem = ({
   maxHeight,
   objectFit = 'contain',
   imageStyle,
+  draggable,
   onImageLoad,
   showWaveform = false,
 }) => {
@@ -87,6 +89,7 @@ const StoryMapMediaItem = ({
       <img
         src={getMediaSource(item)}
         alt={item.altText || label || mediaLabel(item)}
+        draggable={draggable}
         onLoad={onImageLoad}
         onError={() => setHasError(true)}
         style={{
@@ -182,6 +185,7 @@ export const CroppedImagePreview = ({
         <StoryMapMediaItem
           key={getMediaSource(item)}
           fill
+          draggable={false}
           imageStyle={{ position: 'relative', zIndex: 1 }}
           item={item}
           label={label}
@@ -198,10 +202,14 @@ export const CroppedImagePreview = ({
       : undefined;
 
   return (
-    <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+    <Box
+      data-cropped-media-preview
+      sx={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+    >
       <StoryMapMediaItem
         key={getMediaSource(item)}
         fill
+        draggable={false}
         imageStyle={{
           position: 'absolute',
           left: 0,
@@ -543,12 +551,40 @@ export const GalleryPresentation = ({
     setDropTargetIndex(null);
   };
   const onDragStart = (event, index) => {
+    const tile = event.currentTarget;
+    let dragImage = tile;
+    let width = tile.clientWidth;
+    let height = tile.clientHeight;
+    const image = tile.querySelector('[data-cropped-media-preview] img');
+    if (image?.complete && image.naturalWidth) {
+      const tileBounds = tile.getBoundingClientRect();
+      const imageBounds = image.getBoundingClientRect();
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(tileBounds.width);
+      canvas.height = Math.round(tileBounds.height);
+      const context = canvas.getContext('2d');
+      if (context) {
+        // Bound the native drag bitmap; DOM snapshots can include clipped overflow.
+        context.drawImage(
+          image,
+          imageBounds.left - tileBounds.left,
+          imageBounds.top - tileBounds.top,
+          imageBounds.width,
+          imageBounds.height
+        );
+        dragImage = canvas;
+        width = canvas.width;
+        height = canvas.height;
+      } else {
+        logger.error('Unable to create cropped media drag preview');
+      }
+    }
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', String(index));
     event.dataTransfer.setDragImage(
-      event.currentTarget,
-      Math.round(event.currentTarget.clientWidth / 2),
-      Math.round(event.currentTarget.clientHeight / 2)
+      dragImage,
+      Math.round(width / 2),
+      Math.round(height / 2)
     );
     setDragSourceIndex(index);
   };

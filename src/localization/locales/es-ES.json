@@ -923,6 +923,7 @@
         "media_done": "Listo",
         "media_add": "Agregar",
         "media_add_label": "Agregar multimedia",
+        "media_limit_reached": "Máximo de 6 elementos multimedia por capítulo.",
         "media_crop": "Recortar",
         "media_move_earlier": "Mover antes",
         "media_move_later": "Mover después",

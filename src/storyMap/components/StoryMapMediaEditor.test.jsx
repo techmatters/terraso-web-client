@@ -314,7 +314,7 @@ test.each([
     language: 'en-US',
     heading: 'Drag files here or choose files',
     helper: 'Supported files: images, audio, and video.',
-    position: 'Media 1 of 6',
+    position: 'Media 1 of 5',
     addText: 'Add media',
     toolbar: 'Media collection actions',
   },
@@ -322,17 +322,24 @@ test.each([
     language: 'es-ES',
     heading: 'Arrastra archivos aquí o elige archivos',
     helper: 'Archivos compatibles: imágenes, audio y video.',
-    position: '1 de 6',
+    position: '1 de 5',
     addText: 'Agregar',
     toolbar: 'Acciones de la colección multimedia',
   },
 ])(
-  'StoryMapMediaEditor: six-item chapters can open the localized upload picker in $language',
+  'StoryMapMediaEditor: chapters below the limit can open the localized upload picker in $language',
   async ({ language, heading, helper, position, addText, toolbar }) => {
     const previousLanguage = i18n.language;
     try {
       await act(() => i18n.changeLanguage(language));
-      await render(<StoryMapMediaEditor />);
+      await render(
+        <StoryMapMediaEditor
+          initialChapter={{
+            ...INITIAL_CHAPTER,
+            mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 5),
+          }}
+        />
+      );
 
       const addMediaButton = screen.getByRole('button', {
         name: /Add media|Agregar multimedia/,
@@ -357,8 +364,46 @@ test.each([
   }
 );
 
-test('StoryMapMediaEditor: adding a seventh item preserves existing media and allows further additions', async () => {
-  await render(<StoryMapMediaEditor />);
+test.each([
+  {
+    language: 'en-US',
+    explanation: 'Maximum of 6 media items per chapter.',
+  },
+  {
+    language: 'es-ES',
+    explanation: 'Máximo de 6 elementos multimedia por capítulo.',
+  },
+])(
+  'StoryMapMediaEditor: six items disable adding with a localized explanation in $language',
+  async ({ language, explanation }) => {
+    const previousLanguage = i18n.language;
+    try {
+      await act(() => i18n.changeLanguage(language));
+      await render(<StoryMapMediaEditor />);
+      const addMediaButton = screen.getByRole('button', {
+        name: /Add media|Agregar multimedia/,
+      });
+      expect(addMediaButton).toBeDisabled();
+      expect(addMediaButton).toHaveAttribute('aria-description', explanation);
+      fireEvent.mouseOver(addMediaButton);
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(explanation);
+      fireEvent.click(addMediaButton);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    } finally {
+      await act(() => i18n.changeLanguage(previousLanguage));
+    }
+  }
+);
+
+test('StoryMapMediaEditor: adding a sixth item preserves existing media and disables further additions', async () => {
+  await render(
+    <StoryMapMediaEditor
+      initialChapter={{
+        ...INITIAL_CHAPTER,
+        mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 5),
+      }}
+    />
+  );
 
   const addMediaButton = screen.getByRole('button', { name: 'Add media' });
   expect(addMediaButton).toBeEnabled();
@@ -391,9 +436,9 @@ test('StoryMapMediaEditor: adding a seventh item preserves existing media and al
   await waitFor(() =>
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   );
-  expect(screen.getByText('Media 7 of 7')).toBeInTheDocument();
+  expect(screen.getByText('Media 6 of 6')).toBeInTheDocument();
   expect(await screen.findByText('YouTube video title')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Add media' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeDisabled();
   fireEvent.click(
     screen.getByRole('button', { name: 'Expand Embedded video' })
   );
@@ -404,9 +449,9 @@ test('StoryMapMediaEditor: adding a seventh item preserves existing media and al
   await waitFor(() =>
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   );
-  for (let position = 6; position >= 1; position -= 1) {
+  for (let position = 5; position >= 1; position -= 1) {
     fireEvent.click(screen.getByRole('button', { name: 'Previous media' }));
-    expect(screen.getByText(`Media ${position} of 7`)).toBeInTheDocument();
+    expect(screen.getByText(`Media ${position} of 6`)).toBeInTheDocument();
   }
 });
 
@@ -539,7 +584,14 @@ test.each([
 ])(
   'StoryMapMediaEditor: rejects $filename without allowing submission',
   async ({ filename, type, size, error }) => {
-    await render(<StoryMapMediaEditor />);
+    await render(
+      <StoryMapMediaEditor
+        initialChapter={{
+          ...INITIAL_CHAPTER,
+          mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 5),
+        }}
+      />
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
     const dialog = screen.getByRole('dialog', { name: 'Add media' });
     const file = new File(['file'], filename, { type });
@@ -565,7 +617,7 @@ test.each([
   }
 );
 
-test('StoryMapMediaEditor: existing chapters above six retain navigation and can add more', async () => {
+test('StoryMapMediaEditor: existing chapters above six retain navigation but cannot add more', async () => {
   await render(
     <StoryMapMediaEditor
       initialChapter={{
@@ -579,11 +631,11 @@ test('StoryMapMediaEditor: existing chapters above six retain navigation and can
   );
 
   expect(screen.getByText('Media 1 of 7')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Add media' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeDisabled();
   fireEvent.click(screen.getByRole('button', { name: 'Next media' }));
   expect(screen.getByText('Media 2 of 7')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
-  expect(screen.getByRole('dialog', { name: 'Add media' })).toBeInTheDocument();
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
 test.each(['theme-1', 'theme-7'])(
@@ -824,6 +876,7 @@ test.each([
       const image = screen.getByRole('img', { name: 'image media' });
       loadImageDimensions(image, naturalWidth, naturalHeight);
 
+      expect(image.draggable).toBe(false);
       expect(image).toHaveStyle({
         position: 'absolute',
         objectFit: 'fill',
@@ -1066,6 +1119,7 @@ test('StoryMapMediaEditor: provides clear reordering, direct navigation, and con
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   );
   expect(screen.getByText('Media 2 of 5')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeEnabled();
 });
 
 test('StoryMapMediaEditor: shows one actionable ALT indicator on images without alt text', async () => {
@@ -1097,6 +1151,61 @@ test('StoryMapMediaEditor: shows one actionable ALT indicator on images without 
     screen.queryByRole('button', { name: /alt text for audio media/i })
   ).not.toBeInTheDocument();
 });
+
+test.each([
+  { position: { x: 0.3, y: 0.7 }, left: -144, top: -324 },
+  { position: { x: 0, y: 1 }, left: 0, top: -360 },
+])(
+  'StoryMapMedia: cropped drag snapshots keep tile bounds at crop $position',
+  async ({ position, left, top }) => {
+    const drawImage = jest.fn();
+    const getContext = jest
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockReturnValue({ drawImage });
+    try {
+      await render(
+        <GalleryPresentation
+          items={[
+            {
+              ...INITIAL_CHAPTER.mediaItems[0],
+              crop: { position, scale: 2 },
+            },
+          ]}
+          onItemsReorder={jest.fn()}
+        />
+      );
+      const image = screen.getByRole('img');
+      loadImageDimensions(image);
+      Object.defineProperty(image, 'complete', { value: true });
+      const tile = image.closest('[data-gallery-media-tile]');
+      jest.spyOn(tile, 'getBoundingClientRect').mockReturnValue({
+        left: 100,
+        top: 200,
+        width: 480,
+        height: 360,
+      });
+      jest.spyOn(image, 'getBoundingClientRect').mockReturnValue({
+        left: 100 + left,
+        top: 200 + top,
+        width: 1280,
+        height: 720,
+      });
+      const dataTransfer = {
+        setData: jest.fn(),
+        setDragImage: jest.fn(),
+      };
+      fireEvent.dragStart(tile, { dataTransfer });
+      const [snapshot, x, y] = dataTransfer.setDragImage.mock.calls[0];
+      expect(snapshot).toBeInstanceOf(HTMLCanvasElement);
+      expect([snapshot.width, snapshot.height, x, y]).toEqual([
+        480, 360, 240, 180,
+      ]);
+      expect(drawImage).toHaveBeenCalledWith(image, left, top, 1280, 720);
+    } finally {
+      getContext.mockRestore();
+    }
+  }
+);
 
 test('StoryMapMediaEditor: switches presentation while sharing contextual media actions', async () => {
   await render(<StoryMapMediaEditor />);
@@ -1132,6 +1241,7 @@ test('StoryMapMediaEditor: switches presentation while sharing contextual media 
     name: 'Open image media 2',
   });
   const firstSource = within(firstMedia).getByRole('img').getAttribute('src');
+  expect(within(firstMedia).getByRole('img').draggable).toBe(false);
   expect(firstMedia).toHaveStyle({ cursor: 'grab' });
   expect(firstMedia.parentElement).toHaveStyle({
     backgroundColor: 'var(--story-theme-background)',
@@ -1144,6 +1254,11 @@ test('StoryMapMediaEditor: switches presentation while sharing contextual media 
     setDragImage: jest.fn(),
   };
   fireEvent.dragStart(firstMedia.parentElement, { dataTransfer });
+  expect(dataTransfer.setDragImage).toHaveBeenCalledWith(
+    firstMedia.parentElement,
+    expect.any(Number),
+    expect.any(Number)
+  );
   expect(dataTransfer.effectAllowed).toBe('move');
   expect(firstMedia).toHaveStyle({ cursor: 'grabbing' });
   fireEvent.dragOver(secondMedia, { dataTransfer });
