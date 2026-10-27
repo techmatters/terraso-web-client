@@ -927,7 +927,7 @@ const EmptyMediaPlaceholder = ({ onUpload }) => {
 
 const AddMediaButton = ({ compact = false, disabled = false, onClick }) => {
   const limitMessage = i18n.t('storyMap.media_limit_reached');
-  const addLabel = i18n.t('storyMap.media_add');
+  const addLabel = i18n.t('storyMap.media_add_label');
 
   return (
     <Tooltip title={disabled ? limitMessage : addLabel}>
@@ -962,7 +962,7 @@ const AddMediaButton = ({ compact = false, disabled = false, onClick }) => {
               }),
             }}
           >
-            {addLabel}
+            {i18n.t('storyMap.media_add')}
           </Box>
         </Button>
       </span>

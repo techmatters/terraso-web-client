@@ -321,7 +321,7 @@ test('waveform decoding failure leaves native playback available', async () => {
   await render(<MediaViewer item={item} />);
 
   expect(await screen.findByRole('alert')).toHaveTextContent(
-    'Waveform unavailable. You can still use the audio controls.'
+    'Audio preview unavailable. You can still play the audio.'
   );
   expect(
     screen.getByLabelText('audio media', { selector: 'audio' })
@@ -340,7 +340,7 @@ test('failed preview keeps the speaker fallback and expansion can retry decoding
   await render(<GalleryPresentation items={[item]} />);
   act(() => onIntersection([{ isIntersecting: true }]));
   expect(await screen.findByRole('status')).toHaveTextContent(
-    'Waveform preview unavailable'
+    'Audio preview unavailable'
   );
   expect(screen.getByTestId('VolumeUpIcon')).toBeInTheDocument();
   expect(logger.error).toHaveBeenCalled();
