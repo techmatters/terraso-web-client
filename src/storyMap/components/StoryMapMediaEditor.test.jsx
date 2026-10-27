@@ -75,7 +75,7 @@ const MEDIA_ERROR_MESSAGES = [
   {
     language: 'es-ES',
     media: 'Contenido multimedia no disponible',
-    video: 'Vista previa del video no disponible',
+    video: 'Vista previa no disponible',
   },
 ];
 
@@ -312,15 +312,19 @@ test.each([
     language: 'en-US',
     explanation: 'Maximum of 6 media items per chapter.',
     position: 'Media 1 of 6',
+    addText: 'Add media',
+    toolbar: 'Media collection actions',
   },
   {
     language: 'es-ES',
     explanation: 'Máximo de 6 elementos multimedia por capítulo.',
-    position: 'Elemento multimedia 1 de 6',
+    position: '1 de 6',
+    addText: 'Agregar',
+    toolbar: 'Acciones de la colección multimedia',
   },
 ])(
   'StoryMapMediaEditor: the add action is disabled with a localized explanation at six items in $language',
-  async ({ language, explanation, position }) => {
+  async ({ language, explanation, position, addText, toolbar }) => {
     const previousLanguage = i18n.language;
     try {
       await act(() => i18n.changeLanguage(language));
@@ -330,6 +334,10 @@ test.each([
         name: /Add media|Agregar multimedia/,
       });
       expect(addMediaButton).toBeDisabled();
+      expect(addMediaButton.textContent).toBe(addText);
+      expect(screen.getByRole('toolbar', { name: toolbar })).toHaveStyle({
+        flexWrap: 'wrap',
+      });
       expect(addMediaButton).toHaveAttribute('aria-description', explanation);
       fireEvent.mouseOver(addMediaButton);
       expect(await screen.findByRole('tooltip')).toHaveTextContent(explanation);

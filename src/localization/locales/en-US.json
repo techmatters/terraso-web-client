@@ -901,8 +901,8 @@
     "storyMap": {
         "media_unavailable": "Media unavailable",
         "media_video_unavailable": "Video preview unavailable",
-        "media_waveform_unavailable": "Waveform unavailable. You can still use the audio controls.",
-        "media_waveform_preview_unavailable": "Waveform preview unavailable",
+        "media_waveform_unavailable": "Audio preview unavailable. You can still play the audio.",
+        "media_waveform_preview_unavailable": "Audio preview unavailable",
         "media_close_viewer": "Close media viewer",
         "media_collection_actions": "Media collection actions",
         "media_current_actions": "Current media actions",
@@ -920,6 +920,7 @@
         "media_edit_alt": "Edit alt text",
         "media_add_alt": "Add alt text",
         "media_add": "Add media",
+        "media_add_label": "Add media",
         "media_limit_reached": "Maximum of 6 media items per chapter.",
         "media_crop": "Crop",
         "media_move_earlier": "Move earlier",

@@ -448,12 +448,19 @@ const MediaCollectionHeader = ({
     sx={{
       alignItems: 'center',
       containerType: 'inline-size',
+      flexWrap: 'wrap',
+      gap: 1,
       justifyContent: 'space-between',
       minHeight: 32,
       px: 0.5,
     }}
   >
-    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+    <Stack
+      direction="row"
+      spacing={1}
+      useFlexGap
+      sx={{ alignItems: 'center', flexWrap: 'wrap', minWidth: 0 }}
+    >
       {presentationAction}
       {showCounter && itemCount > 1 && (
         <Typography variant="caption" sx={{ whiteSpace: 'nowrap' }}>
