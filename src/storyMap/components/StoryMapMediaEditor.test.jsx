@@ -36,6 +36,8 @@ import {
 } from 'terraso-web-client/storyMap/components/StoryMapMedia';
 import { STORY_MAP_THEME_OPTIONS } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
+import { STORY_MAP_MEDIA_MAX_SIZE } from 'terraso-web-client/config';
+
 const originalFetch = global.fetch;
 const OriginalIntersectionObserver = globalThis.IntersectionObserver;
 const loadImageDimensions = (
@@ -310,21 +312,23 @@ test.each([1, 2])(
 test.each([
   {
     language: 'en-US',
-    explanation: 'Maximum of 6 media items per chapter.',
+    heading: 'Drag files here or choose files',
+    helper: 'Supported files: images, audio, and video.',
     position: 'Media 1 of 6',
     addText: 'Add media',
     toolbar: 'Media collection actions',
   },
   {
     language: 'es-ES',
-    explanation: 'Máximo de 6 elementos multimedia por capítulo.',
+    heading: 'Arrastra archivos aquí o elige archivos',
+    helper: 'Archivos compatibles: imágenes, audio y video.',
     position: '1 de 6',
     addText: 'Agregar',
     toolbar: 'Acciones de la colección multimedia',
   },
 ])(
-  'StoryMapMediaEditor: the add action is disabled with a localized explanation at six items in $language',
-  async ({ language, explanation, position, addText, toolbar }) => {
+  'StoryMapMediaEditor: six-item chapters can open the localized upload picker in $language',
+  async ({ language, heading, helper, position, addText, toolbar }) => {
     const previousLanguage = i18n.language;
     try {
       await act(() => i18n.changeLanguage(language));
@@ -333,18 +337,19 @@ test.each([
       const addMediaButton = screen.getByRole('button', {
         name: /Add media|Agregar multimedia/,
       });
-      expect(addMediaButton).toBeDisabled();
+      expect(addMediaButton).toBeEnabled();
       expect(addMediaButton.textContent).toBe(addText);
       expect(screen.getByRole('toolbar', { name: toolbar })).toHaveStyle({
         flexWrap: 'wrap',
       });
-      expect(addMediaButton).toHaveAttribute('aria-description', explanation);
-      fireEvent.mouseOver(addMediaButton);
-      expect(await screen.findByRole('tooltip')).toHaveTextContent(explanation);
       fireEvent.click(addMediaButton);
+      const dialog = screen.getByRole('dialog', {
+        name: /Add media|Agregar multimedia/,
+      });
       expect(
-        screen.queryByRole('dialog', { name: /Add media|Agregar multimedia/ })
-      ).not.toBeInTheDocument();
+        within(dialog).getByRole('heading', { name: heading })
+      ).toBeVisible();
+      expect(within(dialog).getByText(helper)).toBeVisible();
       expect(screen.getByText(position)).toBeInTheDocument();
     } finally {
       await act(() => i18n.changeLanguage(previousLanguage));
@@ -352,15 +357,8 @@ test.each([
   }
 );
 
-test('StoryMapMediaEditor: adding media to a five-item chapter reaches six and preserves all media', async () => {
-  await render(
-    <StoryMapMediaEditor
-      initialChapter={{
-        ...INITIAL_CHAPTER,
-        mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 5),
-      }}
-    />
-  );
+test('StoryMapMediaEditor: adding a seventh item preserves existing media and allows further additions', async () => {
+  await render(<StoryMapMediaEditor />);
 
   const addMediaButton = screen.getByRole('button', { name: 'Add media' });
   expect(addMediaButton).toBeEnabled();
@@ -377,7 +375,9 @@ test('StoryMapMediaEditor: adding media to a five-item chapter reaches six and p
     marginBottom: '16px',
   });
   expect(within(dialog).getByRole('link').parentElement).toContainElement(
-    within(dialog).getByRole('button', { name: /Upload a photo or audio file/ })
+    within(dialog).getByRole('button', {
+      name: /Drag files here or choose files/,
+    })
   );
   const input = within(dialog).getByRole('textbox', {
     name: 'Link to a YouTube or Vimeo video',
@@ -391,15 +391,23 @@ test('StoryMapMediaEditor: adding media to a five-item chapter reaches six and p
   await waitFor(() =>
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   );
-  expect(screen.getByText('Media 6 of 6')).toBeInTheDocument();
+  expect(screen.getByText('Media 7 of 7')).toBeInTheDocument();
   expect(await screen.findByText('YouTube video title')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Add media' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeEnabled();
   fireEvent.click(
     screen.getByRole('button', { name: 'Expand Embedded video' })
   );
   expect(
     within(screen.getByRole('dialog')).getByTitle('Embedded video')
   ).toHaveAttribute('src', 'https://www.youtube.com/embed/aqz-KE-bpKQ');
+  fireEvent.click(screen.getByRole('button', { name: 'Close media viewer' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  for (let position = 6; position >= 1; position -= 1) {
+    fireEvent.click(screen.getByRole('button', { name: 'Previous media' }));
+    expect(screen.getByText(`Media ${position} of 7`)).toBeInTheDocument();
+  }
 });
 
 test('StoryMapMedia: YouTube Gallery preview still opens playback when metadata fails', async () => {
@@ -489,7 +497,7 @@ test('StoryMapMediaEditor: choosing a link after dropping a file submits only th
   const dialog = screen.getByRole('dialog', { name: 'Add media' });
   expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
   const dropZone = within(dialog).getByRole('button', {
-    name: /Upload a photo or audio file/,
+    name: /Drag files here or choose files/,
   });
   const file = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
   await act(async () =>
@@ -515,7 +523,49 @@ test('StoryMapMediaEditor: choosing a link after dropping a file submits only th
   expect(screen.getByText('Media 2 of 2')).toBeInTheDocument();
 });
 
-test('StoryMapMediaEditor: existing chapters above six retain their media and cannot add more', async () => {
+test.each([
+  {
+    filename: 'document.txt',
+    type: 'text/plain',
+    size: 10,
+    error: 'The file cannot be added.',
+  },
+  {
+    filename: 'large.jpg',
+    type: 'image/jpeg',
+    size: STORY_MAP_MEDIA_MAX_SIZE + 1,
+    error: 'large.jpg cannot be added because the file is too large.',
+  },
+])(
+  'StoryMapMediaEditor: rejects $filename without allowing submission',
+  async ({ filename, type, size, error }) => {
+    await render(<StoryMapMediaEditor />);
+    fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
+    const dialog = screen.getByRole('dialog', { name: 'Add media' });
+    const file = new File(['file'], filename, { type });
+    Object.defineProperty(file, 'size', { value: size });
+    await act(async () =>
+      fireEvent.drop(
+        within(dialog).getByRole('button', {
+          name: /Drag files here or choose files/,
+        }),
+        {
+          dataTransfer: {
+            files: [file],
+            items: [{ kind: 'file', type, getAsFile: () => file }],
+            types: ['Files'],
+          },
+        }
+      )
+    );
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(error);
+    expect(
+      within(dialog).getByRole('button', { name: 'Add media' })
+    ).toBeDisabled();
+  }
+);
+
+test('StoryMapMediaEditor: existing chapters above six retain navigation and can add more', async () => {
   await render(
     <StoryMapMediaEditor
       initialChapter={{
@@ -529,9 +579,11 @@ test('StoryMapMediaEditor: existing chapters above six retain their media and ca
   );
 
   expect(screen.getByText('Media 1 of 7')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Add media' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Add media' })).toBeEnabled();
   fireEvent.click(screen.getByRole('button', { name: 'Next media' }));
   expect(screen.getByText('Media 2 of 7')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
+  expect(screen.getByRole('dialog', { name: 'Add media' })).toBeInTheDocument();
 });
 
 test.each(['theme-1', 'theme-7'])(
@@ -1086,14 +1138,16 @@ test('StoryMapMediaEditor: switches presentation while sharing contextual media 
   });
   const secondSource = within(secondMedia).getByRole('img').getAttribute('src');
   const dataTransfer = {
-    effectAllowed: 'move',
+    effectAllowed: 'uninitialized',
     getData: jest.fn(() => '0'),
     setData: jest.fn(),
     setDragImage: jest.fn(),
   };
   fireEvent.dragStart(firstMedia.parentElement, { dataTransfer });
+  expect(dataTransfer.effectAllowed).toBe('move');
   expect(firstMedia).toHaveStyle({ cursor: 'grabbing' });
   fireEvent.dragOver(secondMedia, { dataTransfer });
+  expect(dataTransfer.dropEffect).toBe('move');
   fireEvent.drop(secondMedia, { dataTransfer });
 
   expect(
@@ -1265,7 +1319,7 @@ test('StoryMapMediaEditor: deleting a failed image and adding a new upload rende
   fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
   const dialog = screen.getByRole('dialog', { name: 'Add media' });
   const dropZone = within(dialog).getByRole('button', {
-    name: /Upload a photo or audio file/,
+    name: /Drag files here or choose files/,
   });
   expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
   expect(dropZone).toHaveStyle({ borderStyle: 'dashed' });

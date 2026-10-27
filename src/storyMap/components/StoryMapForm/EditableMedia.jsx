@@ -74,7 +74,6 @@ import {
   calculateMediaFitScale as calculateFitScale,
   MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
   getMediaSource,
-  MAX_CHAPTER_MEDIA_ITEMS,
   getMediaLabel as mediaLabel,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
 import {
@@ -273,7 +272,7 @@ const getDataFromEmbedded = value => {
 };
 
 export const AddMediaDialog = memo(props => {
-  const { canAdd = true, open, onClose, onAdd } = props;
+  const { open, onClose, onAdd } = props;
   const { t } = useTranslation();
   const { addMediaFile } = useStoryMapMediaContext();
 
@@ -428,6 +427,7 @@ export const AddMediaDialog = memo(props => {
             </Stack>
           }
           multiple={false}
+          caption={t('storyMap.form_media_add_dialog_dropzone_helper')}
           maxSize={STORY_MAP_MEDIA_MAX_SIZE}
           fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
           fileExtensions={STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS}
@@ -476,10 +476,8 @@ export const AddMediaDialog = memo(props => {
               'storyMap.form_media_add_dialog_link_media_placeholder'
             )}
           />
-          {(embeddedError || !canAdd) && (
-            <FormHelperText error>
-              {embeddedError || t('storyMap.media_limit_reached')}
-            </FormHelperText>
+          {embeddedError && (
+            <FormHelperText error>{embeddedError}</FormHelperText>
           )}
         </Paper>
       </DialogContent>
@@ -488,7 +486,7 @@ export const AddMediaDialog = memo(props => {
         <Button
           variant="contained"
           onClick={onAddWrapper}
-          disabled={addDisabled || !canAdd}
+          disabled={addDisabled}
         >
           {t('storyMap.form_media_add_dialog_add')}
         </Button>
@@ -925,17 +923,14 @@ const EmptyMediaPlaceholder = ({ onUpload }) => {
   );
 };
 
-const AddMediaButton = ({ compact = false, disabled = false, onClick }) => {
-  const limitMessage = i18n.t('storyMap.media_limit_reached');
+const AddMediaButton = ({ compact = false, onClick }) => {
   const addLabel = i18n.t('storyMap.media_add_label');
 
   return (
-    <Tooltip title={disabled ? limitMessage : addLabel}>
+    <Tooltip title={addLabel}>
       <span>
         <Button
-          aria-description={disabled ? limitMessage : undefined}
           aria-label={addLabel}
-          disabled={disabled}
           onClick={onClick}
           size="small"
           sx={{
@@ -1196,7 +1191,6 @@ const EditableMediaList = ({
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const mediaItems = value || [];
-  const canAddMedia = mediaItems.length < MAX_CHAPTER_MEDIA_ITEMS;
   const hasMultipleItems = mediaItems.length > 1;
   const carouselThemeStyles = useMemo(
     () => getStoryMapThemeCssVariables(config),
@@ -1254,15 +1248,11 @@ const EditableMediaList = ({
     >
       {open && (
         <AddMediaDialog
-          canAdd={canAddMedia}
           open={open}
           onClose={() => {
             setOpen(false);
           }}
           onAdd={media => {
-            if (!canAddMedia) {
-              return;
-            }
             const nextMedia = {
               ...media,
               id: media.contentId || uuidv4(),
@@ -1281,11 +1271,7 @@ const EditableMediaList = ({
           <Presentation
             currentIndex={selectedIndex}
             headerAction={
-              <AddMediaButton
-                compact
-                disabled={!canAddMedia}
-                onClick={() => setOpen(true)}
-              />
+              <AddMediaButton compact onClick={() => setOpen(true)} />
             }
             items={mediaItems.map(media => ({
               ...media,
