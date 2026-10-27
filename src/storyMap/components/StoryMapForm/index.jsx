@@ -54,6 +54,8 @@ const BASE_CHAPTER = {
   title: '',
   description: '',
   onChapterEnter: [],
+  mediaItems: [],
+  mediaPresentation: 'carousel',
 };
 
 const Preview = props => {
@@ -63,18 +65,13 @@ const Preview = props => {
   const previewConfig = useMemo(
     () => ({
       ...config,
-      chapters: config.chapters.map(chapter => {
-        if (!chapter.media || chapter.media.url) {
-          return chapter;
-        }
-        return {
-          ...chapter,
-          media: {
-            ...chapter.media,
-            url: getMediaFile(chapter.media.contentId),
-          },
-        };
-      }),
+      chapters: config.chapters.map(chapter => ({
+        ...chapter,
+        mediaItems: chapter.mediaItems.map(media => ({
+          ...media,
+          url: media.url || getMediaFile(media.contentId),
+        })),
+      })),
     }),
     [config, getMediaFile]
   );

@@ -27,6 +27,11 @@ import _ from 'lodash/fp';
 import { flushSync } from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
+import {
+  normalizeStoryMapConfig,
+  parseStoryMapConfiguration,
+} from 'terraso-web-client/storyMap/storyMapUtils';
+
 const StoryMapConfigDataContext = createContext();
 const StoryMapPreviewContext = createContext();
 const StoryMapMediaContext = createContext();
@@ -71,8 +76,9 @@ export const StoryMapConfigContextProvider = props => {
     throw new Error('StoryMapConfigContextProvider requires a baseConfig');
   }
 
-  const initialConfig = baseConfig;
-  const [config, setConfig] = useState(initialConfig);
+  const [config, setConfig] = useState(() =>
+    normalizeStoryMapConfig(baseConfig)
+  );
   const [configRevision, setConfigRevision] = useState(0);
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
@@ -80,7 +86,7 @@ export const StoryMapConfigContextProvider = props => {
   const [hasBufferedChapterChanges, setHasBufferedChapterChanges] =
     useState(false);
   const init = useRef(false);
-  const latestConfigRef = useRef(initialConfig);
+  const latestConfigRef = useRef(config);
   const latestConfigRevisionRef = useRef(0);
   const bufferedChapterUpdateBuildersRef = useRef(new Map());
   const chaptersWithBufferedChangesRef = useRef(new Set());
@@ -150,7 +156,10 @@ export const StoryMapConfigContextProvider = props => {
       }
 
       const nextConfig = savedConfig
-        ? applyConfigUpdate(latestConfigRef.current, savedConfig)
+        ? applyConfigUpdate(
+            latestConfigRef.current,
+            normalizeStoryMapConfig(parseStoryMapConfiguration(savedConfig))
+          )
         : latestConfigRef.current;
       latestConfigRef.current = nextConfig;
       setConfig(nextConfig);

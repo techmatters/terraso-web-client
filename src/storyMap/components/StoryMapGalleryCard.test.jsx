@@ -71,3 +71,96 @@ test('StoryMapGalleryCard: uses default image when no featured image is configur
     '/storyMap/terraso-story-maps-img.jpg'
   );
 });
+
+const firstImage = {
+  type: 'image/jpeg',
+  signedUrl: 'https://example.com/first.jpg',
+  altText: 'First chapter image',
+};
+const secondImage = {
+  type: 'image/png',
+  url: 'https://example.com/second.png',
+};
+const mixedChapters = [
+  { mediaItems: [{ type: 'audio/mpeg', signedUrl: 'audio.mp3' }] },
+  {
+    mediaItems: [
+      { type: 'embedded', source: 'youtube', url: 'video-url' },
+      { type: 'image/jpeg', contentId: 'unresolved-upload' },
+      firstImage,
+      secondImage,
+    ],
+  },
+];
+
+test.each([
+  {
+    name: 'explicit featured image takes precedence over chapter images',
+    config: { ...storyMap.config, chapters: mixedChapters },
+    src: storyMap.config.featuredImage.signedUrl,
+    alt: storyMap.config.featuredImage.description,
+  },
+  {
+    name: 'first available image in mixed ordered chapter media',
+    config: { chapters: mixedChapters },
+    src: firstImage.signedUrl,
+    alt: firstImage.altText,
+  },
+  {
+    name: 'legacy single-media chapter',
+    config: { chapters: [{ media: firstImage }] },
+    src: firstImage.signedUrl,
+    alt: firstImage.altText,
+  },
+  {
+    name: 'explicitly empty collection overrides legacy media',
+    config: { chapters: [{ media: firstImage, mediaItems: [] }] },
+    src: '/storyMap/terraso-story-maps-img.jpg',
+    alt: storyMap.title,
+  },
+  {
+    name: 'missing featured source uses chapter image and its alt text',
+    config: {
+      featuredImage: { description: 'Unused featured description' },
+      chapters: [{ mediaItems: [secondImage] }],
+    },
+    src: secondImage.url,
+    alt: storyMap.title,
+  },
+])('StoryMapGalleryCard: $name', ({ config, src, alt }) => {
+  render(
+    <MemoryRouter>
+      <StoryMapGalleryCard storyMap={{ ...storyMap, config }} />
+    </MemoryRouter>
+  );
+  expect(screen.getByRole('img', { name: alt })).toHaveAttribute('src', src);
+});
+
+test('StoryMapGalleryCard: reordered and removed images update the automatic cover, with load-error fallback', () => {
+  const renderCard = mediaItems => (
+    <MemoryRouter>
+      <StoryMapGalleryCard
+        storyMap={{
+          ...storyMap,
+          config: { chapters: [{ mediaItems }] },
+        }}
+      />
+    </MemoryRouter>
+  );
+  const { rerender } = render(renderCard([firstImage, secondImage]));
+  expect(screen.getByRole('img')).toHaveAttribute('src', firstImage.signedUrl);
+  rerender(renderCard([secondImage, firstImage]));
+  expect(screen.getByRole('img')).toHaveAttribute('src', secondImage.url);
+  fireEvent.error(screen.getByRole('img'));
+  expect(screen.getByRole('img')).toHaveAttribute(
+    'src',
+    '/storyMap/terraso-story-maps-img.jpg'
+  );
+  rerender(renderCard([firstImage]));
+  expect(screen.getByRole('img')).toHaveAttribute('src', firstImage.signedUrl);
+  rerender(renderCard([]));
+  expect(screen.getByRole('img')).toHaveAttribute(
+    'src',
+    '/storyMap/terraso-story-maps-img.jpg'
+  );
+});

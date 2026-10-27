@@ -110,13 +110,31 @@ const parseConfig = node => {
   }
 };
 
+const getStoryMapImage = config => {
+  if (config.featuredImage?.signedUrl) {
+    return config.featuredImage.signedUrl;
+  }
+
+  for (const chapter of config.chapters ?? []) {
+    const mediaItems =
+      chapter.mediaItems ?? (chapter.media ? [chapter.media] : []);
+    const image = mediaItems.find(
+      media => media.type?.startsWith('image') && (media.signedUrl || media.url)
+    );
+    if (image) {
+      return image.signedUrl || image.url;
+    }
+  }
+
+  return getFallbackImageUrl();
+};
+
 const buildMetaTags = node => {
   const storyMapConfig = parseConfig(node);
 
   const title = storyMapConfig.title;
   const description = getStoryMapMetaDescription(storyMapConfig);
-  const image =
-    storyMapConfig.featuredImage?.signedUrl || getFallbackImageUrl();
+  const image = getStoryMapImage(storyMapConfig);
 
   return { title, description, image };
 };
