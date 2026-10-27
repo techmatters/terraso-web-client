@@ -97,8 +97,6 @@ const StoryMapMediaEditorContent = ({ initialChapter }) => {
     >
       <Stack spacing={2} sx={{ margin: 'auto', maxWidth: 900 }}>
         <ChapterForm
-          mediaField="mediaItems"
-          multipleMedia
           onFieldBlur={() => {}}
           onFieldChange={onFieldChange}
           record={chapter}

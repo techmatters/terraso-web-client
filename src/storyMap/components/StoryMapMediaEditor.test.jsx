@@ -37,7 +37,25 @@ import {
 import { STORY_MAP_THEME_OPTIONS } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 const originalFetch = global.fetch;
+const OriginalIntersectionObserver = globalThis.IntersectionObserver;
+const loadImageDimensions = (
+  image,
+  naturalWidth = 640,
+  naturalHeight = 360
+) => {
+  Object.defineProperties(image, {
+    naturalWidth: { value: naturalWidth },
+    naturalHeight: { value: naturalHeight },
+  });
+  fireEvent.load(image);
+};
+
 beforeEach(() => {
+  globalThis.IntersectionObserver = jest.fn(callback => ({
+    observe: target => callback([{ target, isIntersecting: true }]),
+    disconnect: jest.fn(),
+    unobserve: jest.fn(),
+  }));
   global.fetch = jest.fn().mockResolvedValue({
     ok: true,
     json: async () => ({ title: 'YouTube video title' }),
@@ -45,6 +63,7 @@ beforeEach(() => {
 });
 afterAll(() => {
   global.fetch = originalFetch;
+  globalThis.IntersectionObserver = OriginalIntersectionObserver;
 });
 
 const MEDIA_ERROR_MESSAGES = [
@@ -598,38 +617,180 @@ test('StoryMapMediaEditor: a single image supports alt text, cropping and origin
     target: { value: '2' },
   });
   fireEvent.click(screen.getByRole('button', { name: 'Done' }));
-  expect(screen.getByRole('img', { name: 'Mangrove restoration' })).toHaveStyle(
-    { transform: 'scale(2)' }
-  );
+  const croppedImage = screen.getByRole('img', {
+    name: 'Mangrove restoration',
+  });
+  loadImageDimensions(croppedImage);
+  expect(croppedImage).toHaveStyle({
+    width: '200%',
+    height: '200%',
+    left: '-50%',
+    top: '-50%',
+  });
   fireEvent.click(screen.getByRole('button', { name: 'Expand image media' }));
   expect(
     within(screen.getByRole('dialog')).getByRole('img', {
       name: 'Mangrove restoration',
-    })
-  ).not.toHaveStyle({ transform: 'scale(2)' });
+    }).style.left
+  ).toBe('');
 });
 
-test('StoryMapMedia: playback controls remain outside the expansion button and pause before expansion', async () => {
-  const pause = jest
-    .spyOn(HTMLMediaElement.prototype, 'pause')
-    .mockImplementation(() => {});
-  const items = [
-    { id: 'audio-1', type: 'audio/mpeg', url: 'https://test.com/audio.mp3' },
-  ];
-  await render(
-    <CarouselPresentation items={items} theme={{ id: 'theme-5' }} />
-  );
-  const expand = screen.getByRole('button', { name: 'Expand audio media' });
-  expect(
-    within(expand).queryByLabelText('audio media')
-  ).not.toBeInTheDocument();
-  fireEvent.click(expand);
-  expect(pause).toHaveBeenCalledTimes(1);
-  expect(screen.getByRole('dialog')).toHaveStyle({
-    '--story-theme-background': '#1A3A2A',
-  });
-  pause.mockRestore();
-});
+test.each([
+  { name: 'Gallery', Presentation: GalleryPresentation },
+  { name: 'Carousel', Presentation: CarouselPresentation },
+])(
+  'StoryMapMedia: $name previews launch playback only in the viewer',
+  async ({ Presentation }) => {
+    const items = [
+      {
+        id: 'audio-1',
+        type: 'audio/mpeg',
+        url: 'https://test.com/audio.mp3',
+        label: 'audio media',
+      },
+      {
+        id: 'video-1',
+        type: 'video/mp4',
+        url: 'https://test.com/video.mp4',
+        label: 'video media',
+      },
+      {
+        id: 'image-1',
+        type: 'image/jpeg',
+        url: 'https://test.com/image.jpg',
+        label: 'image media',
+      },
+      {
+        id: 'embed-1',
+        type: 'embedded',
+        url: 'https://test.com/embed',
+        label: 'Embedded video',
+      },
+      { ...INITIAL_CHAPTER.mediaItems[5], label: 'Embedded video' },
+      {
+        id: 'vimeo-1',
+        type: 'embedded',
+        source: 'vimeo',
+        url: 'https://player.vimeo.com/video/1084537',
+        label: 'Embedded video',
+      },
+    ];
+    for (const item of items) {
+      const { unmount } = await render(
+        <Presentation items={[item]} theme={{ id: 'theme-5' }} />
+      );
+      expect(screen.queryByLabelText('audio media')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Embedded video')).not.toBeInTheDocument();
+      screen.queryAllByLabelText('video media').forEach(preview => {
+        expect(preview).not.toHaveAttribute('controls');
+      });
+      const launcher = screen.getByRole('button', {
+        name: /^(Open|Expand) /,
+      });
+      expect(
+        within(launcher).queryByTestId('OpenInFullIcon')
+      ).not.toBeInTheDocument();
+      expect(within(launcher).queryByRole('button')).not.toBeInTheDocument();
+      launcher.focus();
+      expect(launcher).toHaveFocus();
+      fireEvent.click(launcher);
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).toHaveStyle({ '--story-theme-background': '#1A3A2A' });
+      const player = item.type.startsWith('image')
+        ? within(dialog).getByRole('img', { name: item.label })
+        : within(dialog).getByLabelText(item.label);
+      expect(player.hasAttribute('controls')).toBe(
+        item.type.startsWith('audio') || item.type.startsWith('video')
+      );
+      expect(player).not.toHaveAttribute('autoplay');
+      unmount();
+    }
+  }
+);
+
+test.each([
+  {
+    name: 'off-center',
+    naturalWidth: 640,
+    naturalHeight: 360,
+    position: { x: 0.3, y: 0.7 },
+    offsets: [
+      [-64, -324],
+      [-144, -324],
+    ],
+  },
+  {
+    name: 'portrait',
+    naturalWidth: 640,
+    naturalHeight: 720,
+    position: { x: 0.4, y: 0.6 },
+    offsets: [
+      [-192, -684],
+      [-144, -468],
+    ],
+  },
+  {
+    name: 'wide',
+    naturalWidth: 1280,
+    naturalHeight: 360,
+    position: { x: 0.3, y: 0.7 },
+    offsets: [
+      [-448, -324],
+      [-528, -324],
+    ],
+  },
+  {
+    name: 'boundary-clamped',
+    naturalWidth: 640,
+    naturalHeight: 360,
+    position: { x: 0, y: 1 },
+    offsets: [
+      [0, -360],
+      [0, -360],
+    ],
+  },
+])(
+  'StoryMapMediaEditor: renders $name crops at editor-equivalent offsets in both presentations',
+  async ({ naturalWidth, naturalHeight, position, offsets }) => {
+    const item = {
+      ...INITIAL_CHAPTER.mediaItems[0],
+      crop: { position, scale: 2 },
+    };
+    for (const [index, Presentation] of [
+      CarouselPresentation,
+      GalleryPresentation,
+    ].entries()) {
+      const { unmount } = await render(<Presentation items={[item]} />);
+      const image = screen.getByRole('img', { name: 'image media' });
+      loadImageDimensions(image, naturalWidth, naturalHeight);
+
+      expect(image).toHaveStyle({
+        position: 'absolute',
+        objectFit: 'fill',
+      });
+      const width = index === 0 ? 640 : 480;
+      const height = 360;
+      const coverScale = Math.max(width / naturalWidth, height / naturalHeight);
+      expect((parseFloat(image.style.width) / 100) * width).toBeCloseTo(
+        naturalWidth * coverScale * 2
+      );
+      expect((parseFloat(image.style.height) / 100) * height).toBeCloseTo(
+        naturalHeight * coverScale * 2
+      );
+      const renderedX = (parseFloat(image.style.left) / 100) * width;
+      const renderedY = (parseFloat(image.style.top) / 100) * height;
+      expect(renderedX).toBeCloseTo(offsets[index][0]);
+      expect(renderedY).toBeCloseTo(offsets[index][1]);
+      expect(image.style.transform).toBe('');
+      expect(image.parentElement).toHaveStyle({
+        position: 'absolute',
+        inset: '0',
+        overflow: 'hidden',
+      });
+      unmount();
+    }
+  }
+);
 
 test('StoryMapMediaEditor: stores image crop settings for the carousel while expansion uses the original image', async () => {
   await render(<StoryMapMediaEditor />);
@@ -656,7 +817,16 @@ test('StoryMapMediaEditor: stores image crop settings for the carousel while exp
   });
   fireEvent.click(screen.getByRole('button', { name: 'Done' }));
 
-  expect(originalImage).toHaveStyle({ transform: 'scale(2)' });
+  const croppedImage = within(carousel).getByRole('img', {
+    name: 'image media',
+  });
+  loadImageDimensions(croppedImage);
+  expect(croppedImage).toHaveStyle({
+    width: '200%',
+    height: '200%',
+    left: '-50%',
+    top: '-50%',
+  });
   expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
 
   fireEvent.click(screen.getByRole('button', { name: 'Expand image media' }));
@@ -740,10 +910,12 @@ test('StoryMapMediaEditor: applies saved carousel crops to Gallery tiles', async
       screen.getByRole('button', { name: 'Open image media 1' })
     ).getByRole('img', { name: 'image media' })
   );
+  loadImageDimensions(galleryImage, 480, 360);
   expect(galleryImage).toHaveStyle({
-    objectPosition: '50% 50%',
-    transform: 'scale(2)',
-    transformOrigin: '50% 50%',
+    width: '200%',
+    height: '200%',
+    left: '-50%',
+    top: '-50%',
   });
 });
 
@@ -977,7 +1149,7 @@ test('StoryMapMediaEditor: shows a muted first-frame video preview in Gallery', 
   ).toBeInTheDocument();
 });
 
-test('StoryMapMediaEditor: provides compact controls in Gallery audio tiles', async () => {
+test('StoryMapMediaEditor: Gallery audio tiles open the viewer without inline playback', async () => {
   await render(<StoryMapMediaEditor />);
 
   fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
@@ -987,24 +1159,11 @@ test('StoryMapMediaEditor: provides compact controls in Gallery audio tiles', as
   expect(audioIcon).toHaveAttribute('aria-hidden', 'true');
   expect(audioIcon).toHaveStyle({ fontSize: '32px' });
   expect(preview).toHaveStyle({ color: 'var(--story-theme-text)' });
-  const audio = within(preview).getByLabelText('audio media');
-  Object.defineProperty(audio, 'duration', { configurable: true, value: 184 });
-  Object.defineProperty(audio, 'paused', { configurable: true, value: true });
-  audio.play = jest.fn(() => Promise.resolve());
-  fireEvent.loadedMetadata(audio);
-  fireEvent.timeUpdate(audio, { target: { currentTime: 12 } });
-  fireEvent.click(within(preview).getByRole('button', { name: 'Play audio' }));
-
+  expect(within(preview).queryByLabelText('audio media')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Open audio media 4' }));
   expect(
-    within(preview).getByRole('button', { name: 'Play audio' })
-  ).toBeInTheDocument();
-  expect(audio.play).toHaveBeenCalled();
-  expect(
-    within(preview).getByRole('button', { name: 'Expand audio media' })
-  ).toBeInTheDocument();
-  expect(within(preview).getByText('0:12 / 3:04')).toBeInTheDocument();
-  expect(audio).toHaveAttribute('preload', 'metadata');
-  expect(audio).toHaveStyle({ display: 'none' });
+    within(screen.getByRole('dialog')).getByLabelText('audio media')
+  ).toHaveAttribute('controls');
 });
 
 test('StoryMapMediaEditor: uses the production editor for one media item', async () => {
