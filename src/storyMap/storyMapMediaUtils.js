@@ -31,6 +31,32 @@ export const calculateMediaFitScale = ({ naturalHeight, naturalWidth }) => {
   );
 };
 
+export const calculateMediaCropStyle = (
+  crop,
+  { naturalWidth, naturalHeight },
+  aspectRatio
+) => {
+  const imageAspectRatio = naturalWidth / naturalHeight;
+  const scaledWidth = Math.max(1, imageAspectRatio / aspectRatio) * crop.scale;
+  const scaledHeight = Math.max(1, aspectRatio / imageAspectRatio) * crop.scale;
+  const cropWidth = 1 / scaledWidth;
+  const cropHeight = 1 / scaledHeight;
+  const allowOutside = cropWidth > 1 || cropHeight > 1;
+  const offsetAxis = (center, cropSize, scaledSize) => {
+    const cropStart = Math.max(
+      allowOutside ? -cropSize : 0,
+      Math.min(center - cropSize / 2, allowOutside ? 1 : 1 - cropSize)
+    );
+    return `${-cropStart * scaledSize * 100}%`;
+  };
+  return {
+    width: `${scaledWidth * 100}%`,
+    height: `${scaledHeight * 100}%`,
+    left: offsetAxis(crop.position.x, cropWidth, scaledWidth),
+    top: offsetAxis(crop.position.y, cropHeight, scaledHeight),
+  };
+};
+
 export const getMediaKind = media =>
   ['image', 'audio', 'video'].find(kind => media.type.startsWith(kind)) ||
   'embedded';

@@ -176,14 +176,7 @@ const ChapterConfig = props => {
 };
 
 const ChapterForm = props => {
-  const {
-    record,
-    onFieldChange,
-    onFieldBlur,
-    mediaField = 'mediaItems',
-    multipleMedia = true,
-    mediaPresentationField = 'mediaPresentation',
-  } = props;
+  const { record, onFieldChange, onFieldBlur } = props;
   const { t } = useTranslation();
   const { setConfig, init } = useStoryMapConfigActionsContext();
   const [isNew, setIsNew] = useState(false);
@@ -280,11 +273,11 @@ const ChapterForm = props => {
           />
           <EditableMedia
             label={t('storyMap.form_chapter_media_label')}
-            multiple={multipleMedia}
-            onPresentationChange={onFieldChange(mediaPresentationField)}
-            presentation={record[mediaPresentationField] || 'carousel'}
-            value={record[mediaField]}
-            onChange={onFieldChange(mediaField)}
+            multiple
+            onPresentationChange={onFieldChange('mediaPresentation')}
+            presentation={record.mediaPresentation || 'carousel'}
+            value={record.mediaItems}
+            onChange={onFieldChange('mediaItems')}
           />
           <EditableRichText
             label={t('storyMap.form_chapter_description_label')}

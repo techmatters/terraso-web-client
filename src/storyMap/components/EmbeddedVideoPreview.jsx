@@ -22,9 +22,12 @@ import logger from 'terraso-client-shared/monitoring/logger';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutlined';
 import { Box, Typography } from '@mui/material';
 
+import useMediaPreviewVisibility from 'terraso-web-client/storyMap/components/useMediaPreviewVisibility';
+
 const EmbeddedVideoPreview = ({ item }) => {
   const { t } = useTranslation();
   const { id } = getVideoId(item.url);
+  const { previewRef, shouldLoad } = useMediaPreviewVisibility();
   const [metadata, setMetadata] = useState(null);
   const [failedThumbnail, setFailedThumbnail] = useState(null);
   const isYouTube = item.source === 'youtube';
@@ -44,6 +47,9 @@ const EmbeddedVideoPreview = ({ item }) => {
   const metadataFailed = metadata?.url === videoUrl && metadata.failed;
 
   useEffect(() => {
+    if (!shouldLoad) {
+      return;
+    }
     const controller = new AbortController();
     const loadMetadata = async () => {
       try {
@@ -82,10 +88,11 @@ const EmbeddedVideoPreview = ({ item }) => {
     };
     loadMetadata();
     return () => controller.abort();
-  }, [videoUrl, metadataUrl, isYouTube]);
+  }, [shouldLoad, videoUrl, metadataUrl, isYouTube]);
 
   return (
     <Box
+      ref={previewRef}
       sx={{
         alignItems: 'center',
         color: 'var(--story-theme-text)',
@@ -96,7 +103,7 @@ const EmbeddedVideoPreview = ({ item }) => {
         width: '100%',
       }}
     >
-      {thumbnailUrl && failedThumbnail !== thumbnailUrl && (
+      {shouldLoad && thumbnailUrl && failedThumbnail !== thumbnailUrl && (
         <Box
           component="img"
           alt=""
