@@ -81,7 +81,12 @@ const Form = props => {
     });
   }, [setFormContext, trigger, errors, isValid, touchedFields, isValidating]);
 
-  watch((data, { name, type }) => onChange?.(data, name, type));
+  useEffect(() => {
+    const subscription = watch((data, { name, type }) =>
+      onChange?.(data, name, type)
+    );
+    return () => subscription.unsubscribe();
+  }, [watch, onChange]);
 
   const requiredFields = useMemo(
     () =>
