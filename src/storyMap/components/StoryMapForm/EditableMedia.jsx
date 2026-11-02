@@ -762,8 +762,9 @@ const getMediaDeleteConfirmProps = media => {
 const ImageCropDialog = ({ image, onClose, onSave }) => {
   const { getMediaFile } = useStoryMapMediaContext();
   const [altText, setAltText] = useState(image.altText || '');
-  const [crop, setCrop] = useState(image.crop || DEFAULT_CROP);
+  const [crop, setCrop] = useState(image.crop);
   const [fitScale, setFitScale] = useState(image.crop?.fitScale || 1);
+  const previewCrop = crop || { ...DEFAULT_CROP, scale: fitScale };
   const imageSrc = getMediaSrc(image, getMediaFile);
 
   return (
@@ -782,10 +783,14 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               onLoad={({ currentTarget }) => {
                 const nextFitScale = calculateFitScale(currentTarget);
                 setFitScale(nextFitScale);
-                setCrop(currentCrop => ({
-                  ...currentCrop,
-                  scale: Math.max(currentCrop.scale, nextFitScale),
-                }));
+                setCrop(currentCrop =>
+                  currentCrop
+                    ? {
+                        ...currentCrop,
+                        scale: Math.max(currentCrop.scale, nextFitScale),
+                      }
+                    : currentCrop
+                );
               }}
               src={imageSrc}
               style={{ display: 'none' }}
@@ -797,10 +802,10 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               height={640 / CAROUSEL_ASPECT_RATIO}
               border={20}
               color={[255, 255, 255, 0.6]}
-              position={crop.position}
-              scale={Math.max(crop.scale, fitScale)}
+              position={previewCrop.position}
+              scale={Math.max(previewCrop.scale, fitScale)}
               onPositionChange={position =>
-                setCrop(currentCrop => ({ ...currentCrop, position }))
+                setCrop({ ...previewCrop, position })
               }
             />
           </Box>
@@ -817,7 +822,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               min={fitScale}
               max={3}
               step={0.1}
-              value={crop.scale}
+              value={previewCrop.scale}
               valueLabelDisplay="auto"
               valueLabelFormat={scale =>
                 scale === fitScale
@@ -825,7 +830,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
                   : `${scale}x`
               }
               onChange={(event, scale) =>
-                setCrop(currentCrop => ({ ...currentCrop, scale }))
+                setCrop({ ...previewCrop, scale })
               }
             />
           </Stack>
@@ -1222,7 +1227,7 @@ const EditableMediaList = ({
         const { altText: existingAltText, ...mediaWithoutAltText } = media;
         return {
           ...mediaWithoutAltText,
-          crop,
+          ...(crop ? { crop } : {}),
           ...(altText ? { altText } : {}),
         };
       })

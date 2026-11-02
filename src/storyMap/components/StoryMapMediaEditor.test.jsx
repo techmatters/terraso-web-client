@@ -171,6 +171,57 @@ test.each([
 );
 
 test.each([
+  { name: 'portrait', width: 900, height: 1200 },
+  { name: 'wide', width: 3000, height: 1000 },
+])(
+  'StoryMapMediaEditor: an alt-text-only edit preserves full-image framing for a fresh $name image',
+  async ({ width, height }) => {
+    await render(
+      <StoryMapMediaEditor
+        initialChapter={{
+          ...INITIAL_CHAPTER,
+          mediaItems: [
+            {
+              id: 'uncropped-image',
+              type: 'image/jpeg',
+              signedUrl: 'https://test.com/uncropped.jpg',
+            },
+          ],
+        }}
+      />
+    );
+    const viewport = screen.getByTestId('carousel-viewport');
+    loadImageDimensions(within(viewport).getByRole('img'), width, height);
+    expect(within(viewport).getByRole('img')).toHaveStyle({
+      objectFit: 'contain',
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Add alt text for image media 1' })
+    );
+    loadImageDimensions(screen.getByAltText('Crop source'), width, height);
+    fireEvent.change(
+      screen.getByRole('textbox', {
+        name: 'Describe this image for people with visual impairments',
+      }),
+      { target: { value: 'Landscape restoration' } }
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    );
+    const image = within(viewport).getByRole('img', {
+      name: 'Landscape restoration',
+    });
+    loadImageDimensions(image, width, height);
+    expect(
+      within(viewport).getByRole('img', { name: 'Landscape restoration' })
+    ).toHaveStyle({ objectFit: 'contain' });
+  }
+);
+
+test.each([
   {
     language: 'en-US',
     altAction: 'Add alt text for image media 1',
