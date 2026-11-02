@@ -20,9 +20,10 @@ const { baseUrl } = require('../config');
 const STORY_MAP_FALLBACK_IMAGE_PATH = '/storyMap/terraso-story-maps-img.jpg';
 const STORY_MAP_FALLBACK_TITLE =
   'Terraso Story Maps - Free and Open Source Storymapping';
+const STORY_MAP_TITLE_SUFFIX = ' | Terraso Story Maps';
 const STORY_MAP_FALLBACK_DESCRIPTION =
-  'Inspire your audience with an open source, easy-to-use, and powerful map-based storytelling tool. Share data, media, and narratives on a map to ground your story in the land.';
-const MAX_OG_DESCRIPTION_LENGTH = 160;
+  'an interactive story map made with Terraso Story Maps, the free, open-source app for place-based storytelling.';
+const MAX_OG_DESCRIPTION_LENGTH = 150;
 
 const getFallbackImageUrl = () =>
   `${(baseUrl || '').replace(/\/$/, '')}${STORY_MAP_FALLBACK_IMAGE_PATH}`;
@@ -109,13 +110,14 @@ const getFirstChapterImageUrl = chapters => {
 
 const getStoryMapMetaDescription = storyMapConfig => {
   const shortDescription = toCleanText(storyMapConfig.description);
-  if (shortDescription) {
-    return shortDescription;
-  }
+  const subtitle = toCleanText(storyMapConfig.subtitle);
+  const title = toCleanText(storyMapConfig.title) || STORY_MAP_FALLBACK_TITLE;
 
   return (
+    shortDescription ||
+    subtitle ||
     getFirstChapterDescriptionPreview(storyMapConfig.chapters) ||
-    STORY_MAP_FALLBACK_DESCRIPTION
+    `${title}: ${STORY_MAP_FALLBACK_DESCRIPTION}`
   );
 };
 
@@ -130,10 +132,22 @@ const parseConfig = node => {
   }
 };
 
+const getStoryMapTitle = storyMapConfig => {
+  const storyMapTitle = toCleanText(storyMapConfig.title);
+
+  if (!storyMapTitle) {
+    return STORY_MAP_FALLBACK_TITLE;
+  }
+
+  return storyMapTitle.endsWith(STORY_MAP_TITLE_SUFFIX)
+    ? storyMapTitle
+    : `${storyMapTitle}${STORY_MAP_TITLE_SUFFIX}`;
+};
+
 const buildMetaTags = node => {
   const storyMapConfig = parseConfig(node);
 
-  const title = toCleanText(storyMapConfig.title) || STORY_MAP_FALLBACK_TITLE;
+  const title = getStoryMapTitle(storyMapConfig);
   const description = getStoryMapMetaDescription(storyMapConfig);
   const image =
     storyMapConfig.featuredImage?.signedUrl ||
