@@ -23,10 +23,22 @@ const MOCK_HTML = `<!DOCTYPE html>
 <html>
 <head>
   <title>Terraso</title>
-  <meta name="description" content="Default description" data-rh="true"/>
-  <meta property="og:title" content="Terraso" data-rh="true"/>
-  <meta property="og:description" content="Default description" data-rh="true"/>
-  <meta property="og:image" content="https://example.com/default.jpg" data-rh="true"/>
+  <meta
+    name="description"
+    content="Default description"
+  />
+  <meta
+    property="og:title"
+    content="Terraso"
+  />
+  <meta
+    property="og:description"
+    content="Default description"
+  />
+  <meta
+    property="og:image"
+    content="https://example.com/default.jpg"
+  />
 </head>
 <body>
   <div id="root"></div>
@@ -116,6 +128,7 @@ describe('Story Map Routes - Integration Tests', () => {
         mockStoryMapResponse({
           title: 'My Amazing Story Map',
           description: 'A story about regenerative agriculture',
+          subtitle: 'A less specific subtitle',
           featuredImage: { signedUrl: 'https://cdn.example.com/image.jpg' },
         })
       );
@@ -125,9 +138,14 @@ describe('Story Map Routes - Integration Tests', () => {
         .expect(200)
         .expect('Content-Type', /html/);
 
-      expect(text).toContain('<title>My Amazing Story Map</title>');
-      expect(text).toContain('content="My Amazing Story Map"');
+      expect(text).toContain(
+        '<title>My Amazing Story Map | Terraso Story Maps</title>'
+      );
+      expect(text).toContain(
+        'property="og:title" content="My Amazing Story Map | Terraso Story Maps"'
+      );
       expect(text).toContain('A story about regenerative agriculture');
+      expect(text).not.toContain('A less specific subtitle');
       expect(text).toContain('https://cdn.example.com/image.jpg');
     });
 
@@ -143,11 +161,41 @@ describe('Story Map Routes - Integration Tests', () => {
         .get('/tools/story-maps/abc123/no-image-story')
         .expect(200);
 
-      expect(text).toContain('<title>Story Without Image</title>');
+      expect(text).toContain(
+        '<title>Story Without Image | Terraso Story Maps</title>'
+      );
       expect(text).toContain('This story has no image');
       expect(text).toContain(
         'https://test.terraso.org/storyMap/terraso-story-maps-img.jpg'
       );
+    });
+
+    it('uses the first chapter image when no featured image is configured', async () => {
+      mockFetch(
+        mockStoryMapResponse({
+          title: 'Story With Chapter Image',
+          chapters: [
+            {
+              media: {
+                type: 'video/mp4',
+                signedUrl: 'https://cdn.example.com/video.mp4',
+              },
+            },
+            {
+              media: {
+                type: 'image/jpeg',
+                signedUrl: 'https://cdn.example.com/chapter.jpg',
+              },
+            },
+          ],
+        })
+      );
+
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/chapter-image-story')
+        .expect(200);
+
+      expect(text).toContain('https://cdn.example.com/chapter.jpg');
     });
 
     it('falls back to first chapter content when short description is missing', async () => {
@@ -168,13 +216,34 @@ describe('Story Map Routes - Integration Tests', () => {
         .get('/tools/story-maps/abc123/no-short-description')
         .expect(200);
 
-      expect(text).toContain('<title>Story Without Short Description</title>');
       expect(text).toContain(
-        'This first chapter explains the story context with enough detail that it should be truncated for social previews and search listings to keep metadata concise...'
+        '<title>Story Without Short Description | Terraso Story Maps</title>'
+      );
+      expect(text).toContain(
+        'This first chapter explains the story context with enough detail that it should be truncated for social previews and search listings to keep...'
       );
     });
 
-    it('uses default description when short description and chapter content are missing', async () => {
+    it('uses the story map subtitle when short description is missing', async () => {
+      mockFetch(
+        mockStoryMapResponse({
+          title: 'Story With Subtitle',
+          subtitle: 'A subtitle for the link preview',
+          chapters: [{ description: 'Chapter text should not take priority.' }],
+        })
+      );
+
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/subtitle-story')
+        .expect(200);
+
+      expect(text).toContain(
+        'property="og:description" content="A subtitle for the link preview"'
+      );
+      expect(text).not.toContain('Chapter text should not take priority.');
+    });
+
+    it('uses a title-specific description when short description, subtitle, and chapter content are missing', async () => {
       mockFetch(
         mockStoryMapResponse({
           title: 'Story Without Description Data',
@@ -186,11 +255,39 @@ describe('Story Map Routes - Integration Tests', () => {
         .get('/tools/story-maps/abc123/no-description-data')
         .expect(200);
 
-      expect(text).toContain('<title>Story Without Description Data</title>');
       expect(text).toContain(
-        'Inspire your audience with a free, easy to use, and powerful web app for place-based storytelling. Share data, media, and narratives on a map to ground your story in the land.'
+        '<title>Story Without Description Data | Terraso Story Maps</title>'
+      );
+      expect(text).toContain(
+        'Story Without Description Data: an interactive story map made with Terraso Story Maps, the free, open-source app for place-based storytelling.'
       );
     });
+
+    it.each([undefined, '', '   '])(
+      'uses the generic title for a missing or blank title (%p) without replacing chapter text',
+      async title => {
+        mockFetch(
+          mockStoryMapResponse({
+            title,
+            chapters: [{ description: 'A story told through chapter text.' }],
+          })
+        );
+
+        const { text } = await request(app)
+          .get('/tools/story-maps/abc123/no-title')
+          .expect(200);
+
+        expect(text).toContain(
+          '<title>Terraso Story Maps - Free and Open Source Storymapping</title>'
+        );
+        expect(text).toContain(
+          'property="og:title" content="Terraso Story Maps - Free and Open Source Storymapping"'
+        );
+        expect(text).toContain(
+          'property="og:description" content="A story told through chapter text."'
+        );
+      }
+    );
 
     const fallbackScenarios = [
       ['story map not found', () => mockFetch(mockStoryMapResponse(null))],
@@ -266,7 +363,9 @@ describe('Story Map Routes - Integration Tests', () => {
         .get('/tools/story-maps/abc123/embedded-story/embed')
         .expect(200);
 
-      expect(text).toContain('<title>Embedded Story Map</title>');
+      expect(text).toContain(
+        '<title>Embedded Story Map | Terraso Story Maps</title>'
+      );
       expect(text).toContain('An embedded story');
     });
 
