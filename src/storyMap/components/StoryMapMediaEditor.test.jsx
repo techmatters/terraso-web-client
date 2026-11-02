@@ -363,7 +363,8 @@ test.each([1, 2])(
 test.each([
   {
     language: 'en-US',
-    heading: 'Drag files here or choose files',
+    heading: 'Drag and drop your file here or select one from your device.',
+    selectFile: 'Select file',
     helper: 'Supported files: images, audio, and video.',
     position: 'Media 1 of 5',
     addText: 'Add media',
@@ -371,7 +372,9 @@ test.each([
   },
   {
     language: 'es-ES',
-    heading: 'Arrastra archivos aquí o elige archivos',
+    heading:
+      'Arrastra y suelta tu archivo aquí o selecciona uno de tu dispositivo.',
+    selectFile: 'Seleccionar archivo',
     helper: 'Archivos compatibles: imágenes, audio y video.',
     position: '1 de 5',
     addText: 'Agregar',
@@ -379,7 +382,15 @@ test.each([
   },
 ])(
   'StoryMapMediaEditor: chapters below the limit can open the localized upload picker in $language',
-  async ({ language, heading, helper, position, addText, toolbar }) => {
+  async ({
+    language,
+    heading,
+    selectFile,
+    helper,
+    position,
+    addText,
+    toolbar,
+  }) => {
     const previousLanguage = i18n.language;
     try {
       await act(() => i18n.changeLanguage(language));
@@ -407,6 +418,12 @@ test.each([
       expect(
         within(dialog).getByRole('heading', { name: heading })
       ).toBeVisible();
+      expect(
+        within(dialog).getByText(selectFile, { exact: true })
+      ).toBeVisible();
+      expect(dialog.querySelector('input[type="file"]')).not.toHaveAttribute(
+        'multiple'
+      );
       expect(within(dialog).getByText(helper)).toBeVisible();
       expect(screen.getByText(position)).toBeInTheDocument();
     } finally {
@@ -472,7 +489,7 @@ test('StoryMapMediaEditor: adding a sixth item preserves existing media and disa
   });
   expect(within(dialog).getByRole('link').parentElement).toContainElement(
     within(dialog).getByRole('button', {
-      name: /Drag files here or choose files/,
+      name: /Drag and drop your file here or select one from your device/,
     })
   );
   const input = within(dialog).getByRole('textbox', {
@@ -593,7 +610,7 @@ test('StoryMapMediaEditor: choosing a link after dropping a file submits only th
   const dialog = screen.getByRole('dialog', { name: 'Add media' });
   expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
   const dropZone = within(dialog).getByRole('button', {
-    name: /Drag files here or choose files/,
+    name: /Drag and drop your file here or select one from your device/,
   });
   const file = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
   await act(async () =>
@@ -650,7 +667,7 @@ test.each([
     await act(async () =>
       fireEvent.drop(
         within(dialog).getByRole('button', {
-          name: /Drag files here or choose files/,
+          name: /Drag and drop your file here or select one from your device/,
         }),
         {
           dataTransfer: {
@@ -1502,7 +1519,7 @@ test('StoryMapMediaEditor: deleting a failed image and adding a new upload rende
   fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
   const dialog = screen.getByRole('dialog', { name: 'Add media' });
   const dropZone = within(dialog).getByRole('button', {
-    name: /Drag files here or choose files/,
+    name: /Drag and drop your file here or select one from your device/,
   });
   expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
   expect(dropZone).toHaveStyle({ borderStyle: 'dashed' });

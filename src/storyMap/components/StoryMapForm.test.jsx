@@ -541,7 +541,7 @@ const changeChaper = async ({
       name: 'Add media',
     });
     const dropZone = within(mediaDialog).getByRole('button', {
-      name: /Drag files here or choose files/,
+      name: /Drag and drop your file here or select one from your device/,
     });
     const data = {
       dataTransfer: {

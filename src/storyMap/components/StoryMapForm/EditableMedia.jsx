@@ -428,6 +428,7 @@ export const AddMediaDialog = memo(props => {
             </Stack>
           }
           multiple={false}
+          buttonLabel={t('storyMap.form_media_add_dialog_select_file')}
           caption={t('storyMap.form_media_add_dialog_dropzone_helper')}
           maxSize={STORY_MAP_MEDIA_MAX_SIZE}
           fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
@@ -829,9 +830,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
                   ? i18n.t('storyMap.media_fit_image')
                   : `${scale}x`
               }
-              onChange={(event, scale) =>
-                setCrop({ ...previewCrop, scale })
-              }
+              onChange={(event, scale) => setCrop({ ...previewCrop, scale })}
             />
           </Stack>
           <OutlinedInput
