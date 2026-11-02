@@ -522,6 +522,8 @@ export const GalleryPresentation = ({
   theme,
 }) => {
   const mediaRef = usePlaybackBoundary(active);
+  const dragPreviewRef = useRef(null);
+  useEffect(() => () => dragPreviewRef.current?.remove(), []);
   const [dragSourceIndex, setDragSourceIndex] = useState(null);
   const [dropTargetIndex, setDropTargetIndex] = useState(null);
   const [uncontrolledCurrentIndex, setUncontrolledCurrentIndex] = useState(0);
@@ -547,17 +549,18 @@ export const GalleryPresentation = ({
     setSelectedItem(item);
   };
   const clearDrag = () => {
+    dragPreviewRef.current?.remove();
+    dragPreviewRef.current = null;
     setDragSourceIndex(null);
     setDropTargetIndex(null);
   };
   const onDragStart = (event, index) => {
+    clearDrag();
     const tile = event.currentTarget;
+    const tileBounds = tile.getBoundingClientRect();
     let dragImage = tile;
-    let width = tile.clientWidth;
-    let height = tile.clientHeight;
     const image = tile.querySelector('[data-cropped-media-preview] img');
     if (image?.complete && image.naturalWidth) {
-      const tileBounds = tile.getBoundingClientRect();
       const imageBounds = image.getBoundingClientRect();
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(tileBounds.width);
@@ -572,9 +575,12 @@ export const GalleryPresentation = ({
           imageBounds.width,
           imageBounds.height
         );
+        canvas.setAttribute('aria-hidden', 'true');
+        canvas.style.cssText =
+          'position: fixed; top: 0; left: -10000px; pointer-events: none;';
+        document.body.appendChild(canvas);
+        dragPreviewRef.current = canvas;
         dragImage = canvas;
-        width = canvas.width;
-        height = canvas.height;
       } else {
         logger.error('Unable to create cropped media drag preview');
       }
@@ -583,8 +589,8 @@ export const GalleryPresentation = ({
     event.dataTransfer.setData('text/plain', String(index));
     event.dataTransfer.setDragImage(
       dragImage,
-      Math.round(width / 2),
-      Math.round(height / 2)
+      Math.round(event.clientX - tileBounds.left),
+      Math.round(event.clientY - tileBounds.top)
     );
     setDragSourceIndex(index);
   };

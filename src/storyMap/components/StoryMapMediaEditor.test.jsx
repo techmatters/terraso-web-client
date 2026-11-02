@@ -1163,7 +1163,7 @@ test.each([
       .spyOn(HTMLCanvasElement.prototype, 'getContext')
       .mockReturnValue({ drawImage });
     try {
-      await render(
+      const { unmount } = await render(
         <GalleryPresentation
           items={[
             {
@@ -1192,15 +1192,32 @@ test.each([
       });
       const dataTransfer = {
         setData: jest.fn(),
-        setDragImage: jest.fn(),
+        setDragImage: jest.fn(snapshot =>
+          expect(snapshot.isConnected).toBe(true)
+        ),
       };
-      fireEvent.dragStart(tile, { dataTransfer });
+      const dragStart = new MouseEvent('dragstart', {
+        bubbles: true,
+        clientX: 220,
+        clientY: 290,
+      });
+      Object.defineProperty(dragStart, 'dataTransfer', {
+        value: dataTransfer,
+      });
+      fireEvent(tile, dragStart);
       const [snapshot, x, y] = dataTransfer.setDragImage.mock.calls[0];
       expect(snapshot).toBeInstanceOf(HTMLCanvasElement);
       expect([snapshot.width, snapshot.height, x, y]).toEqual([
-        480, 360, 240, 180,
+        480, 360, 120, 90,
       ]);
       expect(drawImage).toHaveBeenCalledWith(image, left, top, 1280, 720);
+      fireEvent.dragEnd(tile);
+      expect(snapshot).not.toBeInTheDocument();
+
+      fireEvent(tile, dragStart);
+      const secondSnapshot = dataTransfer.setDragImage.mock.calls[1][0];
+      unmount();
+      expect(secondSnapshot).not.toBeInTheDocument();
     } finally {
       getContext.mockRestore();
     }
