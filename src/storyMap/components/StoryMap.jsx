@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import logger from 'terraso-client-shared/monitoring/logger';
 import { Box, useMediaQuery } from '@mui/material';
 
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
@@ -26,6 +27,9 @@ import useActiveStep from 'terraso-web-client/storyMap/components/useActiveStep'
 import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
 import {
   ALIGNMENTS,
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH,
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR,
+  chapterShell,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
@@ -36,13 +40,40 @@ import 'terraso-web-client/storyMap/components/StoryMap.css';
 
 import { FullscreenButton } from 'terraso-web-client/gis/components/FullscreenControl';
 import Map, { useMap } from 'terraso-web-client/gis/components/Map';
-import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
+import MapControls from 'terraso-web-client/gis/components/MapControls';
+import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
+import MapEditingSession from 'terraso-web-client/storyMap/components/MapEditingSession';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 import theme from 'terraso-web-client/theme';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+
+// Interactive elements that keep their pointer events while the chapter
+// overlay passes drags through to the map being positioned: form controls,
+// links, contenteditable, and the ARIA-widget equivalents MUI renders as
+// plain divs (Select, icon buttons, menus, media drop targets).
+const INTERACTIVE_SELECTOR = [
+  'input',
+  'textarea',
+  'select',
+  'button',
+  'a',
+  'label',
+  '[contenteditable="true"]',
+  '[role="button"]',
+  '[role="textbox"]',
+  '[role="combobox"]',
+  '[role="listbox"]',
+  '[role="option"]',
+  '[role="menuitem"]',
+  '[role="menuitemcheckbox"]',
+  '[role="radio"]',
+  '[role="checkbox"]',
+  '[role="switch"]',
+  '[role="tab"]',
+].join(', ');
 
 const Audio = ({ record }) => {
   return (
@@ -88,11 +119,45 @@ const Embedded = ({ record }) => {
   );
 };
 
-const Chapter = ({ record, active }) => {
+/**
+ * A chapter card. The "just" alignments are RENDER MODES (display-side only —
+ * the config, including content and layers, is never touched). Everything
+ * below reads from `chapterShell` (the ONE place "how does this
+ * chapter render" is answered):
+ *
+ * - `justMap`: renders NOTHING over the map (no content, no background) but
+ *   keeps its scroll span (100vh / 100cqh when contained); the camera
+ *   transition still runs.
+ * - `justChapter`: a full-width card whose background covers the map area,
+ *   with the content vertically centered and horizontally centered at a
+ *   reasonable max width. Its span is 120% of the map viewport
+ *   (120vh / 120cqh), its camera transition is skipped and all map layers
+ *   are forced off while it is active (see `mapUtils.ts` — viewer side
+ *   only).
+ * - `hidden` WINS over the modes: a hidden chapter performs no mode
+ *   semantics (no camera skip, no layer forcing) — the map behind the
+ *   invisible card stays alive.
+ * - On `xs` the modes degrade to `center` semantics (the map is a visible
+ *   33vh band there that no card can cover): normal card rendering with the
+ *   content shown, camera transitions run, no layer forcing.
+ *
+ * The editor's chapter form (`ChapterForm`) renders the SAME render modes
+ * through this policy: `justMap` shows nothing over the map (only the
+ * scroll span) and `justChapter` is a full-screen editable chapter — theme
+ * background covering the map, form centered in the same reading column as
+ * the published content, inputs live.
+ */
+const Chapter = ({ record, active, isContained, isMobile }) => {
   const { t } = useTranslation();
+  const policy = chapterShell({
+    alignment: record.alignment,
+    hidden: record.hidden,
+    isMobile,
+  });
   const className = [
     'step-container',
-    ALIGNMENTS[record.alignment] || 'centered',
+    policy.alignmentClass,
+    ...(policy.coversMap ? ['story-theme'] : []),
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
 
@@ -104,33 +169,61 @@ const Chapter = ({ record, active }) => {
       className={className}
       sx={({ breakpoints }) => ({
         [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
+        // The render modes span the chapter scroll space as a share of the
+        // map viewport: 100% for `justMap` (100vh uncontained, 100cqh when
+        // the story map scrolls in its container) and 120% for `justChapter`
+        // (see `chapterShell`). The classic card paddings are dropped for
+        // them in `StoryMap.css`, next to the paddings they cancel: the span
+        // is exactly the mode's share of the map viewport tall.
+        ...(policy.spanHeight(isContained)
+          ? { minHeight: policy.spanHeight(isContained) }
+          : {}),
+        // `justChapter` covers the map area: full width, theme background,
+        // content centered. The content cap VALUE has exactly one owner —
+        // CHAPTER_ONLY_CONTENT_MAX_WIDTH — carried to the CSS rule on
+        // `.step-content` through the custom property below (StoryMap.css
+        // consumes the var; the editor's `justChapter` form sets the same
+        // var, and the rule's `none` fallback keeps every other editable
+        // card at its full editing width).
+        ...(policy.coversMap
+          ? {
+              width: '100%',
+              bgcolor: 'var(--story-theme-background)',
+              justifyContent: 'center',
+              alignItems: 'center',
+              [CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR]:
+                CHAPTER_ONLY_CONTENT_MAX_WIDTH,
+            }
+          : {}),
       })}
     >
-      <Box
-        className="story-theme step-content"
-        sx={{
-          width: hasVisualMedia ? '50vw' : 'auto',
-        }}
-      >
-        {record.title && (
-          <h3 id={`title-${record.id}`} className="title">
-            {record.title}
-          </h3>
-        )}
-        {record.media &&
-          (record.media.type.startsWith('image') ? (
-            <Image record={record} />
-          ) : record.media.type.startsWith('video') ? (
-            <Video record={record} />
-          ) : record.media.type.startsWith('audio') ? (
-            <Audio record={record} />
-          ) : record.media.type.startsWith('embedded') ? (
-            <Embedded record={record} />
-          ) : null)}
-        {record.description && (
-          <RichTextEditor value={record.description} editable={false} />
-        )}
-      </Box>
+      {policy.rendersContent && (
+        <Box
+          className="story-theme step-content"
+          sx={{
+            width: policy.coversMap ? '100%' : hasVisualMedia ? '50vw' : 'auto',
+          }}
+        >
+          {record.title && (
+            <h3 id={`title-${record.id}`} className="title">
+              {record.title}
+            </h3>
+          )}
+          {record.media &&
+            (record.media.type.startsWith('image') ? (
+              <Image record={record} />
+            ) : record.media.type.startsWith('video') ? (
+              <Video record={record} />
+            ) : record.media.type.startsWith('audio') ? (
+              <Audio record={record} />
+            ) : record.media.type.startsWith('embedded') ? (
+              <Embedded record={record} />
+            ) : null)}
+          {record.description && (
+            <RichTextEditor value={record.description} editable={false} />
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
@@ -179,7 +272,14 @@ const Title = props => {
   );
 };
 
-const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
+const MapTransitionController = ({
+  config,
+  currentChapter,
+  layerRevision,
+  suspendCamera,
+  allowRotation,
+  allowLayerForcing,
+}) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
 
@@ -192,8 +292,21 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
       chapterId: currentChapter,
       mapDimensions,
       isMobile,
+      suspendCamera,
+      allowRotation,
+      allowLayerForcing,
     });
-  }, [map, config, mapDimensions, currentChapter, isMobile, layerRevision]);
+  }, [
+    map,
+    config,
+    mapDimensions,
+    currentChapter,
+    isMobile,
+    layerRevision,
+    suspendCamera,
+    allowRotation,
+    allowLayerForcing,
+  ]);
 
   return null;
 };
@@ -216,10 +329,54 @@ const StoryMap = props => {
     onReady,
     chaptersFilter,
     isContained = false,
+    // While the configure-chapter sidebar is open the editor map IS the map
+    // being positioned: it is interactive, carries the positioning controls
+    // (zoom/pitch, geocoder, style switcher), records the user's camera onto
+    // the active step, and its camera step-transitions are suspended (they
+    // would fight the drag) until the sidebar closes. The whole editing
+    // machinery — recorder, attribution, write target, fit channel — is
+    // owned by MapEditingSession; `onFitLayerBounds` hands its fit-layer-
+    // bounds requester to the host (null when no session is active).
+    mapEditing = false,
+    onMapPositionChange,
+    onMapStyleChange,
+    onFitLayerBounds,
+    // The step being edited. Defaults to the scroll-spy's active step; the
+    // host overrides it with an explicit navigation (e.g. clicking a chapter
+    // in the sidebar) before the scroll settles.
+    activeStepId,
+    // Camera rotation is a PLAYBACK feature (a 30s rotateTo would fight the
+    // editor and leak a flipped bearing into the step being configured).
+    playRotateAnimation = true,
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [layerRevision, setLayerRevision] = useState(0);
+  // The map is created ONCE with the config's basemap style: live style
+  // changes are applied by the style switcher (MapContext.changeStyle keeps
+  // the sources/layers), and recreating the map on every config.style write
+  // would snap the camera and remount the layer stack.
+  const [mapStyle] = useState(config.style);
+  // "the map shows config.style" is CODE, not a comment: style writes are
+  // funneled through the map style switcher (onMapStyleChange → the config
+  // context's `updateStyle`), which applies the style to the live map. A
+  // config.style write from anywhere else leaves the rendered map diverged
+  // — asserted here.
+  const styleSwitcherRef = useRef(false);
+  useEffect(() => {
+    if (config.style === mapStyle) {
+      styleSwitcherRef.current = false;
+      return;
+    }
+    if (!styleSwitcherRef.current) {
+      logger.warn(
+        `story map config.style diverged from the rendered map style ` +
+          `(${config.style} ≠ ${mapStyle}): write styles through ` +
+          `updateStyle, not raw config updates`
+      );
+    }
+    styleSwitcherRef.current = false;
+  }, [config.style, mapStyle]);
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const containerRef = useRef();
 
@@ -233,17 +390,27 @@ const StoryMap = props => {
     onReady,
   });
 
-  const currentChapter = activeId ?? STORY_MAP_TITLE_ID;
+  const currentChapter = activeStepId ?? activeId ?? STORY_MAP_TITLE_ID;
 
   const initialLocation = useMemo(() => {
     if (config.titleTransition?.location) {
       return config.titleTransition?.location;
     }
+    // The map opens at the first chapter whose camera will actually run:
+    // a `justChapter` chapter's recorded camera never plays (its step
+    // transition is skipped while the chapter covers the map), while
+    // `justMap` locations stay eligible.
     const firstChapterWithLocation = config.chapters.find(
-      chapter => chapter.location
+      chapter =>
+        chapter.location &&
+        chapterShell({
+          alignment: chapter.alignment,
+          hidden: chapter.hidden,
+          isMobile,
+        }).cameraMode === 'run'
     );
     return firstChapterWithLocation?.location;
-  }, [config.chapters, config.titleTransition?.location]);
+  }, [config.chapters, config.titleTransition?.location, isMobile]);
 
   const filteredChapters = useMemo(() => {
     if (!chaptersFilter) {
@@ -287,8 +454,14 @@ const StoryMap = props => {
       />
       <Map
         id="map"
-        interactive={isMobile && isMapFullscreen}
-        mapStyle={config.style}
+        interactive={(isMobile && isMapFullscreen) || mapEditing}
+        // While the map is being positioned, the wheel scrolls the STORY
+        // (the chapter overlay passes wheel events through to the map
+        // canvas): scroll-zoom must never hijack it and persist it as a
+        // location write. Zoom stays available through the nav controls and
+        // pinch on touch.
+        disableScrollZoom={mapEditing}
+        mapStyle={mapStyle}
         projection={config.projection}
         zoom={1}
         initialLocation={initialLocation}
@@ -336,16 +509,30 @@ const StoryMap = props => {
           onToggle={() => setIsMapFullscreen(prev => !prev)}
         />
 
-        {!_.isEmpty(config.dataLayers) &&
-          Object.values(config.dataLayers).map(dataLayerConfig => (
-            <StoryMapLayer
-              key={dataLayerConfig.id}
-              config={dataLayerConfig}
-              changeBounds={false}
-              opacity={0}
-              onLayerAdded={onLayerAdded}
+        {mapEditing && (
+          <>
+            <MapControls showCompass visualizePitch />
+            <MapStyleSwitcher
+              position="top-right"
+              onStyleChange={({ newStyle }) => {
+                styleSwitcherRef.current = true;
+                onMapStyleChange?.(newStyle.data);
+              }}
             />
-          ))}
+          </>
+        )}
+
+        <MapEditingSession
+          active={mapEditing}
+          config={config}
+          targetId={currentChapter}
+          onPositionChange={onMapPositionChange}
+          onFitLayerBounds={onFitLayerBounds}
+          layers={
+            _.isEmpty(config.dataLayers) ? [] : Object.values(config.dataLayers)
+          }
+          onLayerAdded={onLayerAdded}
+        />
 
         <MapTransitionController
           // NOTE: the MapTransitionController unfortunately must come AFTER any map layers
@@ -354,11 +541,39 @@ const StoryMap = props => {
           config={config}
           currentChapter={currentChapter}
           layerRevision={layerRevision}
+          suspendCamera={mapEditing}
+          allowRotation={playRotateAnimation}
+          // Layer forcing is a PLAYBACK/display feature (a justChapter
+          // chapter covers the map): the editing session keeps layers
+          // visible while they are being configured.
+          allowLayerForcing={!mapEditing}
         />
       </Map>
       <Box
         sx={({ breakpoints }) => ({
           [breakpoints.not('xs')]: { marginTop: '-100cqh' },
+          // While the map is being positioned (Configure Chapter open),
+          // pointer drags pass through the chapter cards to the map; form
+          // controls keep their pointer events so text editing stays
+          // available while configuring.
+          ...(mapEditing
+            ? {
+                pointerEvents: 'none',
+                '& .step-container, & .step.title': { pointerEvents: 'none' },
+                // A `justChapter` shell COVERS the map (opaque theme
+                // background): there is nothing underneath to drag, so the
+                // whole chapter stays interactive and the full-screen
+                // editor form is fully usable (click-to-edit title
+                // included) while the sidebar is open.
+                '& .step-container.chapter-only': { pointerEvents: 'auto' },
+                // Everything interactive keeps its pointer events: form
+                // controls, links, contenteditable, plus the ARIA-widget
+                // equivalents MUI renders as divs (Select, icon buttons,
+                // menus, media drop targets) — those would otherwise be
+                // click-dead while the map is being positioned.
+                [`& ${INTERACTIVE_SELECTOR}`]: { pointerEvents: 'auto' },
+              }
+            : {}),
         })}
         component="section"
         aria-label={t('storyMap.view_chapters_label')}
@@ -376,6 +591,8 @@ const StoryMap = props => {
             <ChapterComponent
               record={chapter}
               active={currentChapter === chapter.id}
+              isContained={isContained}
+              isMobile={isMobile}
             />
           </div>
         ))}
