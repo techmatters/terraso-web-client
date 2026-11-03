@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// Component for editing and uploading a pictures or a audio file
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import getVideoId from 'get-video-id';
 import i18n from 'i18next';
 import _ from 'lodash/fp';
@@ -67,7 +66,6 @@ import {
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   CarouselPresentation,
-  CroppedImagePreview,
   GalleryPresentation,
 } from 'terraso-web-client/storyMap/components/StoryMapMedia';
 import {
@@ -93,8 +91,6 @@ import {
 const MEDIA_TYPES = {
   IMAGE: 'image',
   AUDIO: 'audio',
-  VIDEO: 'video',
-  EMBEDDED: 'embedded',
 };
 
 const DEFAULT_CROP = { position: { x: 0.5, y: 0.5 }, scale: 1 };
@@ -110,137 +106,6 @@ const MEDIA_PRESENTATION_BUTTON_SX = {
     color: 'var(--story-theme-highlight-text)',
   },
 };
-
-const MEDIA_CONFIG = {
-  [MEDIA_TYPES.AUDIO]: {
-    defaultHeight: 130,
-    controlsHeight: 54,
-  },
-  [MEDIA_TYPES.VIDEO]: {
-    defaultHeight: 370,
-    minHeight: 270,
-    maxHeight: 500,
-    controlsOffset: 70,
-  },
-  [MEDIA_TYPES.EMBEDDED]: {
-    defaultHeight: 300,
-  },
-};
-
-const LOADING_STATES = {
-  IDLE: 'idle',
-  LOADING: 'loading',
-  LOADED: 'loaded',
-  ERROR: 'error',
-};
-
-const useMediaLoad = (defaultHeight, elementRef, onLoadCallback) => {
-  const [containerHeight, setContainerHeight] = useState(defaultHeight);
-  const [loadingState, setLoadingState] = useState(LOADING_STATES.IDLE);
-
-  const handleLoad = useCallback(() => {
-    if (!elementRef.current || !onLoadCallback) {
-      return;
-    }
-
-    try {
-      setLoadingState(LOADING_STATES.LOADING);
-      const newHeight = onLoadCallback(elementRef.current);
-      if (newHeight && newHeight !== containerHeight) {
-        setContainerHeight(newHeight);
-      }
-      setLoadingState(LOADING_STATES.LOADED);
-    } catch (error) {
-      console.error('Error calculating media height:', error);
-      setLoadingState(LOADING_STATES.ERROR);
-    }
-  }, [elementRef, onLoadCallback, containerHeight]);
-
-  const handleError = useCallback(() => {
-    setLoadingState(LOADING_STATES.ERROR);
-  }, []);
-
-  return [containerHeight, handleLoad, handleError, loadingState];
-};
-
-const getMediaSrc = getMediaSource;
-
-// Calculate media height to avoid scroller jumps in story map editor
-// This is needed because media elements are loaded asynchronously
-const calculateVideoHeight = videoElement => {
-  if (!videoElement || !videoElement.videoWidth || !videoElement.videoHeight) {
-    return MEDIA_CONFIG[MEDIA_TYPES.VIDEO].defaultHeight;
-  }
-
-  const aspectRatio = videoElement.videoHeight / videoElement.videoWidth;
-  const videoDisplayHeight = videoElement.offsetWidth * aspectRatio;
-  const config = MEDIA_CONFIG[MEDIA_TYPES.VIDEO];
-  return Math.max(
-    config.minHeight,
-    Math.min(config.maxHeight, videoDisplayHeight + config.controlsOffset)
-  );
-};
-
-const calculateAudioHeight = () => {
-  const config = MEDIA_CONFIG[MEDIA_TYPES.AUDIO];
-  return config.controlsHeight + 92;
-};
-
-const MediaActionBar = memo(
-  ({ onUpdate, onDelete, processing, deleteConfirmProps }) => {
-    const { t } = useTranslation();
-
-    return (
-      <Stack
-        direction="row"
-        spacing={1}
-        role="toolbar"
-        aria-label={t('storyMap.form_media_actions')}
-        sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'white',
-          background: 'rgba(0,0,0,0.5)',
-          width: '100%',
-          pt: 2,
-          pb: 2,
-        }}
-      >
-        <Button
-          variant="outlined"
-          onClick={onUpdate}
-          sx={({ palette }) => ({
-            backgroundColor: 'white',
-            '&:hover': {
-              backgroundColor: palette.blue.dark3,
-            },
-          })}
-          aria-label={t('storyMap.form_media_update_label')}
-        >
-          {t('storyMap.form_media_update_label')}
-        </Button>
-        <ConfirmButton
-          onConfirm={onDelete}
-          loading={processing}
-          variant="text"
-          confirmButtonDestructive
-          buttonProps={{
-            title: t('storyMap.form_media_delete'),
-            sx: {
-              minWidth: 'auto',
-            },
-            'aria-label': t('storyMap.form_media_delete'),
-          }}
-          confirmTitle={t(deleteConfirmProps.confirmTitle)}
-          confirmMessage={t(deleteConfirmProps.confirmMessage)}
-          confirmButton={t(deleteConfirmProps.confirmButton)}
-        >
-          <DeleteIcon sx={{ color: 'white' }} />
-        </ConfirmButton>
-      </Stack>
-    );
-  }
-);
 
 const getYouTubeUrl = id => `https://www.youtube.com/embed/${id}`;
 const getVimeoUrl = id => `https://player.vimeo.com/video/${id}`;
@@ -499,224 +364,6 @@ export const AddMediaDialog = memo(props => {
   );
 });
 
-const EditableImage = memo(
-  ({ label, image, onUpdate, onDelete, processing }) => {
-    const { getMediaFile } = useStoryMapMediaContext();
-
-    const imageSrc = useMemo(
-      () => getMediaSrc(image, getMediaFile),
-      [image, getMediaFile]
-    );
-
-    const deleteConfirmProps = useMemo(
-      () => ({
-        confirmTitle: 'storyMap.form_media_image_delete_confirm_title',
-        confirmMessage: 'storyMap.form_media_image_delete_confirm_message',
-        confirmButton: 'storyMap.form_media_image_delete_confirm_button',
-      }),
-      []
-    );
-
-    return (
-      <Stack>
-        <Box
-          data-testid="single-image-viewport"
-          sx={{
-            aspectRatio: '16 / 9',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
-          <CroppedImagePreview
-            item={{ ...image, url: imageSrc }}
-            label={label}
-          />
-        </Box>
-        <MediaActionBar
-          onUpdate={onUpdate}
-          onDelete={onDelete}
-          processing={processing}
-          deleteConfirmProps={deleteConfirmProps}
-        />
-      </Stack>
-    );
-  }
-);
-
-const EditableAudio = memo(({ audio, onUpdate, onDelete, processing }) => {
-  const { t } = useTranslation();
-  const { getMediaFile } = useStoryMapMediaContext();
-  const audioRef = useRef(null);
-
-  const audioSrc = useMemo(
-    () => getMediaSrc(audio, getMediaFile),
-    [audio, getMediaFile]
-  );
-
-  const [containerHeight, handleAudioLoad, handleError, loadingState] =
-    useMediaLoad(
-      MEDIA_CONFIG[MEDIA_TYPES.AUDIO].defaultHeight,
-      audioRef,
-      calculateAudioHeight
-    );
-
-  const deleteConfirmProps = useMemo(
-    () => ({
-      confirmTitle: 'storyMap.form_media_audio_delete_confirm_title',
-      confirmMessage: 'storyMap.form_media_audio_delete_confirm_message',
-      confirmButton: 'storyMap.form_media_audio_delete_confirm_button',
-    }),
-    []
-  );
-
-  useEffect(() => {
-    if (!audioRef.current || !audioSrc) {
-      return;
-    }
-
-    audioRef.current.load();
-  }, [audioSrc]);
-
-  return (
-    <Stack spacing={1} sx={{ height: `${containerHeight}px` }}>
-      <audio
-        ref={audioRef}
-        style={{
-          width: '100%',
-          height: `${MEDIA_CONFIG[MEDIA_TYPES.AUDIO].controlsHeight}px`,
-          opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
-        }}
-        controls
-        onLoadedMetadata={handleAudioLoad}
-        onError={handleError}
-        aria-label={`${t('storyMap.form_media_audio_label')}: ${audio.filename || t('storyMap.form_media_file_default')}`}
-      >
-        <source src={audioSrc} type={audio.type} />
-        {t('storyMap.form_media_audio_not_supported')}
-      </audio>
-      {loadingState === LOADING_STATES.ERROR && (
-        <Typography
-          variant="caption"
-          color="error"
-          sx={{ textAlign: 'center' }}
-        >
-          {t('storyMap.form_media_audio_error')}
-        </Typography>
-      )}
-      <MediaActionBar
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-        processing={processing}
-        deleteConfirmProps={deleteConfirmProps}
-      />
-    </Stack>
-  );
-});
-
-const EditableVideo = memo(({ video, onUpdate, onDelete, processing }) => {
-  const { t } = useTranslation();
-  const { getMediaFile } = useStoryMapMediaContext();
-  const videoRef = useRef(null);
-
-  const videoSrc = useMemo(
-    () => getMediaSrc(video, getMediaFile),
-    [video, getMediaFile]
-  );
-
-  const [containerHeight, handleVideoLoad, handleError, loadingState] =
-    useMediaLoad(
-      MEDIA_CONFIG[MEDIA_TYPES.VIDEO].defaultHeight,
-      videoRef,
-      calculateVideoHeight
-    );
-
-  const deleteConfirmProps = useMemo(
-    () => ({
-      confirmTitle: 'storyMap.form_media_video_delete_confirm_title',
-      confirmMessage: 'storyMap.form_media_video_delete_confirm_message',
-      confirmButton: 'storyMap.form_media_video_delete_confirm_button',
-    }),
-    []
-  );
-
-  useEffect(() => {
-    if (!videoRef.current || !videoSrc) {
-      return;
-    }
-
-    videoRef.current.load();
-  }, [videoSrc]);
-
-  return (
-    <Stack sx={{ height: `${containerHeight}px` }}>
-      <video
-        ref={videoRef}
-        style={{
-          width: '100%',
-          height: `${containerHeight - MEDIA_CONFIG[MEDIA_TYPES.VIDEO].controlsOffset}px`,
-          opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
-        }}
-        controls
-        onLoadedMetadata={handleVideoLoad}
-        onError={handleError}
-        aria-label={`${t('storyMap.form_media_video_label')}: ${video.filename || t('storyMap.form_media_file_default')}`}
-      >
-        <source src={videoSrc} type={video.type} />
-        {t('storyMap.form_media_video_not_supported')}
-      </video>
-      {loadingState === LOADING_STATES.ERROR && (
-        <Typography
-          variant="caption"
-          color="error"
-          sx={{ textAlign: 'center', py: 1 }}
-        >
-          {t('storyMap.form_media_video_error')}
-        </Typography>
-      )}
-      <MediaActionBar
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-        processing={processing}
-        deleteConfirmProps={deleteConfirmProps}
-      />
-    </Stack>
-  );
-});
-
-const EditableEmbedded = memo(
-  ({ label, embedded, onUpdate, onDelete, processing }) => {
-    const deleteConfirmProps = useMemo(
-      () => ({
-        confirmTitle: 'storyMap.form_media_video_delete_confirm_title',
-        confirmMessage: 'storyMap.form_media_video_delete_confirm_message',
-        confirmButton: 'storyMap.form_media_video_delete_confirm_button',
-      }),
-      []
-    );
-
-    return (
-      <Stack spacing={1}>
-        <iframe
-          allowFullScreen
-          title={embedded.title || label}
-          src={embedded.url}
-          style={{
-            height: `${MEDIA_CONFIG[MEDIA_TYPES.EMBEDDED].defaultHeight}px`,
-            width: '100%',
-          }}
-          loading="lazy"
-        />
-        <MediaActionBar
-          onUpdate={onUpdate}
-          onDelete={onDelete}
-          processing={processing}
-          deleteConfirmProps={deleteConfirmProps}
-        />
-      </Stack>
-    );
-  }
-);
-
 const moveMedia = (mediaItems, index, direction) => {
   const nextIndex = index + direction;
   if (nextIndex < 0 || nextIndex >= mediaItems.length) {
@@ -766,7 +413,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
   const [crop, setCrop] = useState(image.crop);
   const [fitScale, setFitScale] = useState(image.crop?.fitScale || 1);
   const previewCrop = crop || { ...DEFAULT_CROP, scale: fitScale };
-  const imageSrc = getMediaSrc(image, getMediaFile);
+  const imageSrc = getMediaSource(image, getMediaFile);
 
   return (
     <Dialog
@@ -1188,13 +835,13 @@ const MediaActionsToolbar = ({
   );
 };
 
-const EditableMediaList = ({
+const EditableMedia = ({
   onChange,
   onPresentationChange,
-  presentation,
+  presentation = 'carousel',
   value,
 }) => {
-  const { t } = useTranslation();
+  useTranslation();
   const { config } = useStoryMapConfigDataContext();
   const { getMediaFile } = useStoryMapMediaContext();
   const [cropIndex, setCropIndex] = useState(null);
@@ -1391,78 +1038,5 @@ const EditableMediaList = ({
     </Stack>
   );
 };
-
-const EditableSingleMedia = memo(({ label, value, onChange }) => {
-  const [open, setOpen] = useState(false);
-
-  const onAdd = useCallback(
-    media => {
-      onChange(media);
-      setOpen(false);
-    },
-    [onChange]
-  );
-
-  const onDelete = useCallback(() => {
-    onChange(null);
-  }, [onChange]);
-
-  const onClose = useCallback(() => setOpen(false), []);
-  const onOpen = useCallback(() => setOpen(true), []);
-
-  const renderMediaComponent = useMemo(() => {
-    if (!value) {
-      return null;
-    }
-
-    const commonProps = {
-      label,
-      onUpdate: onOpen,
-      onDelete,
-    };
-
-    if (value.type.startsWith(MEDIA_TYPES.IMAGE)) {
-      return <EditableImage image={value} {...commonProps} />;
-    }
-    if (value.type.startsWith(MEDIA_TYPES.AUDIO)) {
-      return <EditableAudio audio={value} {...commonProps} />;
-    }
-    if (value.type.startsWith(MEDIA_TYPES.VIDEO)) {
-      return <EditableVideo video={value} {...commonProps} />;
-    }
-    if (value.type.startsWith(MEDIA_TYPES.EMBEDDED)) {
-      return <EditableEmbedded embedded={value} {...commonProps} />;
-    }
-    return null;
-  }, [value, label, onOpen, onDelete]);
-
-  return (
-    <>
-      {open && <AddMediaDialog open={open} onClose={onClose} onAdd={onAdd} />}
-      {renderMediaComponent}
-      {!value && <EmptyMediaPlaceholder onUpload={onOpen} />}
-    </>
-  );
-});
-
-const EditableMedia = ({
-  label,
-  multiple = false,
-  onChange,
-  onPresentationChange,
-  presentation = 'carousel',
-  value,
-}) =>
-  multiple ? (
-    <EditableMediaList
-      label={label}
-      onChange={onChange}
-      onPresentationChange={onPresentationChange}
-      presentation={presentation}
-      value={value}
-    />
-  ) : (
-    <EditableSingleMedia label={label} value={value} onChange={onChange} />
-  );
 
 export default memo(EditableMedia);

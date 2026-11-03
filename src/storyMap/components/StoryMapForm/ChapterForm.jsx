@@ -272,8 +272,6 @@ const ChapterForm = props => {
             }}
           />
           <EditableMedia
-            label={t('storyMap.form_chapter_media_label')}
-            multiple
             onPresentationChange={onFieldChange('mediaPresentation')}
             presentation={record.mediaPresentation || 'carousel'}
             value={record.mediaItems}
