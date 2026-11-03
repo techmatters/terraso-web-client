@@ -14,42 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import getVideoId from 'get-video-id';
+import { memo, useMemo, useState } from 'react';
 import i18n from 'i18next';
-import _ from 'lodash/fp';
-import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import OpenInNew from '@mui/icons-material/OpenInNew';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import ViewCarouselOutlinedIcon from '@mui/icons-material/ViewCarouselOutlined';
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormHelperText,
   IconButton,
-  Link,
   ListItemIcon,
   Menu,
   MenuItem,
-  OutlinedInput,
   Paper,
-  Slider,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -58,8 +45,8 @@ import {
 } from '@mui/material';
 
 import ConfirmButton from 'terraso-web-client/common/components/ConfirmButton';
-import DropZone from 'terraso-web-client/common/components/DropZone';
-import { openFile } from 'terraso-web-client/common/fileUtils';
+import AddMediaDialog from 'terraso-web-client/storyMap/components/StoryMapForm/AddMediaDialog';
+import ImageCropDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ImageCropDialog';
 import {
   useStoryMapConfigDataContext,
   useStoryMapMediaContext,
@@ -69,9 +56,6 @@ import {
   GalleryPresentation,
 } from 'terraso-web-client/storyMap/components/StoryMapMedia';
 import {
-  calculateMediaFitScale as calculateFitScale,
-  MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
-  getMediaSource,
   MAX_CHAPTER_MEDIA_ITEMS,
   getMediaLabel as mediaLabel,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
@@ -82,18 +66,11 @@ import {
   STORY_MAP_OVERLAY_CONTROL_SX,
 } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
-import {
-  STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS,
-  STORY_MAP_MEDIA_ACCEPTED_TYPES,
-  STORY_MAP_MEDIA_MAX_SIZE,
-} from 'terraso-web-client/config';
-
 const MEDIA_TYPES = {
   IMAGE: 'image',
   AUDIO: 'audio',
 };
 
-const DEFAULT_CROP = { position: { x: 0.5, y: 0.5 }, scale: 1 };
 const MEDIA_PRESENTATION_BUTTON_SX = {
   ...STORY_MAP_CONTROL_SX,
   borderColor: 'var(--story-theme-text)',
@@ -106,263 +83,6 @@ const MEDIA_PRESENTATION_BUTTON_SX = {
     color: 'var(--story-theme-highlight-text)',
   },
 };
-
-const getYouTubeUrl = id => `https://www.youtube.com/embed/${id}`;
-const getVimeoUrl = id => `https://player.vimeo.com/video/${id}`;
-
-const getVideoUrl = ({ id, service }) => {
-  if (service === 'youtube') {
-    return getYouTubeUrl(id);
-  }
-
-  if (service === 'vimeo') {
-    return getVimeoUrl(id);
-  }
-
-  console.error(`Invalid video service: ${service}`);
-  return null;
-};
-
-const getDataFromEmbedded = value => {
-  const { id, service } = getVideoId(value);
-
-  if (!_.includes(service, ['youtube', 'vimeo'])) {
-    return null;
-  }
-
-  return {
-    type: 'embedded',
-    source: service,
-    url: getVideoUrl({ id, service }),
-  };
-};
-
-const AddMediaDialog = memo(props => {
-  const { canAdd = true, open, onClose, onAdd } = props;
-  const { t } = useTranslation();
-  const { addMediaFile } = useStoryMapMediaContext();
-
-  const [currentFile, setCurrentFile] = useState();
-  const [dropErrors, setDropErrors] = useState();
-  const [droppedMedia, setDroppedMedia] = useState();
-
-  const [embeddedInputValue, setEmbeddedInputValue] = useState('');
-  const [embeddedMedia, setEmbeddedMedia] = useState();
-  const [embeddedError, setEmbeddedError] = useState();
-
-  const [selected, setSelected] = useState(0);
-
-  useEffect(() => {
-    if (open) {
-      return;
-    }
-
-    setCurrentFile();
-    setDropErrors();
-    setDroppedMedia();
-    setEmbeddedInputValue('');
-    setEmbeddedMedia();
-    setEmbeddedError();
-    setSelected(0);
-  }, [open]);
-
-  const onDropRejected = useCallback(
-    rejections => {
-      const messages = _.flow(
-        // Group by error code
-        _.groupBy(_.get('errors[0].code')),
-        // Get only rejected files filename and join them
-        _.mapValues(_.flow(_.map(_.get('file.name')), _.join(', '))),
-        _.toPairs,
-        // Generate localized messages
-        _.map(([errorCode, rejectedFiles]) =>
-          t(
-            [
-              `storyMap.upload_rejected_${errorCode}`,
-              `storyMap.upload_rejected`,
-            ],
-            { rejectedFiles }
-          )
-        )
-      )(rejections);
-      setDropErrors(() => messages);
-    },
-    [t, setDropErrors]
-  );
-
-  const onDrop = useCallback(
-    acceptedFiles => {
-      if (_.isEmpty(acceptedFiles)) {
-        return;
-      }
-      setDropErrors(null);
-      setSelected(0);
-
-      const selectedFile = acceptedFiles[0];
-      openFile(selectedFile).then(content => {
-        setCurrentFile(selectedFile);
-
-        const id = addMediaFile(content, selectedFile);
-
-        setDroppedMedia({
-          filename: selectedFile.name,
-          type: selectedFile.type,
-          contentId: id,
-        });
-      });
-    },
-    [addMediaFile]
-  );
-
-  const validateEmbedded = useCallback(
-    value => {
-      const embed = getDataFromEmbedded(value);
-
-      if (!embed) {
-        setEmbeddedError(t('storyMap.form_media_add_dialog_embedded_error'));
-        setEmbeddedMedia(null);
-        return;
-      }
-      setEmbeddedError(null);
-      setEmbeddedMedia(embed);
-    },
-    [t]
-  );
-
-  const onEmbeddedInputChange = useCallback(
-    event => {
-      const value = event.target.value;
-      setEmbeddedInputValue(value);
-      setSelected(1);
-
-      if (!embeddedError) {
-        return;
-      }
-
-      validateEmbedded(value);
-    },
-    [embeddedError, validateEmbedded]
-  );
-
-  const onEmbeddedInputBlur = useCallback(() => {
-    if (!embeddedInputValue) {
-      return;
-    }
-    validateEmbedded(embeddedInputValue);
-  }, [validateEmbedded, embeddedInputValue]);
-
-  const onAddWrapper = useCallback(() => {
-    const media = selected === 0 ? droppedMedia : embeddedMedia;
-    onAdd(media);
-  }, [selected, droppedMedia, embeddedMedia, onAdd]);
-
-  const addDisabled = useMemo(() => {
-    if (selected === 0) {
-      return _.isEmpty(droppedMedia);
-    }
-    if (selected === 1) {
-      return !_.isEmpty(embeddedError) || !embeddedInputValue;
-    }
-    return true;
-  }, [selected, droppedMedia, embeddedError, embeddedInputValue]);
-
-  return (
-    <Dialog fullWidth open={open} onClose={onClose}>
-      <DialogTitle sx={{ pb: 1 }}>
-        {t('storyMap.form_media_add_dialog_title')}
-      </DialogTitle>
-      <DialogContent>
-        <Link
-          href="https://terraso.org/help/chapters/#add-media"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ display: 'block', mb: 2 }}
-        >
-          {t('storyMap.form_media_add_dialog_help_text')}{' '}
-          <OpenInNew fontSize="inherit" sx={{ verticalAlign: 'middle' }} />
-        </Link>
-        <DropZone
-          label={
-            <Stack spacing={1} sx={{ alignItems: 'center' }}>
-              <CloudUploadOutlinedIcon
-                sx={{ color: 'blue.dark', fontSize: 40 }}
-              />
-              <Typography variant="h3" sx={{ fontWeight: 500 }}>
-                {t('storyMap.form_media_add_dialog_dropzone_label')}
-              </Typography>
-            </Stack>
-          }
-          multiple={false}
-          buttonLabel={t('storyMap.form_media_add_dialog_select_file')}
-          caption={t('storyMap.form_media_add_dialog_dropzone_helper')}
-          maxSize={STORY_MAP_MEDIA_MAX_SIZE}
-          fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
-          fileExtensions={STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS}
-          onDrop={onDrop}
-          onDropRejected={onDropRejected}
-          errors={dropErrors}
-          currentFile={currentFile}
-          containerProps={{
-            onClickCapture: () => setSelected(0),
-            onFocusCapture: () => setSelected(0),
-            sx: {
-              opacity: selected === 0 ? 1 : 0.7,
-            },
-          }}
-        />
-        <Paper
-          variant="outlined"
-          sx={{
-            p: 1,
-            mt: 1,
-            borderRadius: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            bgcolor: selected === 1 ? 'blue.lite' : 'white',
-          }}
-        >
-          <Typography
-            component="label"
-            htmlFor="embedded-media-input"
-            variant="h3"
-            sx={{ fontWeight: 500, mb: 1 }}
-          >
-            {t('storyMap.form_media_add_dialog_link_media')}
-          </Typography>
-          <OutlinedInput
-            id="embedded-media-input"
-            size="small"
-            fullWidth
-            onClick={() => setSelected(1)}
-            onFocus={() => setSelected(1)}
-            onChange={onEmbeddedInputChange}
-            onBlur={onEmbeddedInputBlur}
-            value={embeddedInputValue}
-            error={!!embeddedError}
-            placeholder={t(
-              'storyMap.form_media_add_dialog_link_media_placeholder'
-            )}
-          />
-          {(embeddedError || !canAdd) && (
-            <FormHelperText error>
-              {embeddedError || t('storyMap.media_limit_reached')}
-            </FormHelperText>
-          )}
-        </Paper>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{t('common.dialog_close_label')}</Button>
-        <Button
-          variant="contained"
-          onClick={onAddWrapper}
-          disabled={addDisabled || !canAdd}
-        >
-          {t('storyMap.form_media_add_dialog_add')}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-});
 
 const moveMedia = (mediaItems, index, direction) => {
   const nextIndex = index + direction;
@@ -405,106 +125,6 @@ const getMediaDeleteConfirmProps = media => {
     message: 'storyMap.form_media_video_delete_confirm_message',
     button: 'storyMap.form_media_video_delete_confirm_button',
   };
-};
-
-const ImageCropDialog = ({ image, onClose, onSave }) => {
-  const { getMediaFile } = useStoryMapMediaContext();
-  const [altText, setAltText] = useState(image.altText || '');
-  const [crop, setCrop] = useState(image.crop);
-  const [fitScale, setFitScale] = useState(image.crop?.fitScale || 1);
-  const previewCrop = crop || { ...DEFAULT_CROP, scale: fitScale };
-  const imageSrc = getMediaSource(image, getMediaFile);
-
-  return (
-    <Dialog
-      fullWidth
-      maxWidth="md"
-      open
-      onClose={onClose}
-      slotProps={{ paper: { 'aria-label': i18n.t('storyMap.media_crop') } }}
-    >
-      <DialogContent>
-        <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
-          <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
-            <img
-              alt={i18n.t('storyMap.media_crop_source')}
-              onLoad={({ currentTarget }) => {
-                const nextFitScale = calculateFitScale(currentTarget);
-                setFitScale(nextFitScale);
-                setCrop(currentCrop =>
-                  currentCrop
-                    ? {
-                        ...currentCrop,
-                        scale: Math.max(currentCrop.scale, nextFitScale),
-                      }
-                    : currentCrop
-                );
-              }}
-              src={imageSrc}
-              style={{ display: 'none' }}
-            />
-            <AvatarEditor
-              style={{ maxWidth: '100%', height: 'auto' }}
-              image={imageSrc}
-              width={640}
-              height={640 / CAROUSEL_ASPECT_RATIO}
-              border={20}
-              color={[255, 255, 255, 0.6]}
-              position={previewCrop.position}
-              scale={Math.max(previewCrop.scale, fitScale)}
-              onPositionChange={position =>
-                setCrop({ ...previewCrop, position })
-              }
-            />
-          </Box>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ alignItems: 'center', width: '100%' }}
-          >
-            <Typography id="carousel-crop-zoom-label">
-              {i18n.t('storyMap.media_zoom')}
-            </Typography>
-            <Slider
-              aria-labelledby="carousel-crop-zoom-label"
-              min={fitScale}
-              max={3}
-              step={0.1}
-              value={previewCrop.scale}
-              valueLabelDisplay="auto"
-              valueLabelFormat={scale =>
-                scale === fitScale
-                  ? i18n.t('storyMap.media_fit_image')
-                  : `${scale}x`
-              }
-              onChange={(event, scale) => setCrop({ ...previewCrop, scale })}
-            />
-          </Stack>
-          <OutlinedInput
-            fullWidth
-            inputProps={{
-              maxLength: 1000,
-              'aria-label': i18n.t('storyMap.media_alt_placeholder'),
-            }}
-            multiline
-            onChange={event => setAltText(event.target.value)}
-            placeholder={i18n.t('storyMap.media_alt_placeholder')}
-            rows={3}
-            value={altText}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{i18n.t('storyMap.media_cancel')}</Button>
-        <Button
-          variant="contained"
-          onClick={() => onSave(crop, altText.trim())}
-        >
-          {i18n.t('storyMap.media_done')}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
 };
 
 const ImageAltTextBadge = ({ hasAltText, label, onClick }) => (
