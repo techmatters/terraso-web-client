@@ -32,8 +32,27 @@ export const REACT_APP_BASE_URL =
 
 export const GRAPHQL_ENDPOINT = 'graphql/';
 
+const CONFIGURED_COOKIES_DOMAIN = import.meta.env.REACT_APP_COOKIES_DOMAIN;
+
 export const COOKIES_DOMAIN =
-  import.meta.env.REACT_APP_COOKIES_DOMAIN || window.location.hostname;
+  CONFIGURED_COOKIES_DOMAIN || window.location.hostname;
+
+export const getCookieDomainForHost = (
+  hostname: string,
+  cookieDomain = CONFIGURED_COOKIES_DOMAIN
+) => {
+  if (!cookieDomain) {
+    return undefined;
+  }
+
+  const normalizedHostname = hostname.toLowerCase();
+  const normalizedCookieDomain = cookieDomain.replace(/^\./, '').toLowerCase();
+
+  return normalizedHostname === normalizedCookieDomain ||
+    normalizedHostname.endsWith(`.${normalizedCookieDomain}`)
+    ? cookieDomain
+    : undefined;
+};
 
 // 30 days expiration for both access and refresh tokens, since refresh token rotation is implemented on the backend
 const COOKIES_PARAMS = { path: '/', expires: 30 };
@@ -55,7 +74,11 @@ setAPIConfig({
     },
     setToken: (name, token) => {
       Cookies.remove(name, COOKIES_PARAMS);
-      Cookies.set(name, token, { domain: COOKIES_DOMAIN, ...COOKIES_PARAMS });
+      const cookieDomain = getCookieDomainForHost(window.location.hostname);
+      Cookies.set(name, token, {
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
+        ...COOKIES_PARAMS,
+      });
     },
   },
   logger: (severity: Severity, ...args) => console.log(...args),

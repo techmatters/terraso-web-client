@@ -18,7 +18,7 @@
 import Cookies from 'js-cookie';
 import { getAPIConfig } from 'terraso-client-shared/config';
 
-import { COOKIES_DOMAIN } from 'terraso-web-client/config';
+import { getCookieDomainForHost } from 'terraso-web-client/config';
 
 describe('auth token cookie storage', () => {
   afterEach(() => {
@@ -26,7 +26,7 @@ describe('auth token cookie storage', () => {
   });
 
   test.each(['atoken', 'rtoken'])(
-    'replaces the host-only %s with a token scoped to the shared cookie domain',
+    'stores the rotated %s with a cookie scope valid for this host',
     name => {
       const removeCookie = jest.spyOn(Cookies, 'remove');
       const setCookie = jest.spyOn(Cookies, 'set');
@@ -37,8 +37,9 @@ describe('auth token cookie storage', () => {
         path: '/',
         expires: 30,
       });
+      const cookieDomain = getCookieDomainForHost(window.location.hostname);
       expect(setCookie).toHaveBeenCalledWith(name, 'rotated-token', {
-        domain: COOKIES_DOMAIN,
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
         path: '/',
         expires: 30,
       });
@@ -47,4 +48,16 @@ describe('auth token cookie storage', () => {
       );
     }
   );
+
+  test('uses the shared cookie domain for a matching subdomain', () => {
+    expect(getCookieDomainForHost('app.terraso.org', '.terraso.org')).toBe(
+      '.terraso.org'
+    );
+  });
+
+  test('falls back to host-only cookies when a preview host is outside the configured domain', () => {
+    expect(
+      getCookieDomainForHost('preview.onrender.com', '.terraso.org')
+    ).toBeUndefined();
+  });
 });
