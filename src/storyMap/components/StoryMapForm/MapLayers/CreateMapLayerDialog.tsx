@@ -57,7 +57,7 @@ import {
   identifyLatLngColumns,
   validateCoordinateField,
 } from 'terraso-web-client/sharedData/visualization/visualizationUtils';
-import { FileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/FileUpload';
+import { FileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/FileUpload';
 import { addMapLayer } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
   MapLayerConfig,
@@ -295,11 +295,14 @@ type CreateMapLayerDialogProps = {
   onClose: () => void;
   onCreate: (dataLayerConfig: MapLayerConfig) => void;
   chapterTitle?: string;
+  /** Reports the dialog open state to the host (e.g. to guard file drops). */
+  onOpenChange?: (open: boolean) => void;
 };
 const CreateMapLayerDialog = ({
   onClose,
   onCreate,
   chapterTitle,
+  onOpenChange,
 }: CreateMapLayerDialogProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -340,18 +343,31 @@ const CreateMapLayerDialog = ({
         description: _.get('annotateConfig.mapDescription', completeConfig),
         visualizationConfig: filteredConfig,
         selectedFile: visualizationConfig.selectedFile,
-        ownerId: owner.id,
+        ownerId: owner?.id,
         ownerType: entityType,
       })
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         onCreate(data.payload);
+        onClose();
       }
     });
-  }, [dispatch, onCreate, owner.id, entityType, visualizationConfig, trigger]);
+  }, [
+    dispatch,
+    onCreate,
+    onClose,
+    owner?.id,
+    entityType,
+    visualizationConfig,
+    trigger,
+  ]);
 
   const open = Boolean(dataEntry) && !loadingFile && !loadingFileError;
+
+  useEffect(() => {
+    onOpenChange?.(open);
+  }, [open, onOpenChange]);
 
   return (
     <Dialog
@@ -411,10 +427,19 @@ const CreateMapLayerDialog = ({
 interface CreateMapLayerFileUploadProps {
   onCreate: (mapLayer: MapLayerConfig) => void;
   title?: string;
+  /** File to start the create flow with (e.g. dropped on the window). */
+  externalFile?: File;
+  /** When false, the create flow's drop zone UI is not rendered. */
+  showDropZone?: boolean;
+  /** Reports the create dialog open state (e.g. to guard window drops). */
+  onCreateDialogOpenChange?: (open: boolean) => void;
 }
 export const CreateMapLayerFileUpload = ({
   onCreate,
   title,
+  externalFile,
+  showDropZone = true,
+  onCreateDialogOpenChange,
 }: CreateMapLayerFileUploadProps) => {
   const [visualizationConfig, setVisualizationConfig] =
     useState<VisualizationConfigForm>({
@@ -439,7 +464,6 @@ export const CreateMapLayerFileUpload = ({
     },
     [setVisualizationConfig]
   );
-  useEffect(() => {}, [setVisualizationConfig]);
 
   return (
     <VisualizationContextProvider
@@ -448,11 +472,16 @@ export const CreateMapLayerFileUpload = ({
       dispatchErrors={false}
     >
       <FormContextProvider>
-        <FileUpload onCompleteSuccess={setDataEntry} />
+        <FileUpload
+          onCompleteSuccess={setDataEntry}
+          externalFile={externalFile}
+          showDropZone={showDropZone}
+        />
         <CreateMapLayerDialog
           onCreate={onCreate}
           onClose={() => setDataEntry(undefined)}
           chapterTitle={title}
+          onOpenChange={onCreateDialogOpenChange}
         />
       </FormContextProvider>
     </VisualizationContextProvider>

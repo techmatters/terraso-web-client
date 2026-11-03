@@ -21,6 +21,8 @@ import useBufferedChapterFields, {
 } from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 
 const TEXT_COMMIT_DEBOUNCE = 500;
+// NOTE: `alignment` is NOT buffered here — it lives in the Configure Chapter
+// sidebar (immediate apply) and the chapter form no longer edits it.
 const BUFFERED_CHAPTER_FIELDS = {
   title: {
     commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED,
@@ -29,9 +31,6 @@ const BUFFERED_CHAPTER_FIELDS = {
   description: {
     commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED,
     delayMs: TEXT_COMMIT_DEBOUNCE,
-  },
-  alignment: {
-    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.IMMEDIATE,
   },
 };
 

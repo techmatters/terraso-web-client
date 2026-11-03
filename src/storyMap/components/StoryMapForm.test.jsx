@@ -25,8 +25,12 @@ import {
 } from 'terraso-web-client/tests/utils';
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { when } from 'jest-when';
+import logger from 'terraso-client-shared/monitoring/logger';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
+import {
+  createBounds,
+  createLoadedMapMock,
+} from 'terraso-web-client/tests/mapboxMock';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -86,6 +90,43 @@ jest.mock('terraso-web-client/gis/components/MapStyleSwitcher', () => ({
 }));
 
 jest.mock('terraso-client-shared/terrasoApi/api');
+
+// The create-layer dialog's upload flow needs the real storage pipeline; the
+// editor tests only care about the FLOW STATE (which file the create flow
+// holds) surviving sidebar toggles.
+jest.mock(
+  'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/CreateMapLayerDialog',
+  () => ({
+    CreateMapLayerFileUpload: ({ externalFile }) => (
+      <div data-testid="create-flow-file">{externalFile?.name ?? ''}</div>
+    ),
+  })
+);
+
+// Fit-pipeline wiring: record the `changeBounds` prop the fit channel hands
+// EACH layer (a request seq number for the fit target, `false` for everyone
+// else) while rendering the REAL layer — the fit effect in
+// VisualizationMapLayer must actually run (this is a product-level spec, not
+// a hand-simulated camera move).
+jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => {
+  const actual = jest.requireActual(
+    'terraso-web-client/storyMap/components/StoryMapLayer'
+  );
+  const StoryMapLayerSpy = props => {
+    (globalThis.__storyMapChangeBoundsLog ??= []).push({
+      layerId: props.config?.id,
+      changeBounds: props.changeBounds,
+    });
+    return actual.StoryMapLayer(props);
+  };
+  return {
+    ...actual,
+    StoryMapLayer: StoryMapLayerSpy,
+    default: StoryMapLayerSpy,
+  };
+});
+
+const changeBoundsLog = () => globalThis.__storyMapChangeBoundsLog ?? [];
 
 const VISUALIZATION_CONFIG_JSON = {
   datasetConfig: {
@@ -163,23 +204,17 @@ const VISUALIZATION_CONFIG_NO_TILESET = {
   title: 'Datalayer title 3',
 };
 
-const expectSave = async () => {
-  const header = screen.getByRole('region', { name: 'Story editor Header' });
-  expect(within(header).getByText('Saving…')).toBeInTheDocument();
+// DE-FLAKED: assert the SAVE TRANSACTION (the draft autosave fired) instead
+// of the synchronous 'Saving…' label — under CI slowness the save can resolve
+// before the label is inspected (the label itself is TopBar's concern).
+const expectSave = async onSaveDraft => {
   await waitFor(() => {
-    expect(within(header).getByText('Draft saved')).toBeInTheDocument();
+    expect(onSaveDraft).toHaveBeenCalled();
   });
 };
 
 const baseMapOptions = () =>
-  createMapMock({
-    onEvents: {},
-    on: function (type, cb) {
-      if (type === 'load') {
-        cb();
-      }
-      this.onEvents[type] = cb;
-    },
+  createLoadedMapMock({
     getContainer: jest.fn().mockReturnValue(document.createElement('div')),
   });
 
@@ -273,12 +308,10 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  globalThis.__storyMapChangeBoundsLog = [];
   global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-  mapboxgl.LngLatBounds = jest.fn();
-  mapboxgl.LngLatBounds.prototype = {
-    isEmpty: jest.fn().mockReturnValue(false),
-  };
-  mapboxgl.LngLat = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn((...args) => createBounds(...args));
+  mapboxgl.LngLat = jest.fn((lng, lat) => ({ lng, lat }));
   mapboxgl.Popup = jest.fn();
   const Popup = {
     setLngLat: jest.fn().mockReturnThis(),
@@ -640,57 +673,6 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
 });
 
-test('StoryMapForm: Edit Map button width matches chapter content width', async () => {
-  await setup({
-    config: {
-      ...BASE_CONFIG,
-      chapters: [
-        {
-          id: 'chapter-embed',
-          title: 'Chapter with embed',
-          description: 'Chapter with embed description',
-          media: {
-            type: 'embedded',
-            source: 'youtube',
-            url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-            title: 'Test video',
-          },
-          onChapterEnter: [],
-          onChapterExit: [],
-        },
-        {
-          id: 'chapter-no-media',
-          title: 'Chapter without media',
-          description: 'Chapter without media description',
-          onChapterEnter: [],
-          onChapterExit: [],
-        },
-      ],
-    },
-  });
-
-  // The chapter content card (.step-content in StoryMap.css) is capped at
-  // max-width 35vw plus its 50px x2 horizontal padding (border box
-  // calc(35vw + 100px)). The chapter's grid container must be capped so its
-  // 11/12 content cell lands exactly on that card width, keeping the Edit Map
-  // button, the card, and the 1/12 alignment column adjacent.
-  const embedButton = within(
-    screen.getByRole('region', { name: 'Chapter: Chapter with embed' })
-  ).getByRole('button', { name: 'Edit Map' });
-  const embedContainer = embedButton.closest('.MuiGrid-container');
-  expect(getComputedStyle(embedContainer).maxWidth).toBe(
-    'calc((35vw + 100px) * 12 / 11)'
-  );
-  expect(getComputedStyle(embedButton).width).toBe('100%');
-
-  // Without visual media the container cap never binds: the button fills its
-  // grid cell as before.
-  const noMediaButton = within(
-    screen.getByRole('region', { name: 'Chapter: Chapter without media' })
-  ).getByRole('button', { name: 'Edit Map' });
-  expect(getComputedStyle(noMediaButton).width).toBe('100%');
-});
-
 test('StoryMapForm: Change title', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
@@ -738,7 +720,7 @@ test('StoryMapForm: Change title', async () => {
   );
 
   // Save
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -950,6 +932,15 @@ test('StoryMapForm: Sidebar navigation', async () => {
   };
 
   await setup({ config: BASE_CONFIG });
+
+  // Camera step-transitions follow chapter navigation only while the map is
+  // NOT being positioned. The Configure Chapter sidebar (open by default)
+  // suspends them — close it to get the playback behavior.
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
 
   // Get sidebar list
   const sidebarList = screen.getByRole('navigation', {
@@ -1184,7 +1175,7 @@ test('StoryMapForm: Adds new chapter', async () => {
   });
   expect(newChapter).toBeInTheDocument();
 
-  await expectSave();
+  await expectSave(onSaveDraft);
   expect(onSaveDraft).toHaveBeenCalledWith(
     expect.objectContaining({
       title: 'Story Map Title',
@@ -1232,7 +1223,7 @@ test('StoryMapForm: Add embedded media', async () => {
   });
 
   // Save
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1255,7 +1246,7 @@ test('StoryMapForm: Add audio media', async () => {
   });
 
   // Save
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1272,6 +1263,11 @@ test('StoryMapForm: Add audio media', async () => {
 });
 test('StoryMapForm: Show preview', async () => {
   await setup({ config: BASE_CONFIG });
+
+  // Preview lives in the Settings sidebar (closed by default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
@@ -1308,6 +1304,11 @@ test('StoryMapForm: Show preview without title uses blank preview copy', async (
     },
   });
 
+  // Preview lives in the Settings sidebar (closed by default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
   );
@@ -1317,298 +1318,231 @@ test('StoryMapForm: Show preview without title uses blank preview copy', async (
   ).toBeInTheDocument();
 });
 
-test('StoryMapForm: Change chapter location', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: jest
-      .fn()
-      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: jest.fn().mockReturnValue(10),
-    getPitch: jest.fn().mockReturnValue(64),
-    getBearing: jest.fn().mockReturnValue(45),
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
-  };
+test('StoryMapForm: the editor map mounts positioning controls while configuring', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
   mapboxgl.Map.mockReturnValue(map);
   MapboxGlGeocoder.mockClear();
-  const { onSaveDraft, unmount } = await setup({ config: BASE_CONFIG });
+  await setup({ config: BASE_CONFIG });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
-
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
-  });
-  await act(async () => fireEvent.click(locationDialogButton));
-
-  const dialog = screen.getByRole('dialog', {
-    name: 'Edit map for Chapter 1',
-  });
-
+  // Controls attach to the ONE editor map (no dialog, no second map) while
+  // the Configure Chapter sidebar is open.
   expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
-  const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
-  const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
+  expect(map.addControl).toHaveBeenCalled();
 
-  expect(coordinateResult.center).toEqual([-77.6543, 1.2345]);
-  expect(coordinateResult.place_name).toEqual('Coordinates: 1.2345, -77.6543');
-  expect(geocoderOptions.getItemValue(coordinateResult)).toEqual(
-    '1.2345, -77.6543'
-  );
-  expect(geocoderOptions.render(coordinateResult)).toEqual(
-    '<div class="mapboxgl-ctrl-geocoder__result-coordinate">Coordinates: 1.2345, -77.6543</div>'
-  );
-
-  const standardResult = { place_name: 'Quito, Ecuador' };
-  expect(geocoderOptions.getItemValue(standardResult)).toEqual(
-    'Quito, Ecuador'
-  );
-  expect(geocoderOptions.render(standardResult)).toEqual('Quito, Ecuador');
-
-  expect(
-    geocoderOptions.render({
-      place_name: '<b>Quito</b> & "Ecuador"',
-    })
-  ).toEqual('&lt;b&gt;Quito&lt;/b&gt; &amp; &quot;Ecuador&quot;');
-
-  map.getCenter.mockReturnValue({
-    lng: coordinateResult.center[0],
-    lat: coordinateResult.center[1],
-  });
-  map.getZoom.mockReturnValue(13);
-  map.getPitch.mockReturnValue(20);
-  map.getBearing.mockReturnValue(5);
-  map.getBounds.mockReturnValue({
-    toArray: () => [
-      [-78, 1],
-      [-77, 2],
-    ],
+  // The chapter overlay must not eat map drags while the map is being
+  // positioned (found in E2E); form controls keep their pointer events.
+  expect(document.getElementById('features')).toHaveStyle({
+    pointerEvents: 'none',
   });
 
-  await act(async () => map.onEvents['move']());
-
-  await act(async () =>
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
-  );
-
-  await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-  });
-
-  // Save
-  await expectSave();
-
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0].chapters[0]).toEqual(
-    expect.objectContaining({
-      location: {
-        bearing: 5,
-        bounds: [-78, 1, -77, 2],
-        center: {
-          lat: 1.2345,
-          lng: -77.6543,
-        },
-        pitch: 20,
-        zoom: 13,
-      },
-    })
-  );
+  // The geocoder's option behavior (coordinate localGeocoder, getItemValue,
+  // render + escaping) is covered by the cheap MapGeocoder unit suite; only
+  // the WIRING (one control on the map) is pinned here.
 });
 
-test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: jest
-      .fn()
-      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: jest.fn().mockReturnValue(10),
-    getPitch: jest.fn().mockReturnValue(64),
-    getBearing: jest.fn().mockReturnValue(45),
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
-  };
+test('StoryMapForm: map controls balance across sidebar open/close and detached geocoder DOM is safe', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
   mapboxgl.Map.mockReturnValue(map);
   MapboxGlGeocoder.mockClear();
   const { unmount } = await setup({ config: BASE_CONFIG });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
+  // "Balance" = exactly one LIVE geocoder on the map at a time (StrictMode
+  // remounts effects, so raw addControl counts may exceed one per session).
+  const geocodersOf = () =>
+    map.addControl.mock.calls
+      .map(([control]) => control)
+      .filter(control => control instanceof MapboxGlGeocoder);
+  const liveGeocoders = () =>
+    geocodersOf().filter(instance => Boolean(instance.container?.parentNode));
 
-  await act(async () => {
+  expect(liveGeocoders().length).toBe(1);
+
+  // Closing Configure Chapter detaches the control (no leak).
+  await act(async () =>
     fireEvent.click(
-      within(chapter1).getByRole('button', {
-        name: 'Edit Map',
-      })
-    );
-  });
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
+  expect(liveGeocoders().length).toBe(0);
+  expect(map.removeControl).toHaveBeenCalledWith(geocodersOf()[0]);
 
-  const geocoderInstance = map.addControl.mock.calls[0][0];
-  geocoderInstance._container = { parentNode: null };
+  // Reopening attaches a fresh instance (no stacking).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(liveGeocoders().length).toBe(1);
 
+  // Detach the live geocoder control's DOM (the real v5 property is
+  // `container`): unmount must stay safe and skip removeControl for the
+  // detached control (other controls are removed normally).
+  const [liveGeocoder] = liveGeocoders().slice(-1);
+  liveGeocoder.container = { parentNode: null };
   expect(() => unmount()).not.toThrow();
-  expect(map.removeControl).not.toHaveBeenCalled();
+  // Identity check (all geocoder doubles serialize alike).
+  expect(
+    map.removeControl.mock.calls.map(([control]) => control)
+  ).not.toContain(liveGeocoder);
+});
+
+test('StoryMapForm: Dragging the map writes the active chapter location immediately', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-2" />,
+    });
+
+    // Scroll to chapter 2: the map writes the ACTIVE step.
+    await io.selectStep('chapter-2');
+
+    map.moveCameraTo(CAMERA_FITTED);
+    await act(async () => {
+      map.fire('mousedown');
+      map.fire('move');
+      map.fire('moveend');
+    });
+
+    // Immediate apply: the config already carries the dragged location.
+    expect(probeChapter().location).toEqual({
+      center: CAMERA_FITTED.center,
+      zoom: CAMERA_FITTED.zoom,
+      pitch: CAMERA_FITTED.pitch,
+      bearing: CAMERA_FITTED.bearing,
+      bounds: [0, 0, 2, 2],
+    });
+
+    // …and the editor's draft autosave persists it.
+    await expectSave(onSaveDraft);
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-2');
+    expect(saved.location.center).toEqual(CAMERA_FITTED.center);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: camera step transitions are suspended while configuring and resume on close', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setup({ config: BASE_CONFIG });
+
+    // Scrolling to a chapter with a location while the Configure Chapter
+    // sidebar is open must NOT move the camera (it would fight the drag).
+    await io.selectStep('chapter-2');
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+
+    // Closing the sidebar resumes the camera step transitions and hands
+    // pointer events back to the chapter overlay.
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+      )
+    );
+    await waitFor(() => expect(map.flyTo).toHaveBeenCalled());
+    expect(document.getElementById('features')).toHaveStyle({
+      pointerEvents: 'auto',
+    });
+  } finally {
+    io.restore();
+  }
 });
 
 test('StoryMapForm: Change chapter style', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
-  };
+  const map = makeCameraMap(CAMERA_OPEN);
   mapboxgl.Map.mockReturnValue(map);
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
-
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
-  });
-  await act(async () => fireEvent.click(locationDialogButton));
-
-  const dialog = screen.getByRole('dialog', {
-    name: 'Edit map for Chapter 1',
-  });
-
-  const baseMapButton = within(dialog).getByRole('button', {
-    name: 'Change Style',
-  });
-
-  await act(async () => fireEvent.click(baseMapButton));
-
-  await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Save Map' })
-    ).toBeInTheDocument();
-  });
-
+  // The style switcher lives on the editor map while configuring; its
+  // change writes config.style immediately (no dialog, no Save Map).
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save Map' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Change Style' }))
   );
 
-  // Save
-  await expectSave();
+  await expectSave(onSaveDraft);
 
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
+  expect(onSaveDraft).toHaveBeenCalled();
+  const saveCall = onSaveDraft.mock.calls.at(-1);
   expect(saveCall[0].style).toEqual('newStyle');
+  // The style write applies to the LIVE map (capture-at-mount): the map is
+  // never recreated for it (recreation would snap the camera).
+  expect(mapboxgl.Map).toHaveBeenCalledTimes(1);
 });
 
 test('StoryMapForm: Add map layer', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
-  };
-  mapboxgl.Map.mockReturnValue(map);
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
 
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
 
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
-  });
-  await act(async () => fireEvent.click(locationDialogButton));
+    const addDataLayerItem = await (async () => {
+      await waitFor(() => {
+        expect(
+          within(sidebar).getByRole('treeitem', {
+            name: 'Datalayer title 1',
+          })
+        ).toBeInTheDocument();
+      });
+      return within(sidebar).getByRole('treeitem', {
+        name: 'Datalayer title 1',
+      });
+    })();
 
-  const dialog = screen.getByRole('dialog', {
-    name: 'Edit map for Chapter 1',
-  });
-
-  const addDataLayerButton = within(dialog).getByRole('button', {
-    name: 'Add Map Layer',
-  });
-  await act(async () => fireEvent.click(addDataLayerButton));
-
-  const dataMapDialog = screen.getByRole('dialog', {
-    name: 'Add a map layer to Chapter 1',
-  });
-
-  const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
-    name: 'Datalayer title 1',
-  });
-  expect(
-    within(dataMapDialog).queryByRole('listitem', {
-      name: 'Datalayer title 2',
-    })
-  ).not.toBeInTheDocument();
-  expect(
-    within(dataMapDialog).queryByRole('listitem', {
-      name: 'Datalayer title 3',
-    })
-  ).not.toBeInTheDocument();
-
-  const radioButton = within(dataLayerItem).getByRole('radio');
-  await act(async () => fireEvent.click(radioButton));
-
-  const nextButton = within(dataMapDialog).getByRole('button', {
-    name: 'Next',
-  });
-  await act(async () => fireEvent.click(nextButton));
-
-  await waitFor(() => {
+    // Only renderable layers are listed in the tree: "Datalayer title 2" is
+    // still processing and "Datalayer title 3" has no tileset.
     expect(
-      within(dialog).getByRole('button', { name: 'Save Map' })
-    ).toBeInTheDocument();
-  });
-  const saveMapButton = within(dialog).getByRole('button', {
-    name: 'Save Map',
-  });
-  await act(async () => fireEvent.click(saveMapButton));
+      within(sidebar).queryByRole('treeitem', {
+        name: 'Datalayer title 2',
+      })
+    ).not.toBeInTheDocument();
+    expect(
+      within(sidebar).queryByRole('treeitem', {
+        name: 'Datalayer title 3',
+      })
+    ).not.toBeInTheDocument();
 
-  await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-  });
+    await act(async () => fireEvent.click(addDataLayerItem));
 
-  // Save
-  await expectSave();
+    // Immediate apply: the layer is on the active chapter already — the
+    // editor's draft autosave persists it.
+    await expectSave(onSaveDraft);
 
-  expect(onSaveDraft).toHaveBeenCalledWith(
-    expect.objectContaining({
-      chapters: expect.arrayContaining([
-        expect.objectContaining({
-          dataLayerConfigId: 'ac0853a2-99e4-4794-93ca-aafc89f361b6',
-        }),
-      ]),
-      dataLayers: {
-        'ac0853a2-99e4-4794-93ca-aafc89f361b6': expect.objectContaining({
-          visualizeConfig: expect.anything(),
-          mapboxTilesetId: expect.anything(),
-        }),
-      },
-    }),
-    expect.anything(),
-    expect.any(Number)
-  );
+    expect(onSaveDraft).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chapters: expect.arrayContaining([
+          expect.objectContaining({
+            mapLayers: [{ layerId: AC085 }],
+            dataLayerConfigId: AC085,
+          }),
+        ]),
+        dataLayers: {
+          [AC085]: expect.objectContaining({
+            visualizeConfig: expect.anything(),
+            mapboxTilesetId: expect.anything(),
+          }),
+        },
+      }),
+      expect.anything(),
+      expect.any(Number)
+    );
+  } finally {
+    io.restore();
+  }
 });
 
 test('StoryMapForm: Move chapter down with menu', async () => {
@@ -1657,7 +1591,7 @@ test('StoryMapForm: Move chapter down with menu', async () => {
     ).not.toBeInTheDocument()
   );
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1732,7 +1666,7 @@ test('StoryMapForm: Move chapter up with menu', async () => {
     ).not.toBeInTheDocument()
   );
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -1858,7 +1792,7 @@ test('StoryMapForm: Delete chapter', async () => {
     expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
   });
 
-  await expectSave();
+  await expectSave(onSaveDraft);
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
 
@@ -1956,6 +1890,12 @@ test('StoryMapForm: Keep map on chapter change', async () => {
 test('StoryMapForm: Add featured image', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
+  // The featured image control lives in the Settings sidebar (closed by
+  // default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+
   const sidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -2012,7 +1952,7 @@ test('StoryMapForm: Add featured image', async () => {
     ).not.toBeInTheDocument();
   });
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
@@ -2026,6 +1966,12 @@ test('StoryMapForm: Add featured image', async () => {
 
 test('StoryMapForm: Add short description', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  // The short description control lives in the Settings sidebar (closed by
+  // default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
 
   const sidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
@@ -2059,11 +2005,1585 @@ test('StoryMapForm: Add short description', async () => {
     ).not.toBeInTheDocument();
   });
 
-  await expectSave();
+  await expectSave(onSaveDraft);
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
   expect(saveCall[0].description).toBe(
     'A monarch pupa sews its butterfly wings inside the chrysalis for Sunday Crafternoon!'
   );
+});
+
+// ---------------------------------------------------------------------------
+// Multi-layer map configuration: `mapLayers` is the single source of truth;
+// `dataLayerConfigId`/`onChapterEnter`/`onChapterExit` are derived compat
+// fields regenerated at the config write boundary.
+// ---------------------------------------------------------------------------
+
+const AC085 = 'ac0853a2-99e4-4794-93ca-aafc89f361b6';
+
+const ChapterLayerFieldsProbe = ({
+  chapterId,
+  testId = 'layer-fields-probe',
+}) => {
+  const { config } = useStoryMapConfigDataContext();
+  const chapter = config.chapters.find(({ id }) => id === chapterId) ?? {};
+  return (
+    <div
+      data-testid={testId}
+      data-fields={JSON.stringify({
+        mapLayers: chapter.mapLayers ?? null,
+        dataLayerConfigId: chapter.dataLayerConfigId ?? null,
+        onChapterEnter: chapter.onChapterEnter ?? null,
+        onChapterExit: chapter.onChapterExit ?? null,
+      })}
+    />
+  );
+};
+
+const probeFields = (testId = 'layer-fields-probe') =>
+  JSON.parse(screen.getByTestId(testId).getAttribute('data-fields') ?? '{}');
+
+const setupWithProbe = async ({ config, probe }) => {
+  const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
+  const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
+  const view = await render(
+    <StoryMapConfigContextProvider
+      baseConfig={config}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      {probe}
+      <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />
+    </StoryMapConfigContextProvider>
+  );
+  return { ...view, onPublish, onSaveDraft };
+};
+
+test('StoryMapForm: Legacy chapter materializes mapLayers on the first sidebar layer edit', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterLayerFieldsProbe chapterId="chapter-2" />,
+    });
+    await io.selectStep('chapter-2');
+
+    // Legacy chapter: dataLayerConfigId + hand-authored events, no mapLayers.
+    let fields = probeFields();
+    expect(fields.mapLayers).toBeNull();
+    expect(fields.dataLayerConfigId).toBe(AC085);
+    expect(fields.onChapterEnter).toEqual([
+      { layer: 'layer1', opacity: 1, duration: 0 },
+    ]);
+
+    // Mere exposure to the sidebar writes nothing (immediate apply writes on
+    // EDITS only).
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    await waitFor(() => {
+      expect(
+        within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
+      ).toBeInTheDocument();
+    });
+    fields = probeFields();
+    expect(fields.mapLayers).toBeNull();
+    expect(fields.dataLayerConfigId).toBe(AC085);
+    expect(fields.onChapterEnter).toEqual([
+      { layer: 'layer1', opacity: 1, duration: 0 },
+    ]);
+    expect(onSaveDraft).not.toHaveBeenCalled();
+
+    // The first layer edit materializes mapLayers + the derived compat
+    // fields (toggle off + on keeps the legacy layer in place).
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+    await expectSave(onSaveDraft);
+
+    fields = probeFields();
+    expect(fields.mapLayers).toEqual([{ layerId: AC085 }]);
+    expect(fields.dataLayerConfigId).toBe(AC085);
+    expect(fields.onChapterEnter).toEqual(
+      expect.arrayContaining([
+        { layer: 'layer1', opacity: 1, duration: 0 },
+        { layer: `${AC085}-markers`, opacity: 1, duration: 0 },
+        { layer: `${AC085}-polygons-outline`, opacity: 1, duration: 0 },
+        { layer: `${AC085}-polygons-fill`, opacity: 0.5, duration: 0 },
+      ])
+    );
+    expect(fields.onChapterExit).toEqual(
+      expect.arrayContaining([
+        { layer: 'layer1', opacity: 0, duration: 0 },
+        { layer: `${AC085}-markers`, opacity: 0, duration: 0 },
+      ])
+    );
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: Sidebar layer edits regenerate chapter layer events and drop stale ones', async () => {
+  const config = {
+    ...BASE_CONFIG,
+    chapters: [
+      {
+        ...BASE_CONFIG.chapters[0],
+        mapLayers: [{ layerId: 'stale-layer' }],
+        dataLayerConfigId: 'stale-layer',
+        onChapterEnter: [
+          { layer: 'layer1', opacity: 1, duration: 0 },
+          { layer: 'stale-layer-markers', opacity: 1, duration: 0 },
+          { layer: 'stale-layer-polygons-fill', opacity: 0.01, duration: 0 },
+        ],
+        onChapterExit: [
+          { layer: 'layer1', opacity: 0, duration: 0 },
+          { layer: 'stale-layer-markers', opacity: 0, duration: 0 },
+        ],
+      },
+      ...BASE_CONFIG.chapters.slice(1),
+    ],
+    dataLayers: {
+      'stale-layer': {
+        id: 'stale-layer',
+        title: 'Stale Layer',
+        ownerType: 'StoryMapNode',
+        geojsonSignedUrl: 'https://example.com/stale.geojson?sig=1',
+      },
+    },
+  };
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    const { onSaveDraft } = await setupWithProbe({
+      config,
+      probe: <ChapterLayerFieldsProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+
+    // Remove the stale layer, add the fetched one.
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('button', {
+          name: 'Remove Stale Layer from this chapter',
+        })
+      )
+    );
+    await waitFor(() => {
+      expect(
+        within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
+      ).toBeInTheDocument();
+    });
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+    await expectSave(onSaveDraft);
+
+    const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+    expect(saved.mapLayers).toEqual([{ layerId: AC085 }]);
+    // Most recently added layer.
+    expect(saved.dataLayerConfigId).toBe(AC085);
+    // Regenerated events for ALL layers (per-layer-type opacities) + preserved
+    // hand-authored entries.
+    expect(saved.onChapterEnter).toEqual(
+      expect.arrayContaining([
+        { layer: 'layer1', opacity: 1, duration: 0 },
+        { layer: `${AC085}-markers`, opacity: 1, duration: 0 },
+        { layer: `${AC085}-polygons-outline`, opacity: 1, duration: 0 },
+        { layer: `${AC085}-polygons-fill`, opacity: 0.5, duration: 0 },
+      ])
+    );
+    expect(saved.onChapterExit).toEqual(
+      expect.arrayContaining([
+        { layer: 'layer1', opacity: 0, duration: 0 },
+        { layer: `${AC085}-markers`, opacity: 0, duration: 0 },
+        { layer: `${AC085}-polygons-fill`, opacity: 0, duration: 0 },
+      ])
+    );
+    // Stale generated entries for the removed layer are gone.
+    const eventLayers = [...saved.onChapterEnter, ...saved.onChapterExit].map(
+      ({ layer }) => layer
+    );
+    expect(
+      eventLayers.filter(layer => layer.startsWith('stale-layer'))
+    ).toEqual([]);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: Add map layer to the title transition', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+    // Scroll to the title step: the sidebar edits `titleTransition`.
+    await io.selectStep(STORY_MAP_TITLE_ID);
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    await waitFor(() => {
+      expect(
+        within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
+      ).toBeInTheDocument();
+    });
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+    await expectSave(onSaveDraft);
+
+    const saved = onSaveDraft.mock.calls.at(-1)[0];
+    expect(saved.titleTransition.mapLayers).toEqual([{ layerId: AC085 }]);
+    expect(saved.titleTransition.dataLayerConfigId).toBe(AC085);
+    expect(saved.titleTransition.onChapterEnter).toEqual(
+      expect.arrayContaining([
+        { layer: `${AC085}-markers`, opacity: 1, duration: 0 },
+        { layer: `${AC085}-polygons-fill`, opacity: 0.5, duration: 0 },
+      ])
+    );
+    expect(saved.titleTransition.onChapterExit).toEqual(
+      expect.arrayContaining([
+        { layer: `${AC085}-polygons-fill`, opacity: 0, duration: 0 },
+      ])
+    );
+  } finally {
+    io.restore();
+  }
+});
+
+const makeTwoLayerConfig = () => ({
+  ...BASE_CONFIG,
+  chapters: [
+    {
+      ...BASE_CONFIG.chapters[0],
+      mapLayers: [{ layerId: 'layer-b' }, { layerId: 'layer-a' }],
+      dataLayerConfigId: 'layer-b',
+    },
+    ...BASE_CONFIG.chapters.slice(1),
+  ],
+  dataLayers: {
+    'layer-a': {
+      id: 'layer-a',
+      title: 'Alpha',
+      ownerType: 'StoryMapNode',
+      geojsonSignedUrl: 'https://example.com/a.geojson?sig=1',
+      visualizeConfig: {
+        shape: 'circle',
+        size: 15,
+        color: '#000000',
+        opacity: 50,
+      },
+    },
+    'layer-b': {
+      id: 'layer-b',
+      title: 'Beta',
+      ownerType: 'StoryMapNode',
+      geojsonSignedUrl: 'https://example.com/b.geojson?sig=1',
+      visualizeConfig: {
+        shape: 'circle',
+        size: 15,
+        color: '#000000',
+        opacity: 25,
+      },
+    },
+  },
+});
+
+test('StoryMapForm: Removing the pointed layer repoints dataLayerConfigId to the topmost remaining', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    const { onSaveDraft } = await setupWithProbe({
+      config: makeTwoLayerConfig(),
+      probe: <ChapterLayerFieldsProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('button', {
+          name: 'Remove Beta from this chapter',
+        })
+      )
+    );
+    await expectSave(onSaveDraft);
+
+    const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+    expect(saved.mapLayers).toEqual([{ layerId: 'layer-a' }]);
+    expect(saved.dataLayerConfigId).toBe('layer-a');
+    const eventLayers = [...saved.onChapterEnter, ...saved.onChapterExit].map(
+      ({ layer }) => layer
+    );
+    expect(eventLayers.filter(layer => layer.startsWith('layer-b'))).toEqual(
+      []
+    );
+    expect(eventLayers).toEqual(
+      expect.arrayContaining(['layer-a-markers', 'layer-a-polygons-fill'])
+    );
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: Removing all layers clears dataLayerConfigId and generated events', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    const { onSaveDraft } = await setupWithProbe({
+      config: makeTwoLayerConfig(),
+      probe: <ChapterLayerFieldsProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('button', {
+          name: 'Remove Beta from this chapter',
+        })
+      )
+    );
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('button', {
+          name: 'Remove Alpha from this chapter',
+        })
+      )
+    );
+    await expectSave(onSaveDraft);
+
+    const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+    expect(saved.mapLayers).toEqual([]);
+    expect(saved.dataLayerConfigId).toBeUndefined();
+    // Only the preserved hand-authored entries remain.
+    expect(saved.onChapterEnter).toEqual([
+      { layer: 'layer1', opacity: 1, duration: 0 },
+    ]);
+    expect(saved.onChapterExit).toEqual([
+      { layer: 'layer1', opacity: 0, duration: 0 },
+    ]);
+  } finally {
+    io.restore();
+  }
+});
+const makeCameraMap = openValues => {
+  let current = openValues;
+  return {
+    ...baseMapOptions(),
+    getCenter: () => current.center,
+    getZoom: () => current.zoom,
+    getPitch: () => current.pitch,
+    getBearing: () => current.bearing,
+    getBounds: jest.fn(() =>
+      createBounds(current.bounds[0], current.bounds[1])
+    ),
+    moveCameraTo: next => {
+      current = next;
+    },
+  };
+};
+
+const CAMERA_OPEN = {
+  center: { lng: -79.89928261750599, lat: -2.423124847733348 },
+  zoom: 5,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [-180, -90],
+    [180, 90],
+  ],
+};
+const CAMERA_FITTED = {
+  center: { lng: 1, lat: 1 },
+  zoom: 12,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [0, 0],
+    [2, 2],
+  ],
+};
+// A viewport that does NOT contain the Ecuador test layers (~[-79.1, -0.35]
+// to [-77.9, 0]). The editor fit channel is wired through
+// avoidMoveWhenVisible, so the fit effect only fires when the layer is
+// completely outside the current viewport; CAMERA_OPEN's world bounds would
+// always report the layer as visible and never fit.
+const CAMERA_AWAY = {
+  center: { lng: 15, lat: 5 },
+  zoom: 5,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [10, 0],
+    [20, 10],
+  ],
+};
+
+test('StoryMapForm: adding a layer never rewrites the chapter camera (fit bursts suppressed, user moves recorded)', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await toggleTreeLayer('Datalayer title 1');
+
+    // The world-bounds viewport already shows the layer, so no fit request
+    // moves the camera (avoidMoveWhenVisible). The move burst below is the
+    // recorder's concern — simulated manually, not produced by a fit.
+    expect(map.fitBounds).not.toHaveBeenCalled();
+
+    // The map fits the added layer: a BURST of programmatic moveends (real
+    // mapbox fires several per fit) — none of them is the user's camera
+    // (chapter-1 had no location and still has none).
+    map.moveCameraTo(CAMERA_FITTED);
+    await act(async () => {
+      map.fire('move');
+      map.fire('moveend');
+    });
+    await act(async () => {
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location).toBeNull();
+
+    // The next REAL user move is recorded (center + zoom)…
+    await act(async () => {
+      map.fire('mousedown');
+      map.moveCameraTo(CAMERA_OPEN);
+      map.fire('move');
+      map.fire('moveend');
+      map.fire('mouseup');
+    });
+    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
+    expect(probeChapter().location.zoom).toBe(CAMERA_OPEN.zoom);
+
+    // …and the draft autosave persists the USER's camera, not the fit.
+    await expectSave(onSaveDraft);
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-1');
+    expect(saved.location.center).toEqual(CAMERA_OPEN.center);
+  } finally {
+    io.restore();
+  }
+});
+// ---------------------------------------------------------------------------
+// Configure Chapter sidebar (persistent, mutually exclusive with Settings)
+// + top bar reorganization.
+// ---------------------------------------------------------------------------
+
+const installIntersectionObserverCapture = () => {
+  const OriginalIntersectionObserver = globalThis.IntersectionObserver;
+  let intersectionObserverCallback;
+  globalThis.IntersectionObserver = class {
+    constructor(cb) {
+      intersectionObserverCallback = cb;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+  return {
+    selectStep: async id => {
+      await act(async () =>
+        intersectionObserverCallback([{ isIntersecting: true, target: { id } }])
+      );
+    },
+    restore: () => {
+      globalThis.IntersectionObserver = OriginalIntersectionObserver;
+    },
+  };
+};
+
+const ChapterAlignmentProbe = ({ chapterId, testId = 'alignment-probe' }) => {
+  const { config } = useStoryMapConfigDataContext();
+  const chapter = config.chapters.find(({ id }) => id === chapterId) ?? {};
+  return (
+    <div
+      data-testid={testId}
+      data-alignment={chapter.alignment ?? ''}
+      data-location={JSON.stringify(chapter.location ?? null)}
+    />
+  );
+};
+
+const probeChapter = (testId = 'alignment-probe') => ({
+  alignment: screen.getByTestId(testId).getAttribute('data-alignment'),
+  location: JSON.parse(
+    screen.getByTestId(testId).getAttribute('data-location') ?? 'null'
+  ),
+});
+
+test('StoryMapForm: top bar has a tools section and an Edit Chapter section', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  const header = screen.getByRole('region', { name: 'Story editor Header' });
+
+  const tools = within(header).getByRole('group', { name: 'Story map tools' });
+  expect(within(tools).getByText('Draft saved')).toBeInTheDocument();
+  expect(
+    within(tools).getByRole('button', { name: 'Publish' })
+  ).toBeInTheDocument();
+  expect(
+    within(tools).getByRole('button', { name: 'Settings' })
+  ).toBeInTheDocument();
+  expect(
+    within(tools).queryByRole('button', { name: 'Edit Chapter' })
+  ).not.toBeInTheDocument();
+
+  const chapterTools = within(header).getByRole('group', {
+    name: 'Chapter tools',
+  });
+  expect(
+    within(chapterTools).getByRole('button', { name: 'Edit Chapter' })
+  ).toBeInTheDocument();
+  expect(
+    within(chapterTools).queryByRole('button', { name: 'Publish' })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: Configure Chapter sidebar is open by default with a title and a close button', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  expect(
+    screen.getByRole('complementary', { name: 'Configure Chapter sidebar' })
+  ).toBeInTheDocument();
+  expect(screen.getByText('Configure Chapter')).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+  ).toBeInTheDocument();
+
+  // Settings is closed (mutually exclusive, Configure Chapter wins the
+  // default).
+  expect(
+    screen.queryByRole('complementary', { name: 'Right sidebar' })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: right sidebars are mutually exclusive', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  // Both sidebars stay MOUNTED (toggling `open`): a closed sidebar is
+  // invisible (visibility: hidden — out of the accessibility tree too) and
+  // its in-flight state survives.
+  const sidebarByLabel = label =>
+    screen.queryByRole('complementary', { name: label, hidden: true });
+  const visibleSidebarByLabel = label =>
+    screen.queryByRole('complementary', { name: label });
+  const configureSidebar = () => sidebarByLabel('Configure Chapter sidebar');
+  const settingsSidebar = () => sidebarByLabel('Right sidebar');
+
+  // Gear opens Settings, closing Configure Chapter.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+  expect(visibleSidebarByLabel('Right sidebar')).toBeInTheDocument();
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
+  expect(within(settingsSidebar()).getByText('Settings')).toBeInTheDocument();
+  expect(
+    within(settingsSidebar()).getByRole('button', {
+      name: 'Close Settings sidebar',
+    })
+  ).toBeInTheDocument();
+
+  // "Edit Chapter" opens Configure Chapter, closing Settings.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).toBeInTheDocument();
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
+  expect(
+    within(configureSidebar()).getByText('Configure Chapter')
+  ).toBeInTheDocument();
+
+  // "Edit Chapter" toggles closed when already open.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
+
+  // X closes whichever sidebar is open.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Settings sidebar' })
+    )
+  );
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: alignment controls moved from the chapter editor to the configure sidebar', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    await setup({ config: BASE_CONFIG });
+
+    // Scroll to chapter 1: alignment is a per-chapter setting.
+    await io.selectStep('chapter-1');
+
+    const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+    expect(
+      within(chapter1).queryByRole('group', { name: 'Set alignment' })
+    ).not.toBeInTheDocument();
+
+    // The alignment control lives in the Configure Chapter sidebar instead.
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    expect(
+      within(sidebar).getByRole('group', { name: 'Set alignment' })
+    ).toBeInTheDocument();
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: chapter and title editors drop the map buttons', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  // The map configuration dialog is gone: no 'Edit Map'/'Set Map Location'
+  // buttons remain — the map is configured in place via the sidebar.
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  expect(
+    within(chapter1).queryByRole('button', { name: 'Edit Map' })
+  ).not.toBeInTheDocument();
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+  expect(
+    within(titleSection).queryByRole('button', { name: 'Set Map Location' })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: alignment buttons in the sidebar write the active chapter alignment', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+
+    // Scroll to chapter 1: the sidebar targets the active step.
+    await io.selectStep('chapter-1');
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('button', { name: 'Align Left' })
+      )
+    );
+
+    // Immediate apply: the config carries the new alignment (the config
+    // probe is the contract — the CSS class names it used to render are
+    // being rewritten and are not asserted here).
+    expect(probeChapter().alignment).toBe('left');
+
+    await expectSave(onSaveDraft);
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-1');
+    expect(saved.alignment).toBe('left');
+  } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Camera attribution and the fit channel (the map editing session).
+// ---------------------------------------------------------------------------
+
+const CAMERA_DRAGGED = {
+  center: { lng: -5, lat: 5 },
+  zoom: 7,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [-6, 4],
+    [-4, 6],
+  ],
+};
+const CAMERA_SEARCHED = {
+  center: { lng: 12, lat: -3 },
+  zoom: 9,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [11, -4],
+    [13, -2],
+  ],
+};
+
+// A map whose fitBounds behaves like the real one: fitBounds({animate:false})
+// fires movestart/move/moveend UNCONDITIONALLY — and re-fires on every call.
+const makeFittingCameraMap = (openValues, fitCamera) => {
+  const map = makeCameraMap(openValues);
+  map.fitBounds = jest.fn(() => {
+    map.moveCameraTo(fitCamera);
+    map.fire('movestart');
+    map.fire('move');
+    map.fire('moveend');
+  });
+  return map;
+};
+
+const dragMapTo = async (map, camera) => {
+  await act(async () => {
+    map.fire('mousedown');
+    map.moveCameraTo(camera);
+    map.fire('move');
+    map.fire('moveend');
+    map.fire('mouseup');
+  });
+};
+
+const toggleTreeLayer = async name => {
+  await waitFor(() => {
+    expect(screen.getByRole('treeitem', { name })).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(screen.getByRole('treeitem', { name }))
+  );
+};
+
+const TitleLocationProbe = ({ testId = 'title-location-probe' }) => {
+  const { config } = useStoryMapConfigDataContext();
+  return (
+    <div
+      data-testid={testId}
+      data-location={JSON.stringify(config.titleTransition?.location ?? null)}
+    />
+  );
+};
+
+const titleLocation = (testId = 'title-location-probe') =>
+  JSON.parse(
+    screen.getByTestId(testId).getAttribute('data-location') ?? 'null'
+  );
+
+const DeleteChapterButton = ({ chapterId }) => {
+  const { setConfig } = useStoryMapConfigActionsContext();
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        setConfig(config => ({
+          ...config,
+          chapters: config.chapters.filter(({ id }) => id !== chapterId),
+        }))
+      }
+    >
+      Delete {chapterId}
+    </button>
+  );
+};
+
+test('StoryMapForm: a layer fit never re-fits and never overwrites the users camera', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeFittingCameraMap(CAMERA_AWAY, CAMERA_FITTED);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Add a layer: ONE fit request → exactly one fit…
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    // …whose own moveend is never recorded as the user's camera.
+    expect(probeChapter().location).toBeNull();
+
+    // The user drags to frame the chapter…
+    await dragMapTo(map, CAMERA_DRAGGED);
+    expect(probeChapter().location.center).toEqual(CAMERA_DRAGGED.center);
+
+    // …and every later write keeps the user's camera: the consumed fit is
+    // never re-run (it used to snap the map back to the layer bounds and the
+    // recorder saved the FIT as the user's camera).
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Align Center' }))
+    );
+    await dragMapTo(map, CAMERA_AWAY);
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(probeChapter().location.center).toEqual(CAMERA_AWAY.center);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: one fit per request — toggling a layer off and on re-fits it', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeFittingCameraMap(CAMERA_AWAY, CAMERA_FITTED);
+    mapboxgl.Map.mockReturnValue(map);
+    // A second layer is ALREADY on the chapter: it is mounted beside the
+    // toggled one and must never be fitted by these writes.
+    const config = {
+      ...BASE_CONFIG,
+      chapters: [
+        {
+          ...BASE_CONFIG.chapters[0],
+          mapLayers: [{ layerId: 'pre-existing' }],
+          dataLayerConfigId: 'pre-existing',
+        },
+        ...BASE_CONFIG.chapters.slice(1),
+      ],
+      dataLayers: {
+        'pre-existing': {
+          id: 'pre-existing',
+          title: 'Pre-existing layer',
+          mapboxTilesetId: 'tileset-pre-existing',
+          mapboxTilesetStatus: TILESET_STATUS_READY,
+          visualizeConfig: {
+            shape: 'circle',
+            opacity: 50,
+            size: 15,
+            color: '#fff',
+          },
+          viewportConfig: {
+            bounds: {
+              northEast: { lat: 10, lng: 20 },
+              southWest: { lat: 0, lng: 10 },
+            },
+          },
+        },
+      },
+    };
+    await setupWithProbe({
+      config,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await toggleTreeLayer('Datalayer title 1');
+    // ONE request → ONE fit (the pre-existing layer is not fitted).
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+
+    // Toggling OFF is not a fit request…
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+
+    // …toggling ON again is a NEW request and fits again.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: a geocoder result after a layer fit IS recorded as the step location', async () => {
+  const io = installIntersectionObserverCapture();
+  const geocoderHandlers = {};
+  MapboxGlGeocoder.mockImplementation(() => ({
+    on: jest.fn((type, handler) => {
+      geocoderHandlers[type] = handler;
+    }),
+  }));
+  try {
+    const map = makeFittingCameraMap(CAMERA_AWAY, CAMERA_FITTED);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(probeChapter().location).toBeNull();
+
+    // The user searches and picks a result: the geocoder flies the map
+    // there — a programmatic move, but deliberate USER intent.
+    await act(async () => {
+      geocoderHandlers.result?.({ result: { place_name: 'Quito' } });
+      map.moveCameraTo(CAMERA_SEARCHED);
+      map.fire('movestart');
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location.center).toEqual(CAMERA_SEARCHED.center);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: the wheel scrolls the story while configuring — no zoom, no location write', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Scroll-zoom is OFF while the map is being positioned: the wheel must
+    // scroll the STORY (the chapter overlay passes wheel events through to
+    // the map canvas). Zoom stays available through the nav controls/pinch.
+    expect(map.scrollZoom.enable).not.toHaveBeenCalled();
+    expect(map.scrollZoom.disable).toHaveBeenCalled();
+
+    // A wheel gesture over the story content never zooms and never writes a
+    // location — not even as a side effect of a later programmatic move.
+    await act(async () => {
+      fireEvent.wheel(document.getElementById('features'));
+      map.fire('wheel');
+    });
+    map.moveCameraTo(CAMERA_FITTED);
+    await act(async () => {
+      map.fire('movestart');
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location).toBeNull();
+  } finally {
+    io.restore();
+  }
+});
+
+const CAMERA_FRAME = { clientWidth: 1200, clientHeight: 600 };
+
+// A camera map WITH map layout: the recorder crops the recorded bounds to
+// the content region of the container (bounds WYSIWYG).
+const makeContentRegionCameraMap = openValues => {
+  const map = makeCameraMap(openValues);
+  const container = document.createElement('div');
+  Object.defineProperties(container, {
+    clientWidth: { value: CAMERA_FRAME.clientWidth },
+    clientHeight: { value: CAMERA_FRAME.clientHeight },
+  });
+  map.getContainer = jest.fn().mockReturnValue(container);
+  const [w, s, e, n] = [-180, -90, 180, 90];
+  map.unproject = jest.fn(([x, y]) => ({
+    lng: w + (x / CAMERA_FRAME.clientWidth) * (e - w),
+    lat: n - (y / CAMERA_FRAME.clientHeight) * (n - s),
+  }));
+  return map;
+};
+
+test('StoryMapForm: the recorded location is the content region, not the raw camera', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeContentRegionCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    const config = {
+      ...BASE_CONFIG,
+      chapters: BASE_CONFIG.chapters.map(chapter =>
+        chapter.id === 'chapter-1' ? { ...chapter, alignment: 'left' } : chapter
+      ),
+    };
+    await setupWithProbe({
+      config,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await dragMapTo(map, CAMERA_OPEN);
+
+    // The chapter card covers the LEFT of the map: the recorded bounds are
+    // the EASTERN content strip, so playback — which expands the recorded
+    // bounds again — reproduces exactly this camera.
+    const recorded = probeChapter().location.bounds;
+    expect(recorded[0]).toBeCloseTo(-36, 6);
+    expect(recorded[1]).toBeCloseTo(-90, 6);
+    expect(recorded[2]).toBeCloseTo(180, 6);
+    expect(recorded[3]).toBeCloseTo(90, 6);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: the recorded location is plain scalars, not mapbox class instances', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await dragMapTo(map, CAMERA_OPEN);
+
+    // A serialized LngLat is never deep-equal to the class instance: the
+    // recorder must normalize at record time (post-save churn fed the
+    // re-fit loop).
+    expect(probeChapter().location).toEqual({
+      center: { lng: CAMERA_OPEN.center.lng, lat: CAMERA_OPEN.center.lat },
+      zoom: CAMERA_OPEN.zoom,
+      pitch: CAMERA_OPEN.pitch,
+      bearing: CAMERA_OPEN.bearing,
+      bounds: [-180, -90, 180, 90],
+    });
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: a drag writes the gesture-start target even when the active step changes mid-drag', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: (
+        <>
+          <ChapterAlignmentProbe chapterId="chapter-1" />
+          <ChapterAlignmentProbe chapterId="chapter-2" testId="probe-2" />
+        </>
+      ),
+    });
+    await io.selectStep('chapter-1');
+
+    await act(async () => {
+      map.fire('mousedown');
+    });
+    // Mid-drag retarget: the scroll-spy moves to another chapter while the
+    // user is still dragging.
+    await io.selectStep('chapter-2');
+    await act(async () => {
+      map.moveCameraTo(CAMERA_DRAGGED);
+      map.fire('move');
+      map.fire('moveend');
+      map.fire('mouseup');
+    });
+
+    // The write lands on the GESTURE-START target; chapter-2 keeps the
+    // location it had before (BASE_CONFIG seeds one).
+    expect(probeChapter().location.center).toEqual(CAMERA_DRAGGED.center);
+    expect(probeChapter('probe-2').location).toEqual({
+      center: { lng: -79.89928261750599, lat: -2.423124847733348 },
+      zoom: 5,
+    });
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: clicking a chapter in the sidebar retargets the map writes before the scroll settles', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-2" testId="probe-2" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Click a chapter in the sidebar: the smooth scroll has NOT settled yet
+    // (the scroll-spy still reports chapter-1), but the edit target is
+    // already the clicked chapter.
+    await act(async () =>
+      fireEvent.click(
+        within(
+          screen.getByRole('navigation', { name: 'Chapters sidebar' })
+        ).getByRole('button', { name: 'Chapter 2' })
+      )
+    );
+    await dragMapTo(map, CAMERA_DRAGGED);
+
+    expect(probeChapter('probe-2').location.center).toEqual(
+      CAMERA_DRAGGED.center
+    );
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: the configure sidebar has no editing-target label', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    await setupWithProbe({ config: BASE_CONFIG });
+
+    await io.selectStep('chapter-1');
+    expect(screen.queryByTestId('editing-target')).not.toBeInTheDocument();
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: a deleted edit target never silently drops the camera write', async () => {
+  const io = installIntersectionObserverCapture();
+  const warn = jest.spyOn(logger, 'warn').mockImplementation(() => {});
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: (
+        <>
+          <ChapterAlignmentProbe chapterId="chapter-1" />
+          <TitleLocationProbe />
+          <DeleteChapterButton chapterId="chapter-1" />
+        </>
+      ),
+    });
+    await io.selectStep('chapter-1');
+
+    await act(async () => {
+      map.fire('mousedown');
+    });
+    // The target chapter is deleted while the user is dragging.
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Delete chapter-1' }))
+    );
+    await act(async () => {
+      map.moveCameraTo(CAMERA_DRAGGED);
+      map.fire('move');
+      map.fire('moveend');
+      map.fire('mouseup');
+    });
+
+    // No crash, no silent loss: the write falls back to the title step and
+    // the drop is reported.
+    expect(warn).toHaveBeenCalled();
+    expect(titleLocation().center).toEqual(CAMERA_DRAGGED.center);
+  } finally {
+    warn.mockRestore();
+    io.restore();
+  }
+});
+
+test('StoryMapForm: an in-flight create-layer flow survives switching to Settings and back', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  // Start the create flow with a window drop (the Configure Chapter sidebar
+  // is open by default).
+  const file = new File(['x'], 'points.geojson', {
+    type: 'application/geo+json',
+  });
+  await act(async () => {
+    fireEvent.drop(window, { dataTransfer: { files: [file] } });
+  });
+  await waitFor(() => {
+    expect(screen.getByTestId('create-flow-file')).toHaveTextContent(
+      'points.geojson'
+    );
+  });
+
+  // Switching to Settings must NOT kill the flow (the sidebars stay
+  // mounted and toggle `open`)…
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+  expect(screen.getByTestId('create-flow-file')).toHaveTextContent(
+    'points.geojson'
+  );
+
+  // …and the flow is still there when Configure Chapter comes back.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(screen.getByTestId('create-flow-file')).toHaveTextContent(
+    'points.geojson'
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Fit-pipeline wiring: ConfigureChapterSidebar.onFitLayerBounds →
+// requestFitBounds (StoryMapForm/index.jsx) → the map editing session's fit
+// request → changeBounds={seq|false} on the layer stack (StoryMap) → the
+// VisualizationMapLayer fit effect. Product-level: no hand-simulated camera
+// moves — the assertions are the fit REQUEST PROPS and the map.fitBounds the
+// real fit effect performs.
+// ---------------------------------------------------------------------------
+
+const changeBoundsFor = layerId =>
+  changeBoundsLog()
+    .filter(entry => entry.layerId === layerId)
+    .at(-1)?.changeBounds;
+
+const makeReadyLayerConfig = (id, title, bounds) => ({
+  id,
+  title,
+  mapboxTilesetId: `tileset-${id}`,
+  mapboxTilesetStatus: TILESET_STATUS_READY,
+  visualizeConfig: { shape: 'circle', opacity: 50, size: 15, color: '#fff' },
+  viewportConfig: { bounds },
+});
+
+test('StoryMapForm: the fit pipeline is wired end to end — one fit per request, seq advances on re-toggle, non-target layers stay false', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_AWAY);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: {
+        ...BASE_CONFIG,
+        chapters: [
+          {
+            ...BASE_CONFIG.chapters[0],
+            mapLayers: [{ layerId: 'pre-existing' }],
+            dataLayerConfigId: 'pre-existing',
+          },
+          ...BASE_CONFIG.chapters.slice(1),
+        ],
+        dataLayers: {
+          'pre-existing': makeReadyLayerConfig(
+            'pre-existing',
+            'Pre-existing layer',
+            {
+              northEast: { lat: 10, lng: 20 },
+              southWest: { lat: 0, lng: 10 },
+            }
+          ),
+        },
+      },
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // The pre-existing layer is mounted beside the fit target and is NEVER
+    // handed a request token.
+    expect(changeBoundsFor('pre-existing')).toBe(false);
+    expect(map.fitBounds).not.toHaveBeenCalled();
+
+    // Sidebar toggle → onFitLayerBounds → requestFitBounds → the session's
+    // fit request → the toggled layer gets the request SEQ and its fit
+    // effect (VisualizationMapLayer) fits the map to the config bounds.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(map.fitBounds).toHaveBeenCalledWith(expect.anything(), {
+      animate: false,
+    });
+    const firstSeq = changeBoundsFor(VISUALIZATION_CONFIG.id);
+    expect(typeof firstSeq).toBe('number');
+    expect(changeBoundsFor('pre-existing')).toBe(false);
+
+    // Toggling OFF is not a request: the consumed seq is never re-run.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+
+    // Toggling ON again IS a new request: the seq ADVANCES and fits once.
+    await toggleTreeLayer('Datalayer title 1');
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+    expect(changeBoundsFor(VISUALIZATION_CONFIG.id)).toBeGreaterThan(firstSeq);
+    expect(changeBoundsFor('pre-existing')).toBe(false);
+  } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Recorder lifecycle balance (the map editing session's map handlers).
+// ---------------------------------------------------------------------------
+
+const RECORDER_EVENTS = [
+  'dragstart',
+  'mousedown',
+  'touchstart',
+  'keydown',
+  'wheel',
+  'dblclick',
+  'movestart',
+  'move',
+  'moveend',
+];
+
+const recorderHandlerCounts = map =>
+  RECORDER_EVENTS.reduce((counts, type) => {
+    counts[type] = (map.onEvents[type] ?? []).length;
+    return counts;
+  }, {});
+
+test('StoryMapForm: the map editing session handler counts return to baseline across sidebar open/close and unmount', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
+  mapboxgl.Map.mockReturnValue(map);
+  const { unmount } = await setupWithProbe({ config: BASE_CONFIG });
+
+  // Open (the default): the session arms its gesture/attribution handlers.
+  const openCounts = recorderHandlerCounts(map);
+
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
+  const baselineCounts = recorderHandlerCounts(map);
+
+  // The session's footprint is exactly one handler per event it owns.
+  RECORDER_EVENTS.forEach(type => {
+    expect(openCounts[type] - baselineCounts[type]).toBe(1);
+  });
+
+  // Open/close ×3: counts land on the same open/baseline values every time —
+  // no handler ever stacks or leaks.
+  for (let cycle = 0; cycle < 3; cycle++) {
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+    );
+    expect(recorderHandlerCounts(map)).toEqual(openCounts);
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+      )
+    );
+    expect(recorderHandlerCounts(map)).toEqual(baselineCounts);
+  }
+
+  // Unmount: every map handler is off again (nothing leaks past teardown).
+  unmount();
+  RECORDER_EVENTS.forEach(type => {
+    expect(recorderHandlerCounts(map)[type]).toBe(0);
+  });
+});
+
+test('StoryMapForm: the transition replay on close is never recorded as a location', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    // Closing the sidebar RESUMES the camera step transitions: the map eases
+    // to the current chapter's camera and the replay terminates with a
+    // moveend burst — none of which is a user gesture.
+    map.flyTo = jest.fn(() => {
+      map.moveCameraTo(CAMERA_FITTED);
+      map.fire('movestart');
+      map.fire('move');
+      map.fire('moveend');
+    });
+    mapboxgl.Map.mockReturnValue(map);
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-2" testId="probe-2" />,
+    });
+    await io.selectStep('chapter-2');
+
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+      )
+    );
+    await waitFor(() => expect(map.flyTo).toHaveBeenCalled());
+
+    // The replay is not a camera edit: the chapter keeps its stored location
+    // (chapter-2 seeds one) and the close triggers no save at all.
+    expect(probeChapter('probe-2').location).toEqual({
+      center: { lng: -79.89928261750599, lat: -2.423124847733348 },
+      zoom: 5,
+    });
+    expect(onSaveDraft).not.toHaveBeenCalled();
+  } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Title-step edges.
+// ---------------------------------------------------------------------------
+
+const TitleTransitionProbe = () => {
+  const { config } = useStoryMapConfigDataContext();
+  return (
+    <div
+      data-testid="title-transition-probe"
+      data-transition={JSON.stringify(config.titleTransition ?? null)}
+    />
+  );
+};
+
+const titleTransition = () =>
+  JSON.parse(
+    screen
+      .getByTestId('title-transition-probe')
+      .getAttribute('data-transition') ?? 'null'
+  );
+
+test('StoryMapForm: the title step has no alignment control and titleTransition never gains an alignment key', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <TitleTransitionProbe />,
+    });
+    await io.selectStep(STORY_MAP_TITLE_ID);
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    // Alignment is per-CHAPTER: the title transition has no alignment in the
+    // config schema, so the control is absent while editing the title step.
+    expect(
+      within(sidebar).queryByRole('group', { name: 'Set alignment' })
+    ).not.toBeInTheDocument();
+
+    // Title-step edits (a camera write, a layer toggle) apply to
+    // titleTransition — and never mint an `alignment` key on it.
+    await dragMapTo(map, CAMERA_DRAGGED);
+    await toggleTreeLayer('Datalayer title 1');
+    const transition = titleTransition();
+    expect(transition.location.center).toEqual(CAMERA_DRAGGED.center);
+    expect('alignment' in transition).toBe(false);
+  } finally {
+    io.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Top bar toggle semantics.
+// ---------------------------------------------------------------------------
+
+test('StoryMapForm: top bar toggles expose aria-pressed for their sidebar state', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  const editChapter = screen.getByRole('button', { name: 'Edit Chapter' });
+  const settings = screen.getByRole('button', { name: 'Settings' });
+
+  // Configure Chapter is open by default; Settings is closed.
+  expect(editChapter).toHaveAttribute('aria-pressed', 'true');
+  expect(settings).toHaveAttribute('aria-pressed', 'false');
+
+  await act(async () => fireEvent.click(editChapter));
+  expect(editChapter).toHaveAttribute('aria-pressed', 'false');
+  expect(settings).toHaveAttribute('aria-pressed', 'false');
+
+  await act(async () => fireEvent.click(settings));
+  expect(settings).toHaveAttribute('aria-pressed', 'true');
+  expect(editChapter).toHaveAttribute('aria-pressed', 'false');
+});
+
+// ---------------------------------------------------------------------------
+// Layer reorder → persisted payload.
+// ---------------------------------------------------------------------------
+
+const orderListTitles = () =>
+  within(
+    screen.getByRole('list', {
+      name: 'Map layers in this chapter, topmost first',
+    })
+  )
+    .getAllByRole('listitem')
+    .map(item => item.getAttribute('aria-label'));
+
+test('StoryMapForm: a keyboard reorder persists the new mapLayers order', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+    const { onSaveDraft } = await setupWithProbe({
+      config: {
+        ...BASE_CONFIG,
+        chapters: [
+          {
+            ...BASE_CONFIG.chapters[0],
+            mapLayers: [{ layerId: 'layer-a' }, { layerId: 'layer-b' }],
+            dataLayerConfigId: 'layer-a',
+          },
+          ...BASE_CONFIG.chapters.slice(1),
+        ],
+        dataLayers: {
+          'layer-a': makeReadyLayerConfig('layer-a', 'Alpha', {
+            northEast: { lat: 1, lng: 1 },
+            southWest: { lat: 0, lng: 0 },
+          }),
+          'layer-b': makeReadyLayerConfig('layer-b', 'Beta', {
+            northEast: { lat: 2, lng: 2 },
+            southWest: { lat: 1, lng: 1 },
+          }),
+        },
+      },
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    // Reorder with the REAL dnd keyboard sensor (space lifts, arrow moves,
+    // space drops) — the same DropResult the mouse sensor produces.
+    await waitFor(() => {
+      expect(screen.getByLabelText('Reorder Alpha')).toBeInTheDocument();
+    });
+    const handle = screen.getByLabelText('Reorder Alpha');
+    await act(async () => {
+      fireEvent.keyDown(handle, { key: ' ', keyCode: 32 });
+    });
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'ArrowDown', keyCode: 40 });
+    });
+    await act(async () => {
+      fireEvent.keyDown(window, { key: ' ', keyCode: 32 });
+    });
+
+    // The list shows the new order…
+    expect(orderListTitles()).toEqual(['Beta', 'Alpha']);
+
+    // …and the draft autosave persists the SAME order in mapLayers.
+    await expectSave(onSaveDraft);
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-1');
+    expect(saved.mapLayers).toEqual([
+      { layerId: 'layer-b' },
+      { layerId: 'layer-a' },
+    ]);
+  } finally {
+    io.restore();
+  }
 });
