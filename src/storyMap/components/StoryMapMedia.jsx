@@ -59,20 +59,17 @@ const hasEmbeddedVideoPreview = item =>
 const StoryMapMediaItem = ({
   item,
   label,
-  compact = false,
   fill = false,
-  maxHeight,
   objectFit = 'contain',
   imageStyle,
   draggable,
   onImageLoad,
-  showWaveform = false,
 }) => {
   const [hasError, setHasError] = useState(false);
   const style = {
     display: 'block',
     height: fill ? '100%' : undefined,
-    maxHeight: fill ? 'none' : maxHeight || (compact ? '160px' : '360px'),
+    maxHeight: fill ? 'none' : '360px',
     objectFit,
     width: '100%',
   };
@@ -101,23 +98,12 @@ const StoryMapMediaItem = ({
   }
 
   if (mediaKind(item) === 'audio') {
-    if (showWaveform) {
-      return (
-        <AudioWaveform
-          key={getMediaSource(item)}
-          label={mediaLabel(item)}
-          onError={() => setHasError(true)}
-          src={getMediaSource(item)}
-        />
-      );
-    }
     return (
-      <audio
-        aria-label={mediaLabel(item)}
-        controls
+      <AudioWaveform
+        key={getMediaSource(item)}
+        label={mediaLabel(item)}
         onError={() => setHasError(true)}
         src={getMediaSource(item)}
-        style={{ ...style, height: '54px' }}
       />
     );
   }
@@ -142,13 +128,13 @@ const StoryMapMediaItem = ({
       title={item.title || mediaLabel(item)}
       style={{
         ...style,
-        height: fill ? '100%' : compact ? '160px' : '300px',
+        height: fill ? '100%' : '300px',
       }}
     />
   );
 };
 
-export const CroppedImagePreview = ({
+const CroppedImagePreview = ({
   item,
   label,
   aspectRatio = CAROUSEL_ASPECT_RATIO,
@@ -409,11 +395,7 @@ export const MediaViewer = ({ item, onClose, theme }) => (
             '& > iframe': { aspectRatio: '16 / 9' },
           }}
         >
-          <StoryMapMediaItem
-            key={getMediaSource(item)}
-            item={item}
-            showWaveform
-          />
+          <StoryMapMediaItem key={getMediaSource(item)} item={item} />
         </Box>
         <Tooltip placement="left" title={i18n.t('storyMap.media_close_viewer')}>
           <IconButton
@@ -483,7 +465,7 @@ const MediaCollectionHeader = ({
   </Stack>
 );
 
-const MediaItemActions = ({ children, presentation, sx }) => (
+const MediaItemActions = ({ children, presentation }) => (
   <Box
     aria-label={
       presentation === 'toolbar'
@@ -491,17 +473,16 @@ const MediaItemActions = ({ children, presentation, sx }) => (
         : undefined
     }
     role={presentation === 'toolbar' ? 'toolbar' : undefined}
-    sx={{
-      ...(presentation === 'menu'
+    sx={
+      presentation === 'menu'
         ? { position: 'absolute', right: 4, top: 4, zIndex: 2 }
         : {
             bgcolor: 'rgba(33, 33, 33, 0.92)',
             display: 'flex',
             justifyContent: 'center',
             minHeight: 40,
-          }),
-      ...sx,
-    }}
+          }
+    }
   >
     {children}
   </Box>
@@ -512,7 +493,6 @@ export const GalleryPresentation = ({
   currentIndex: controlledCurrentIndex,
   headerAction,
   items,
-  itemActionsSx,
   onCurrentIndexChange,
   onItemsReorder,
   presentationAction,
@@ -700,7 +680,7 @@ export const GalleryPresentation = ({
           </Box>
         )}
         {renderItemActions && (
-          <MediaItemActions presentation="menu" sx={itemActionsSx}>
+          <MediaItemActions presentation="menu">
             {renderItemActions(item, index, 'menu')}
           </MediaItemActions>
         )}
@@ -789,7 +769,7 @@ const usePlaybackBoundary = active => {
   return ref;
 };
 
-export const pauseMediaPlayback = element =>
+const pauseMediaPlayback = element =>
   element?.querySelectorAll('audio, video').forEach(media => media.pause());
 
 export const CarouselPresentation = ({
@@ -797,7 +777,6 @@ export const CarouselPresentation = ({
   headerAction,
   items,
   currentIndex: controlledCurrentIndex,
-  itemActionsSx,
   onCurrentIndexChange,
   presentationAction,
   renderItemActions,
@@ -851,7 +830,7 @@ export const CarouselPresentation = ({
         )}
         <Stack spacing={0} sx={{ overflow: 'hidden', position: 'relative' }}>
           {renderItemActions && (
-            <MediaItemActions presentation="toolbar" sx={itemActionsSx}>
+            <MediaItemActions presentation="toolbar">
               {renderItemActions(currentItem, currentIndex, 'toolbar')}
             </MediaItemActions>
           )}

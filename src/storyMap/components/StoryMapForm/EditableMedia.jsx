@@ -137,7 +137,7 @@ const getDataFromEmbedded = value => {
   };
 };
 
-export const AddMediaDialog = memo(props => {
+const AddMediaDialog = memo(props => {
   const { canAdd = true, open, onClose, onAdd } = props;
   const { t } = useTranslation();
   const { addMediaFile } = useStoryMapMediaContext();
