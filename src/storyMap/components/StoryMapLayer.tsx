@@ -23,6 +23,13 @@ import type { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 type Props = {
   config: MapLayerConfig;
   changeBounds: boolean;
+  /**
+   * When true, the `changeBounds` fit is skipped while any part of the layer
+   * is already visible (zoom out to the viewport ∪ layer union only when the
+   * layer is completely outside the viewport). Used by the map configuration
+   * dialog's layer-add preview.
+   */
+  avoidMoveWhenVisible?: boolean;
   useConfigBounds?: boolean;
   opacity?: number;
   onSourceError?: (error: unknown) => void;
@@ -47,6 +54,7 @@ const getSourceType = (config: MapLayerConfig): 's3' | 'tileset' => {
 export const StoryMapLayer = ({
   config,
   changeBounds,
+  avoidMoveWhenVisible,
   opacity,
   useConfigBounds = false,
   onSourceError,
@@ -75,6 +83,7 @@ export const StoryMapLayer = ({
         showPopups={false}
         useTileset={useTileset}
         changeBounds={changeBounds}
+        avoidMoveWhenVisible={avoidMoveWhenVisible}
         useConfigBounds={useConfigBounds}
         opacity={opacity}
         onLayerAdded={onLayerAdded}
