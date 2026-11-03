@@ -19,6 +19,9 @@ import { getContrastRatio } from '@mui/material/styles';
 
 export const DEFAULT_STORY_MAP_THEME = 'theme-1';
 
+export const MEDIA_PREVIEW_BACKGROUND =
+  'color-mix(in srgb, var(--story-theme-text) 8%, var(--story-theme-background))';
+
 export const STORY_MAP_CONTROL_SX = {
   color: 'var(--story-theme-text)',
   '&:hover': {

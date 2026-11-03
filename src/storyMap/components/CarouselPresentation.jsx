@@ -23,13 +23,14 @@ import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 
 import { AudioWaveformProvider } from 'terraso-web-client/storyMap/components/AudioWaveform';
 import {
-  MEDIA_PREVIEW_BACKGROUND,
+  pauseMediaPlayback,
+  usePlaybackBoundary,
+} from 'terraso-web-client/storyMap/components/mediaPlayback';
+import {
   MediaCollectionHeader,
   MediaItemActions,
   MediaPreviewButton,
-  pauseMediaPlayback,
-  usePlaybackBoundary,
-} from 'terraso-web-client/storyMap/components/mediaPresentationShared';
+} from 'terraso-web-client/storyMap/components/MediaPresentationControls';
 import MediaPreview from 'terraso-web-client/storyMap/components/MediaPreview';
 import MediaViewer from 'terraso-web-client/storyMap/components/MediaViewer';
 import {
@@ -39,6 +40,7 @@ import {
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
 import {
   getStoryMapThemeCssVariables,
+  MEDIA_PREVIEW_BACKGROUND,
   STORY_MAP_CONTROL_SX,
 } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 

@@ -22,20 +22,24 @@ import { Box, Stack, Typography } from '@mui/material';
 
 import { AudioWaveformProvider } from 'terraso-web-client/storyMap/components/AudioWaveform';
 import {
-  MEDIA_PREVIEW_BACKGROUND,
+  pauseMediaPlayback,
+  usePlaybackBoundary,
+} from 'terraso-web-client/storyMap/components/mediaPlayback';
+import {
   MediaCollectionHeader,
   MediaItemActions,
   MediaPreviewButton,
-  pauseMediaPlayback,
-  usePlaybackBoundary,
-} from 'terraso-web-client/storyMap/components/mediaPresentationShared';
+} from 'terraso-web-client/storyMap/components/MediaPresentationControls';
 import MediaPreview from 'terraso-web-client/storyMap/components/MediaPreview';
 import MediaViewer from 'terraso-web-client/storyMap/components/MediaViewer';
 import {
   getMediaKind as mediaKind,
   getMediaLabel as mediaLabel,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
-import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
+import {
+  getStoryMapThemeCssVariables,
+  MEDIA_PREVIEW_BACKGROUND,
+} from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 const GalleryPresentation = ({
   active = true,

@@ -19,7 +19,7 @@ import i18n from 'i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, Dialog, IconButton, Tooltip } from '@mui/material';
 
-import { StoryMapMediaItem } from 'terraso-web-client/storyMap/components/mediaPresentationShared';
+import StoryMapMediaItem from 'terraso-web-client/storyMap/components/StoryMapMediaItem';
 import {
   getMediaSource,
   getMediaLabel as mediaLabel,

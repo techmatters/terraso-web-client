@@ -22,10 +22,7 @@ import { Box, Typography } from '@mui/material';
 
 import { AudioWaveformPreview } from 'terraso-web-client/storyMap/components/AudioWaveform';
 import EmbeddedVideoPreview from 'terraso-web-client/storyMap/components/EmbeddedVideoPreview';
-import {
-  MEDIA_PREVIEW_BACKGROUND,
-  StoryMapMediaItem,
-} from 'terraso-web-client/storyMap/components/mediaPresentationShared';
+import StoryMapMediaItem from 'terraso-web-client/storyMap/components/StoryMapMediaItem';
 import {
   calculateMediaFitScale as calculateFitScale,
   calculateMediaCropStyle,
@@ -34,6 +31,7 @@ import {
   getMediaKind as mediaKind,
   getMediaLabel as mediaLabel,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
+import { MEDIA_PREVIEW_BACKGROUND } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 const hasEmbeddedVideoPreview = item =>
   ['youtube', 'vimeo'].includes(item.source);
