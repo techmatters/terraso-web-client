@@ -15,9 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useState } from 'react';
-import i18n from 'i18next';
+import { useCallback, useState } from 'react';
 import AvatarEditor from 'react-avatar-editor';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -33,19 +33,60 @@ import {
 import { useStoryMapMediaContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   calculateMediaFitScale as calculateFitScale,
+  calculateMediaCropGeometry,
   MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
   getMediaSource,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
 
 const DEFAULT_CROP = { position: { x: 0.5, y: 0.5 }, scale: 1 };
+const CROP_WIDTH = 640;
+const CROP_HEIGHT = CROP_WIDTH / CAROUSEL_ASPECT_RATIO;
+const CROP_BORDER = 20;
 
 const ImageCropDialog = ({ image, onClose, onSave }) => {
   const { getMediaFile } = useStoryMapMediaContext();
+  const { t } = useTranslation();
   const [altText, setAltText] = useState(image.altText || '');
   const [crop, setCrop] = useState(image.crop);
-  const [fitScale, setFitScale] = useState(image.crop?.fitScale || 1);
+  const [imageSize, setImageSize] = useState();
+  const fitScale = imageSize
+    ? calculateFitScale(imageSize)
+    : image.crop?.fitScale || 1;
   const previewCrop = crop || { ...DEFAULT_CROP, scale: fitScale };
+  const sourceSize = imageSize || {
+    naturalWidth: CROP_WIDTH,
+    naturalHeight: CROP_HEIGHT,
+  };
+  const geometry = calculateMediaCropGeometry(previewCrop, sourceSize);
+  const canPan =
+    Math.max(geometry.scaledWidth, geometry.scaledHeight) >
+    1 + Number.EPSILON * 4;
+  const boundCrop = (nextCrop, dimensions = sourceSize) => ({
+    ...nextCrop,
+    position: calculateMediaCropGeometry(nextCrop, dimensions).position,
+  });
+  // The library exposes no canvas ARIA props; localize its rendered DOM here.
+  const localizeCropSurface = useCallback(
+    surface => {
+      const canvas = surface?.querySelector('canvas');
+      canvas?.setAttribute('aria-label', t('storyMap.media_crop_editor_label'));
+      canvas?.setAttribute(
+        'aria-roledescription',
+        t('storyMap.media_crop_editor_role')
+      );
+    },
+    [t]
+  );
   const imageSrc = getMediaSource(image, getMediaFile);
+  const blockFixedPanning = event => {
+    if (
+      !canPan &&
+      (event.type !== 'keydown' || event.key.startsWith('Arrow'))
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
 
   return (
     <Dialog
@@ -53,22 +94,43 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
       maxWidth="md"
       open
       onClose={onClose}
-      slotProps={{ paper: { 'aria-label': i18n.t('storyMap.media_crop') } }}
+      slotProps={{ paper: { 'aria-label': t('storyMap.media_crop') } }}
     >
       <DialogContent>
         <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
-          <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
+          <Box
+            ref={localizeCropSurface}
+            onMouseDownCapture={blockFixedPanning}
+            onTouchStartCapture={blockFixedPanning}
+            onKeyDownCapture={blockFixedPanning}
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              height: CROP_HEIGHT + 2 * CROP_BORDER,
+              justifyContent: 'center',
+              maxWidth: '100%',
+              overflow: 'hidden',
+              width: CROP_WIDTH + 2 * CROP_BORDER,
+            }}
+          >
             <img
-              alt={i18n.t('storyMap.media_crop_source')}
+              alt={t('storyMap.media_crop_source')}
               onLoad={({ currentTarget }) => {
-                const nextFitScale = calculateFitScale(currentTarget);
-                setFitScale(nextFitScale);
+                const nextImageSize = {
+                  naturalWidth: currentTarget.naturalWidth,
+                  naturalHeight: currentTarget.naturalHeight,
+                };
+                const nextFitScale = calculateFitScale(nextImageSize);
+                setImageSize(nextImageSize);
                 setCrop(currentCrop =>
                   currentCrop
-                    ? {
-                        ...currentCrop,
-                        scale: Math.max(currentCrop.scale, nextFitScale),
-                      }
+                    ? boundCrop(
+                        {
+                          ...currentCrop,
+                          scale: Math.max(currentCrop.scale, nextFitScale),
+                        },
+                        nextImageSize
+                      )
                     : currentCrop
                 );
               }}
@@ -76,14 +138,20 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               style={{ display: 'none' }}
             />
             <AvatarEditor
-              style={{ maxWidth: '100%', height: 'auto' }}
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+                ...(!canPan ? { cursor: 'default' } : {}),
+              }}
               image={imageSrc}
-              width={640}
-              height={640 / CAROUSEL_ASPECT_RATIO}
-              border={20}
+              width={CROP_WIDTH * Math.min(1, geometry.scaledWidth)}
+              height={CROP_HEIGHT * Math.min(1, geometry.scaledHeight)}
+              border={CROP_BORDER}
               color={[255, 255, 255, 0.6]}
               position={previewCrop.position}
-              scale={Math.max(previewCrop.scale, fitScale)}
+              // The visible crop surface covers the image at sub-1 zoom, so
+              // the library can enforce its normal bounds on both axes.
+              scale={Math.max(1, previewCrop.scale)}
               onPositionChange={position =>
                 setCrop({ ...previewCrop, position })
               }
@@ -95,7 +163,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
             sx={{ alignItems: 'center', width: '100%' }}
           >
             <Typography id="carousel-crop-zoom-label">
-              {i18n.t('storyMap.media_zoom')}
+              {t('storyMap.media_zoom')}
             </Typography>
             <Slider
               aria-labelledby="carousel-crop-zoom-label"
@@ -105,34 +173,40 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               value={previewCrop.scale}
               valueLabelDisplay="auto"
               valueLabelFormat={scale =>
-                scale === fitScale
-                  ? i18n.t('storyMap.media_fit_image')
-                  : `${scale}x`
+                scale === fitScale ? t('storyMap.media_fit_image') : `${scale}x`
               }
-              onChange={(event, scale) => setCrop({ ...previewCrop, scale })}
+              onChange={(event, scale) =>
+                setCrop(
+                  boundCrop({
+                    ...previewCrop,
+                    position: geometry.position,
+                    scale,
+                  })
+                )
+              }
             />
           </Stack>
           <OutlinedInput
             fullWidth
             inputProps={{
               maxLength: 1000,
-              'aria-label': i18n.t('storyMap.media_alt_placeholder'),
+              'aria-label': t('storyMap.media_alt_placeholder'),
             }}
             multiline
             onChange={event => setAltText(event.target.value)}
-            placeholder={i18n.t('storyMap.media_alt_placeholder')}
+            placeholder={t('storyMap.media_alt_placeholder')}
             rows={3}
             value={altText}
           />
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{i18n.t('storyMap.media_cancel')}</Button>
+        <Button onClick={onClose}>{t('storyMap.media_cancel')}</Button>
         <Button
           variant="contained"
-          onClick={() => onSave(crop, altText.trim())}
+          onClick={() => onSave(crop ? boundCrop(crop) : crop, altText.trim())}
         >
-          {i18n.t('storyMap.media_done')}
+          {t('storyMap.media_done')}
         </Button>
       </DialogActions>
     </Dialog>

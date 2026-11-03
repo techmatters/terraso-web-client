@@ -925,6 +925,8 @@
         "media_add_label": "Agregar multimedia",
         "media_limit_reached": "Máximo de 6 elementos multimedia por capítulo.",
         "media_crop": "Recortar",
+        "media_crop_editor_label": "Editor de recorte de imagen",
+        "media_crop_editor_role": "editor de imágenes",
         "media_move_earlier": "Mover antes",
         "media_move_later": "Mover después",
         "media_delete": "Eliminar",

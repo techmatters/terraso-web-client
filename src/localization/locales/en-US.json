@@ -923,6 +923,8 @@
         "media_add_label": "Add media",
         "media_limit_reached": "Maximum of 6 media items per chapter.",
         "media_crop": "Crop",
+        "media_crop_editor_label": "Image crop editor",
+        "media_crop_editor_role": "image editor",
         "media_move_earlier": "Move earlier",
         "media_move_later": "Move later",
         "media_delete": "Delete",

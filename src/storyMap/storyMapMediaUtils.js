@@ -31,29 +31,44 @@ export const calculateMediaFitScale = ({ naturalHeight, naturalWidth }) => {
   );
 };
 
-export const calculateMediaCropStyle = (
+export const calculateMediaCropGeometry = (
   crop,
   { naturalWidth, naturalHeight },
-  aspectRatio
+  aspectRatio = MEDIA_ASPECT_RATIO
 ) => {
   const imageAspectRatio = naturalWidth / naturalHeight;
   const scaledWidth = Math.max(1, imageAspectRatio / aspectRatio) * crop.scale;
   const scaledHeight = Math.max(1, aspectRatio / imageAspectRatio) * crop.scale;
-  const cropWidth = 1 / scaledWidth;
-  const cropHeight = 1 / scaledHeight;
-  const allowOutside = cropWidth > 1 || cropHeight > 1;
-  const offsetAxis = (center, cropSize, scaledSize) => {
-    const cropStart = Math.max(
-      allowOutside ? -cropSize : 0,
-      Math.min(center - cropSize / 2, allowOutside ? 1 : 1 - cropSize)
-    );
-    return `${-cropStart * scaledSize * 100}%`;
+  const boundCenter = (center, scaledSize) =>
+    scaledSize <= 1
+      ? 0.5
+      : Math.max(
+          1 / (2 * scaledSize),
+          Math.min(center, 1 - 1 / (2 * scaledSize))
+        );
+  return {
+    scaledWidth,
+    scaledHeight,
+    position: {
+      x: boundCenter(crop.position.x, scaledWidth),
+      y: boundCenter(crop.position.y, scaledHeight),
+    },
   };
+};
+
+export const calculateMediaCropStyle = (crop, imageSize, aspectRatio) => {
+  const { scaledWidth, scaledHeight, position } = calculateMediaCropGeometry(
+    crop,
+    imageSize,
+    aspectRatio
+  );
+  const offsetAxis = (center, scaledSize) =>
+    `${(0.5 - center * scaledSize) * 100}%`;
   return {
     width: `${scaledWidth * 100}%`,
     height: `${scaledHeight * 100}%`,
-    left: offsetAxis(crop.position.x, cropWidth, scaledWidth),
-    top: offsetAxis(crop.position.y, cropHeight, scaledHeight),
+    left: offsetAxis(position.x, scaledWidth),
+    top: offsetAxis(position.y, scaledHeight),
   };
 };
 
