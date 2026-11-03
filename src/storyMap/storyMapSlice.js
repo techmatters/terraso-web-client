@@ -40,6 +40,7 @@ const initialState = {
     list: [],
   },
   delete: {},
+  unpublish: {},
   memberships: {
     add: {
       saving: false,
@@ -80,6 +81,18 @@ export const updateStoryMap = createAsyncThunk(
   storyMapService.updateStoryMap,
   null,
   false
+);
+export const unpublishStoryMap = createAsyncThunk(
+  'storyMap/unpublishStoryMap',
+  ({ id }) =>
+    storyMapService.updateStoryMap({
+      storyMap: { id, unpublish: true },
+      files: {},
+    }),
+  () => ({
+    severity: 'success',
+    content: 'storyMap.unpublished_story_map',
+  })
 );
 export const deleteStoryMap = createAsyncThunk(
   'storyMap/deleteStoryMap',
@@ -276,10 +289,36 @@ const storyMapSlice = createSlice({
         error: false,
         data: {
           ...state.form.data,
-          ...action.payload,
+          ...(action.meta.arg.storyMap.publish
+            ? action.payload
+            : _.omit(
+                ['isPublished', 'publishedAt', 'is_published', 'published_at'],
+                action.payload
+              )),
         },
       },
     }));
+
+    builder.addCase(unpublishStoryMap.pending, (state, action) =>
+      _.set(`unpublish.${action.meta.arg.id}.unpublishing`, true, state)
+    );
+    builder.addCase(unpublishStoryMap.rejected, (state, action) =>
+      _.set(`unpublish.${action.meta.arg.id}.unpublishing`, false, state)
+    );
+    builder.addCase(unpublishStoryMap.fulfilled, (state, action) => {
+      state.unpublish[action.meta.arg.id] = { unpublishing: false };
+      if (state.form.data?.id === action.payload.id) {
+        state.form.data = { ...state.form.data, ...action.payload };
+      }
+      if (state.view.data?.id === action.payload.id) {
+        state.view.data = null;
+      }
+      state.userStoryMaps.list = state.userStoryMaps.list.map(storyMap =>
+        storyMap.id === action.payload.id
+          ? { ...storyMap, ...action.payload }
+          : storyMap
+      );
+    });
 
     builder.addCase(deleteStoryMap.pending, (state, action) =>
       _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, true, state)
