@@ -62,7 +62,8 @@ const StoryMapUpdate = props => {
   const { trackEvent } = useAnalytics();
   const [savedStoryMap, setSavedStoryMap] = useState();
   const { storyMap } = useStoryMapConfigDataContext();
-  const { applySavedRevisionConfig } = useStoryMapSaveContext();
+  const { applySavedRevisionConfig, getConfigForSave } =
+    useStoryMapSaveContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
@@ -116,7 +117,9 @@ const StoryMapUpdate = props => {
         updateStoryMap({
           storyMap: {
             id: storyMap?.id,
-            config,
+            // Save/publish boundary: unused data layers are pruned here (and
+            // only here) — see pruneUnusedDataLayers's commit contract.
+            config: getConfigForSave(config),
             publish,
           },
           files: mediaFiles,
@@ -148,7 +151,13 @@ const StoryMapUpdate = props => {
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, storyMap?.isPublished, applySavedRevisionConfig, dispatch]
+    [
+      storyMap?.id,
+      storyMap?.isPublished,
+      applySavedRevisionConfig,
+      getConfigForSave,
+      dispatch,
+    ]
   );
   const onPublish = useCallback(
     (config, mediaFiles, revision) =>
