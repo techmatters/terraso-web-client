@@ -16,9 +16,8 @@
  */
 
 import Cookies from 'js-cookie';
-import { getAPIConfig } from 'terraso-client-shared/config';
 
-import { getCookieDomainForHost } from 'terraso-web-client/config';
+import { createTokenStorage } from 'terraso-web-client/config';
 
 describe('auth token cookie storage', () => {
   afterEach(() => {
@@ -26,20 +25,23 @@ describe('auth token cookie storage', () => {
   });
 
   test.each(['atoken', 'rtoken'])(
-    'stores the rotated %s with a cookie scope valid for this host',
+    'writes %s to the configured shared domain on a matching app host',
     name => {
       const removeCookie = jest.spyOn(Cookies, 'remove');
       const setCookie = jest.spyOn(Cookies, 'set');
+      const tokenStorage = createTokenStorage(
+        () => 'app.staging.terraso.net',
+        '.staging.terraso.net'
+      );
 
-      getAPIConfig().tokenStorage.setToken(name, 'rotated-token');
+      tokenStorage.setToken(name, 'rotated-token');
 
       expect(removeCookie).toHaveBeenCalledWith(name, {
         path: '/',
         expires: 30,
       });
-      const cookieDomain = getCookieDomainForHost(window.location.hostname);
       expect(setCookie).toHaveBeenCalledWith(name, 'rotated-token', {
-        ...(cookieDomain ? { domain: cookieDomain } : {}),
+        domain: '.staging.terraso.net',
         path: '/',
         expires: 30,
       });
@@ -49,15 +51,21 @@ describe('auth token cookie storage', () => {
     }
   );
 
-  test('uses the shared cookie domain for a matching subdomain', () => {
-    expect(getCookieDomainForHost('app.terraso.org', '.terraso.org')).toBe(
-      '.terraso.org'
-    );
-  });
+  test.each(['atoken', 'rtoken'])(
+    'writes %s host-only when the configured domain does not match the preview host',
+    name => {
+      const setCookie = jest.spyOn(Cookies, 'set');
+      const tokenStorage = createTokenStorage(
+        () => 'preview.onrender.com',
+        '.staging.terraso.net'
+      );
 
-  test('falls back to host-only cookies when a preview host is outside the configured domain', () => {
-    expect(
-      getCookieDomainForHost('preview.onrender.com', '.terraso.org')
-    ).toBeUndefined();
-  });
+      tokenStorage.setToken(name, 'rotated-token');
+
+      expect(setCookie).toHaveBeenCalledWith(name, 'rotated-token', {
+        path: '/',
+        expires: 30,
+      });
+    }
+  );
 });
