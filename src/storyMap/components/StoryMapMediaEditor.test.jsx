@@ -813,7 +813,84 @@ test('StoryMapMediaEditor: a single image supports alt text, cropping and origin
       name: 'Mangrove restoration',
     }).style.left
   ).toBe('');
+  fireEvent.click(screen.getByRole('button', { name: 'Close media viewer' }));
+  fireEvent.click(
+    await screen.findByRole('button', {
+      name: 'Edit alt text for image media 1',
+    })
+  );
+  fireEvent.change(
+    screen.getByRole('textbox', {
+      name: 'Describe this image for people with visual impairments',
+    }),
+    { target: { value: '' } }
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+  expect(
+    await screen.findByRole('button', {
+      name: 'Add alt text for image media 1',
+    })
+  ).toBeInTheDocument();
+  const clearedImage = screen.getByRole('img', { name: 'image media' });
+  expect(clearedImage).toHaveAttribute('src', croppedImage.getAttribute('src'));
+  expect(clearedImage).toHaveStyle({
+    width: '200%',
+    height: '200%',
+    left: '-50%',
+    top: '-50%',
+  });
 });
+
+test.each([
+  { name: 'Gallery', Presentation: GalleryPresentation },
+  { name: 'Carousel', Presentation: CarouselPresentation },
+])(
+  'StoryMapMedia: $name images and blurred backgrounds load lazily while the viewer loads eagerly',
+  async ({ name, Presentation }) => {
+    const firstSource = `https://test.com/${name}-lazy-first.jpg`;
+    const nextSource = `https://test.com/${name}-lazy-next.jpg`;
+    const item = {
+      id: 'lazy-image',
+      type: 'image/jpeg',
+      signedUrl: firstSource,
+    };
+    const hasBackground = source =>
+      Array.from(document.styleSheets).some(sheet =>
+        Array.from(sheet.cssRules).some(rule => rule.cssText.includes(source))
+      );
+    const { rerender } = await render(<Presentation items={[item]} />);
+    const image = screen.getByRole('img');
+    expect(image).toHaveAttribute('loading', 'lazy');
+    expect(hasBackground(firstSource)).toBe(false);
+    loadImageDimensions(image);
+    expect(hasBackground(firstSource)).toBe(true);
+
+    const nextItem = { ...item, signedUrl: nextSource };
+    rerender(<Presentation items={[nextItem]} />);
+    expect(screen.getByRole('img')).toHaveAttribute('loading', 'lazy');
+    expect(hasBackground(nextSource)).toBe(false);
+    loadImageDimensions(screen.getByRole('img'));
+    expect(hasBackground(nextSource)).toBe(true);
+
+    rerender(
+      <Presentation
+        items={[
+          { ...nextItem, crop: { position: { x: 0.5, y: 0.5 }, scale: 2 } },
+        ]}
+      />
+    );
+    expect(screen.getByRole('img')).toHaveAttribute('loading', 'lazy');
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /Open image media|Expand image media/,
+      })
+    );
+    expect(within(screen.getByRole('dialog')).getByRole('img')).toHaveAttribute(
+      'loading',
+      'eager'
+    );
+  }
+);
 
 test.each([
   { name: 'Gallery', Presentation: GalleryPresentation },

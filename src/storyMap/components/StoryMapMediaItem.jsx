@@ -33,6 +33,7 @@ const StoryMapMediaItem = ({
   objectFit = 'contain',
   imageStyle,
   draggable,
+  loading = 'lazy',
   onImageLoad,
 }) => {
   const [hasError, setHasError] = useState(false);
@@ -57,6 +58,7 @@ const StoryMapMediaItem = ({
         src={getMediaSource(item)}
         alt={item.altText || label || mediaLabel(item)}
         draggable={draggable}
+        loading={loading}
         onLoad={onImageLoad}
         onError={() => setHasError(true)}
         style={{

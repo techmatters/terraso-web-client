@@ -59,7 +59,9 @@ const CroppedImagePreview = ({
           position: 'relative',
           width: '100%',
           '&::before': {
-            backgroundImage: `url(${getMediaSource(item)})`,
+            backgroundImage: imageSize
+              ? `url(${getMediaSource(item)})`
+              : undefined,
             backgroundPosition: 'center',
             backgroundSize: 'cover',
             content: '""',
@@ -215,7 +217,13 @@ const MediaPreview = ({ item, objectFit = 'cover', aspectRatio = 4 / 3 }) => {
   }
 
   if (mediaKind(item) === 'image') {
-    return <CroppedImagePreview aspectRatio={aspectRatio} item={item} />;
+    return (
+      <CroppedImagePreview
+        key={getMediaSource(item)}
+        aspectRatio={aspectRatio}
+        item={item}
+      />
+    );
   }
 
   return <VideoPreview item={item} objectFit={objectFit} />;

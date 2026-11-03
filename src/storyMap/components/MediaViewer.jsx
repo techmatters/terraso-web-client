@@ -78,7 +78,11 @@ const MediaViewer = ({ item, onClose, theme }) => (
             '& > iframe': { aspectRatio: '16 / 9' },
           }}
         >
-          <StoryMapMediaItem key={getMediaSource(item)} item={item} />
+          <StoryMapMediaItem
+            key={getMediaSource(item)}
+            item={item}
+            loading="eager"
+          />
         </Box>
         <Tooltip placement="left" title={i18n.t('storyMap.media_close_viewer')}>
           <IconButton

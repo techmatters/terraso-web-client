@@ -16,6 +16,7 @@
  */
 import { memo, useMemo, useState } from 'react';
 import i18n from 'i18next';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import AddIcon from '@mui/icons-material/Add';
@@ -490,7 +491,7 @@ const EditableMedia = ({
           return media;
         }
 
-        const { altText: existingAltText, ...mediaWithoutAltText } = media;
+        const mediaWithoutAltText = _.omit('altText', media);
         return {
           ...mediaWithoutAltText,
           ...(crop ? { crop } : {}),
