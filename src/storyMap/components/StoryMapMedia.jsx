@@ -658,6 +658,9 @@ export const GalleryPresentation = ({
                 ? 'var(--story-theme-background)'
                 : MEDIA_PREVIEW_BACKGROUND,
             cursor: dragCursor || 'pointer',
+            ...(onItemsReorder && {
+              '&:active': { cursor: 'grabbing' },
+            }),
             '&:focus-visible': {
               outline: '3px solid',
               outlineColor: 'var(--story-theme-highlight)',
