@@ -54,7 +54,8 @@ setAPIConfig({
       Cookies.remove(name, { domain: COOKIES_DOMAIN, ...COOKIES_PARAMS });
     },
     setToken: (name, token) => {
-      Cookies.set(name, token, COOKIES_PARAMS);
+      Cookies.remove(name, COOKIES_PARAMS);
+      Cookies.set(name, token, { domain: COOKIES_DOMAIN, ...COOKIES_PARAMS });
     },
   },
   logger: (severity: Severity, ...args) => console.log(...args),
