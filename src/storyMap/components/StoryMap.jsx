@@ -37,59 +37,28 @@ import 'terraso-web-client/storyMap/components/StoryMap.css';
 import { FullscreenButton } from 'terraso-web-client/gis/components/FullscreenControl';
 import Map, { useMap } from 'terraso-web-client/gis/components/Map';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
+import {
+  CarouselPresentation,
+  GalleryPresentation,
+} from 'terraso-web-client/storyMap/components/StoryMapMedia';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
-import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
+import {
+  getStoryMapThemeCssVariables,
+  getStoryMapThemeOption,
+} from 'terraso-web-client/storyMap/storyMapThemeUtils';
+import { normalizeChapterMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
 import theme from 'terraso-web-client/theme';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-const Audio = ({ record }) => {
-  return (
-    <>
-      <audio style={{ width: '100%' }} controls loading="lazy">
-        <source src={record.media.signedUrl} type={record.media.type} />
-      </audio>
-    </>
-  );
-};
-
-const Video = ({ record }) => {
-  return (
-    <>
-      <video style={{ width: '100%' }} controls loading="lazy">
-        <source src={record.media.signedUrl} type={record.media.type} />
-      </video>
-    </>
-  );
-};
-
-const Image = ({ record }) => {
+const Chapter = ({ record, active, themeId }) => {
   const { t } = useTranslation();
-  return (
-    <img
-      src={record.media.signedUrl || record.media.url}
-      alt={t('storyMap.view_chapter_media_label')}
-      width="100%"
-      loading="lazy"
-    ></img>
-  );
-};
-
-const Embedded = ({ record }) => {
-  return (
-    <iframe
-      allowFullScreen
-      title={record.media.title}
-      src={record.media.url}
-      style={{ height: '300px', width: '100%' }}
-      loading="lazy"
-    />
-  );
-};
-
-const Chapter = ({ record, active }) => {
-  const { t } = useTranslation();
+  const { mediaItems, mediaPresentation } = normalizeChapterMedia(record);
+  const Presentation =
+    mediaPresentation === 'gallery'
+      ? GalleryPresentation
+      : CarouselPresentation;
   const className = [
     'step-container',
     ALIGNMENTS[record.alignment] || 'centered',
@@ -117,16 +86,13 @@ const Chapter = ({ record, active }) => {
             {record.title}
           </h3>
         )}
-        {record.media &&
-          (record.media.type.startsWith('image') ? (
-            <Image record={record} />
-          ) : record.media.type.startsWith('video') ? (
-            <Video record={record} />
-          ) : record.media.type.startsWith('audio') ? (
-            <Audio record={record} />
-          ) : record.media.type.startsWith('embedded') ? (
-            <Embedded record={record} />
-          ) : null)}
+        {mediaItems.length > 0 && (
+          <Presentation
+            items={mediaItems}
+            active={active}
+            theme={getStoryMapThemeOption(themeId)}
+          />
+        )}
         {record.description && (
           <RichTextEditor value={record.description} editable={false} />
         )}
@@ -374,6 +340,7 @@ const StoryMap = props => {
         {filteredChapters.map(chapter => (
           <div key={chapter.id} ref={registerStep} id={chapter.id}>
             <ChapterComponent
+              themeId={config.themeId}
               record={chapter}
               active={currentChapter === chapter.id}
             />

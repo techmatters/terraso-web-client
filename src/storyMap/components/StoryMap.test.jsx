@@ -68,7 +68,7 @@ const testChapter = ({ title, description, image }) => {
 
   if (image) {
     const imageElement = within(chapterSection).getByRole('img', {
-      name: 'Chapter media',
+      name: 'image media',
     });
     expect(imageElement).toHaveAttribute('src', image);
   }
@@ -102,6 +102,20 @@ test('StoryMap: Renders title and chapters correctly', async () => {
     image: 'https://test.com/image.png',
   });
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
+});
+
+test('StoryMap: passes only the theme id needed by custom chapter components', async () => {
+  const ChapterComponent = jest.fn(() => null);
+  await render(
+    <StoryMap
+      config={{ ...CONFIG, themeId: 'theme-3' }}
+      ChapterComponent={ChapterComponent}
+    />
+  );
+
+  const chapterProps = ChapterComponent.mock.calls[0][0];
+  expect(chapterProps.themeId).toBe('theme-3');
+  expect(chapterProps).not.toHaveProperty('config');
 });
 
 test('StoryMap: Use config style', async () => {

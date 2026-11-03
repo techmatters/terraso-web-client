@@ -90,24 +90,6 @@ const getFirstChapterDescriptionPreview = chapters => {
   return '';
 };
 
-const isImageMedia = media =>
-  media?.signedUrl &&
-  (media.type === 'image' || media.type?.startsWith('image/'));
-
-const getFirstChapterImageUrl = chapters => {
-  if (!Array.isArray(chapters)) {
-    return '';
-  }
-
-  for (const chapter of chapters) {
-    if (isImageMedia(chapter?.media)) {
-      return chapter.media.signedUrl;
-    }
-  }
-
-  return '';
-};
-
 const getStoryMapMetaDescription = storyMapConfig => {
   const shortDescription = toCleanText(storyMapConfig.description);
   const subtitle = toCleanText(storyMapConfig.subtitle);
@@ -144,15 +126,31 @@ const getStoryMapTitle = storyMapConfig => {
     : `${storyMapTitle}${STORY_MAP_TITLE_SUFFIX}`;
 };
 
+const getStoryMapImage = config => {
+  if (config.featuredImage?.signedUrl) {
+    return config.featuredImage.signedUrl;
+  }
+
+  for (const chapter of config.chapters ?? []) {
+    const mediaItems =
+      chapter.mediaItems ?? (chapter.media ? [chapter.media] : []);
+    const image = mediaItems.find(
+      media => media.type?.startsWith('image') && (media.signedUrl || media.url)
+    );
+    if (image) {
+      return image.signedUrl || image.url;
+    }
+  }
+
+  return getFallbackImageUrl();
+};
+
 const buildMetaTags = node => {
   const storyMapConfig = parseConfig(node);
 
   const title = getStoryMapTitle(storyMapConfig);
   const description = getStoryMapMetaDescription(storyMapConfig);
-  const image =
-    storyMapConfig.featuredImage?.signedUrl ||
-    getFirstChapterImageUrl(storyMapConfig.chapters) ||
-    getFallbackImageUrl();
+  const image = getStoryMapImage(storyMapConfig);
 
   return { title, description, image };
 };
