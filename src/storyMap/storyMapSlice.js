@@ -291,10 +291,7 @@ const storyMapSlice = createSlice({
           ...state.form.data,
           ...(action.meta.arg.storyMap.publish
             ? action.payload
-            : _.omit(
-                ['isPublished', 'publishedAt', 'is_published', 'published_at'],
-                action.payload
-              )),
+            : _.omit(['isPublished', 'publishedAt'], action.payload)),
         },
       },
     }));

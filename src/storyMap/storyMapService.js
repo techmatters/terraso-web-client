@@ -33,24 +33,21 @@ import {
   getStoryMapConfig,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
-const normalizeUpdatedStoryMap = (storyMap, response = {}) => ({
-  ...response,
-  storyMapId: response.storyMapId || response.story_map_id,
-  publishedAt:
-    response.publishedAt !== undefined
-      ? response.publishedAt
-      : response.published_at,
-  configuration: response.configuration || storyMap.config,
-  config: getStoryMapConfig({
-    ...response,
-    config: response.config || storyMap.config,
-    configuration: response.configuration || storyMap.config,
-  }),
-  isPublished:
-    response.isPublished ??
-    response.is_published ??
-    Boolean(response.publishedAt || response.published_at || storyMap.publish),
-});
+const normalizeUpdatedStoryMap = (storyMap, response = {}) => {
+  const configuration = response.configuration || storyMap.config;
+
+  return {
+    id: response.id,
+    title: response.title,
+    storyMapId: response.story_map_id,
+    slug: response.slug,
+    featured: response.featured,
+    publishedAt: response.published_at,
+    configuration,
+    config: getStoryMapConfig({ configuration }),
+    isPublished: response.is_published,
+  };
+};
 
 export const fetchUserStoryMaps = (params, currentUser) => {
   return terrasoApi

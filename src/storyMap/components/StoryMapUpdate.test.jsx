@@ -133,10 +133,15 @@ const createDeferred = () => {
   };
 };
 
-const buildSavedStoryMap = title => ({
-  ...API_STORY_MAP,
-  title,
+const buildSavedStoryMap = (title, isPublished = false) => ({
+  id: API_STORY_MAP.id,
+  slug: API_STORY_MAP.slug,
   story_map_id: API_STORY_MAP.storyMapId,
+  created_by: API_STORY_MAP.createdBy.id,
+  title,
+  is_published: isPublished,
+  published_at: isPublished ? PUBLISHED_API_STORY_MAP.publishedAt : null,
+  featured: false,
   configuration: {
     ...CONFIG,
     title,
@@ -224,10 +229,7 @@ test('StoryMapUpdate: Save', async () => {
       ],
     },
   });
-  terrasoApi.request.mockResolvedValue({
-    ...API_STORY_MAP,
-    configuration: JSON.parse(API_STORY_MAP.configuration),
-  });
+  terrasoApi.request.mockResolvedValue(buildSavedStoryMap(CONFIG.title, true));
   await setup({ id: API_STORY_MAP.createdBy.id });
 
   const saveButton = screen.getByRole('button', { name: 'Publish' });
@@ -257,10 +259,7 @@ test('StoryMapUpdate: Republish tracks an update event', async () => {
       ],
     },
   });
-  terrasoApi.request.mockResolvedValue({
-    ...PUBLISHED_API_STORY_MAP,
-    configuration: JSON.parse(PUBLISHED_API_STORY_MAP.configuration),
-  });
+  terrasoApi.request.mockResolvedValue(buildSavedStoryMap(CONFIG.title, true));
   await setup({ id: PUBLISHED_API_STORY_MAP.createdBy.id });
 
   await act(async () => {
@@ -426,10 +425,7 @@ test('StoryMapUpdate: a late draft save cannot restore publication after unpubli
   });
   await act(async () => jest.advanceTimersByTime(500));
   await act(async () => {
-    draftSave.resolve({
-      ...PUBLISHED_API_STORY_MAP,
-      configuration: { ...CONFIG, title: 'Latest draft' },
-    });
+    draftSave.resolve(buildSavedStoryMap('Latest draft', true));
   });
 
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
@@ -577,7 +573,7 @@ test('StoryMapUpdate: publish responses still complete after local edits while p
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   await act(async () => {
-    publishRequest.resolve(buildSavedStoryMap('First published title'));
+    publishRequest.resolve(buildSavedStoryMap('First published title', true));
   });
 
   await waitFor(() => {
