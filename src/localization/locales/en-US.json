@@ -899,6 +899,15 @@
         "no_options": "No options"
     },
     "storyMap": {
+        "media_unavailable": "Media unavailable",
+        "media_video_unavailable": "Video preview unavailable",
+        "media_waveform_unavailable": "Audio preview unavailable. You can still play the audio.",
+        "media_waveform_preview_unavailable": "Audio preview unavailable",
+        "media_close_viewer": "Close media viewer",
+        "media_image_label": "image media",
+        "media_audio_label": "audio media",
+        "media_video_label": "video media",
+        "media_embedded_label": "Embedded video",
         "item_type": "Story Map",
         "not_found": "Story Map not found",
         "story_maps_title": "{{name}}{{possession}} Story Maps",
