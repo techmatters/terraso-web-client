@@ -88,21 +88,6 @@ export const normalizeStoryMapConfig = config =>
       }
     : config;
 
-// Temporary projection for single-media consumers while collection UI is introduced.
-export const adaptStoryMapConfigForSingleMedia = config =>
-  config
-    ? {
-        ...config,
-        ...(config.chapters && {
-          chapters: config.chapters.map(chapter =>
-            chapter.mediaItems == null
-              ? chapter
-              : { ...chapter, media: chapter.mediaItems[0] }
-          ),
-        }),
-      }
-    : config;
-
 export const generateStoryMapUrl = storyMap => {
   const { storyMapId, slug } = storyMap;
   return `/tools/story-maps/${storyMapId}/${slug}`;
@@ -140,7 +125,7 @@ export const parseStoryMapConfiguration = configuration => {
 };
 
 export const getStoryMapConfig = storyMap =>
-  adaptStoryMapConfigForSingleMedia(
+  normalizeStoryMapConfig(
     storyMap?.config || parseStoryMapConfiguration(storyMap?.configuration)
   );
 

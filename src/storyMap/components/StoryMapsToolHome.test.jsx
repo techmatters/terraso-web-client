@@ -146,6 +146,13 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
                   signedUrl: 'https://example.com/story-map-1.png',
                   description: 'Story 1 featured image',
                 },
+                chapters: [
+                  {
+                    mediaItems: [
+                      { type: 'image/png', signedUrl: 'chapter-image.png' },
+                    ],
+                  },
+                ],
               }),
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
               createdBy: {

@@ -16,48 +16,47 @@
  */
 
 import {
-  normalizeChapterMedia,
-  normalizeStoryMapConfig,
+  chapterHasVisualMedia,
+  getStoryMapConfig,
+  isChapterEmpty,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
-test('legacy chapter media is normalized without losing its metadata', () => {
+test('legacy stories retain image metadata when loaded into the multi-media model', () => {
   const media = {
     type: 'image/jpeg',
-    signedUrl: 'image.jpg',
-    altText: 'A tree',
+    contentId: 'image-1',
+    altText: 'Mangroves',
+    crop: { position: { x: 0.3, y: 0.6 }, scale: 2 },
   };
-  expect(normalizeChapterMedia({ id: 'chapter', media })).toEqual({
-    id: 'chapter',
+  const config = getStoryMapConfig({
+    configuration: JSON.stringify({ chapters: [{ id: 'chapter-1', media }] }),
+  });
+  expect(config.chapters[0]).toEqual({
+    id: 'chapter-1',
     mediaItems: [media],
     mediaPresentation: 'carousel',
   });
+  expect(chapterHasVisualMedia(config.chapters[0])).toBe(true);
+  expect(isChapterEmpty(config.chapters[0])).toBe(false);
 });
 
-test('normalizing a configuration preserves chapter order and media metadata', () => {
-  const media = { type: 'audio/mpeg', url: 'audio.mp3' };
-  const config = {
-    title: 'Story',
-    chapters: [{ id: 'one', media }, { id: 'two' }],
-  };
-
-  expect(normalizeStoryMapConfig(config)).toEqual({
-    title: 'Story',
-    chapters: [
-      { id: 'one', mediaItems: [media], mediaPresentation: 'carousel' },
-      { id: 'two', mediaItems: [], mediaPresentation: 'carousel' },
-    ],
+test('new stories preserve ordered media and explicit removal of legacy media', () => {
+  const mediaItems = [
+    { id: 'audio-1', type: 'audio/mpeg' },
+    { id: 'image-1', type: 'image/jpeg' },
+  ];
+  const config = getStoryMapConfig({
+    config: {
+      chapters: [
+        { mediaItems, mediaPresentation: 'gallery' },
+        { media: mediaItems[1], mediaItems: [] },
+        {},
+      ],
+    },
   });
-  expect(config.chapters[0].media).toBe(media);
-});
-
-test('an explicit empty collection takes precedence over legacy media', () => {
-  const chapter = {
-    media: { type: 'image/jpeg', signedUrl: 'old.jpg' },
-    mediaItems: [],
-    mediaPresentation: 'gallery',
-  };
-  expect(normalizeChapterMedia(chapter)).toEqual({
-    mediaItems: [],
-    mediaPresentation: 'gallery',
-  });
+  expect(config.chapters[0].mediaItems).toEqual(mediaItems);
+  expect(config.chapters[0].mediaPresentation).toBe('gallery');
+  expect(config.chapters[1].mediaItems).toEqual([]);
+  expect(config.chapters[2].mediaItems).toEqual([]);
+  expect(isChapterEmpty(config.chapters[1])).toBe(true);
 });
