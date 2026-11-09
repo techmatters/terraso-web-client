@@ -27,6 +27,8 @@ import _ from 'lodash/fp';
 import { flushSync } from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
+import { adaptStoryMapConfigForSingleMedia } from 'terraso-web-client/storyMap/storyMapUtils';
+
 const StoryMapConfigDataContext = createContext();
 const StoryMapPreviewContext = createContext();
 const StoryMapMediaContext = createContext();
@@ -71,7 +73,7 @@ export const StoryMapConfigContextProvider = props => {
     throw new Error('StoryMapConfigContextProvider requires a baseConfig');
   }
 
-  const initialConfig = baseConfig;
+  const initialConfig = adaptStoryMapConfigForSingleMedia(baseConfig);
   const [config, setConfig] = useState(initialConfig);
   const [configRevision, setConfigRevision] = useState(0);
   const [preview, setPreview] = useState(false);
@@ -150,7 +152,10 @@ export const StoryMapConfigContextProvider = props => {
       }
 
       const nextConfig = savedConfig
-        ? applyConfigUpdate(latestConfigRef.current, savedConfig)
+        ? applyConfigUpdate(
+            latestConfigRef.current,
+            adaptStoryMapConfigForSingleMedia(savedConfig)
+          )
         : latestConfigRef.current;
       latestConfigRef.current = nextConfig;
       setConfig(nextConfig);
