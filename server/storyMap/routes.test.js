@@ -123,6 +123,103 @@ describe('Story Map Routes - Integration Tests', () => {
   });
 
   describe('GET /tools/story-maps/:storyMapId/:slug', () => {
+    it.each([
+      {
+        name: 'explicit featured image wins over chapter media',
+        config: {
+          featuredImage: { signedUrl: 'https://cdn.example.com/featured.jpg' },
+          chapters: [
+            {
+              mediaItems: [
+                {
+                  type: 'image/jpeg',
+                  signedUrl: 'https://cdn.example.com/chapter.jpg',
+                },
+              ],
+            },
+          ],
+        },
+        image: 'https://cdn.example.com/featured.jpg',
+      },
+      {
+        name: 'first available image in chapter and media order',
+        config: {
+          chapters: [
+            { mediaItems: [{ type: 'audio/mpeg', signedUrl: 'audio.mp3' }] },
+            {
+              mediaItems: [
+                { type: 'video/mp4', signedUrl: 'video.mp4' },
+                { type: 'embedded', url: 'https://www.youtube.com/embed/test' },
+                { type: 'image/jpeg', contentId: 'unresolved-upload' },
+                {
+                  type: 'image/jpeg',
+                  signedUrl: 'https://cdn.example.com/first.jpg?a=1&b=2',
+                },
+                {
+                  type: 'image/jpeg',
+                  signedUrl: 'https://cdn.example.com/second.jpg',
+                },
+              ],
+            },
+          ],
+        },
+        image: 'https://cdn.example.com/first.jpg?a=1&b=2',
+      },
+      {
+        name: 'legacy chapter image',
+        config: {
+          chapters: [
+            {
+              media: {
+                type: 'image/jpeg',
+                signedUrl: 'https://cdn.example.com/legacy.jpg',
+              },
+            },
+          ],
+        },
+        image: 'https://cdn.example.com/legacy.jpg',
+      },
+      {
+        name: 'explicit empty collection overrides legacy image',
+        config: {
+          chapters: [
+            {
+              media: {
+                type: 'image/jpeg',
+                signedUrl: 'https://cdn.example.com/legacy.jpg',
+              },
+              mediaItems: [],
+            },
+          ],
+        },
+        image: 'https://test.terraso.org/storyMap/terraso-story-maps-img.jpg',
+      },
+      {
+        name: 'missing featured source uses chapter URL',
+        config: {
+          featuredImage: { description: 'No source' },
+          chapters: [
+            {
+              mediaItems: [
+                { type: 'image/png', url: 'https://cdn.example.com/url.png' },
+              ],
+            },
+          ],
+        },
+        image: 'https://cdn.example.com/url.png',
+      },
+    ])('selects Open Graph cover: $name', async ({ config, image }) => {
+      mockFetch(mockStoryMapResponse(config));
+      for (const suffix of ['', '/embed']) {
+        const { text } = await request(app)
+          .get(`/tools/story-maps/abc123/cover-test${suffix}`)
+          .expect(200);
+        expect(text).toContain(
+          `<meta property="og:image" content="${image}" data-rh="true"/>`
+        );
+      }
+    });
+
     it('injects meta tags when story map has full metadata', async () => {
       mockFetch(
         mockStoryMapResponse({
@@ -196,30 +293,6 @@ describe('Story Map Routes - Integration Tests', () => {
         .expect(200);
 
       expect(text).toContain('https://cdn.example.com/chapter.jpg');
-    });
-
-    it('uses a collection chapter image for social previews', async () => {
-      mockFetch(
-        mockStoryMapResponse({
-          title: 'Story With Collection Image',
-          chapters: [
-            {
-              mediaItems: [
-                {
-                  type: 'image/jpeg',
-                  signedUrl: 'https://cdn.example.com/collection.jpg',
-                },
-              ],
-            },
-          ],
-        })
-      );
-
-      const { text } = await request(app)
-        .get('/tools/story-maps/abc123/collection-image-story')
-        .expect(200);
-
-      expect(text).toContain('https://cdn.example.com/collection.jpg');
     });
 
     it('falls back to first chapter content when short description is missing', async () => {
