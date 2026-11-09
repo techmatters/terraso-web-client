@@ -24,17 +24,20 @@ import {
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
+import { getMediaSource } from 'terraso-web-client/storyMap/storyMapMediaUtils';
 
 import { REACT_APP_BASE_URL } from 'terraso-web-client/config';
 
 export const chapterHasVisualMedia = chapter => {
-  const { media } = chapter;
-  return media && _.includes(media.type, ['image', 'embedded']);
+  const { mediaItems } = normalizeChapterMedia(chapter);
+  return mediaItems.some(media =>
+    ['image', 'video', 'embedded'].some(type => media.type.startsWith(type))
+  );
 };
 
 export const isChapterEmpty = chapter => {
-  const { title, description, media } = chapter;
-  return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(media);
+  const { title, description, mediaItems } = normalizeChapterMedia(chapter);
+  return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(mediaItems);
 };
 
 export const normalizeChapterMedia = chapter => {
@@ -44,6 +47,35 @@ export const normalizeChapterMedia = chapter => {
     mediaItems: chapter.mediaItems ?? (media ? [media] : []),
     mediaPresentation: chapter.mediaPresentation ?? 'carousel',
   };
+};
+
+export const STORY_MAP_FALLBACK_IMAGE = '/storyMap/terraso-story-maps-img.jpg';
+
+const getStoryMapCoverMedia = config => {
+  if (config?.featuredImage?.signedUrl) {
+    return config.featuredImage;
+  }
+
+  for (const chapter of config?.chapters ?? []) {
+    const image = normalizeChapterMedia(chapter).mediaItems.find(
+      media => media.type?.startsWith('image') && getMediaSource(media)
+    );
+    if (image) {
+      return image;
+    }
+  }
+
+  return null;
+};
+
+export const getStoryMapImage = config => {
+  const media = getStoryMapCoverMedia(config);
+  return media ? getMediaSource(media) : STORY_MAP_FALLBACK_IMAGE;
+};
+
+export const getStoryMapImageAlt = (config, title) => {
+  const media = getStoryMapCoverMedia(config);
+  return media?.altText || media?.description || title;
 };
 
 export const normalizeStoryMapConfig = config =>
