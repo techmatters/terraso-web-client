@@ -56,7 +56,7 @@ const Chapter = ({ record, active, themeId }) => {
   const { t } = useTranslation();
   const { mediaItems, mediaPresentation } = normalizeChapterMedia(record);
   const Presentation =
-    mediaPresentation === 'gallery'
+    mediaItems.length > 1 && mediaPresentation === 'gallery'
       ? GalleryPresentation
       : CarouselPresentation;
   const className = [
