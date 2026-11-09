@@ -1223,6 +1223,79 @@ test('StoryMapForm: Adds new chapter', async () => {
     expect.any(Number)
   );
 });
+test('StoryMapForm: displays collection media and preserves the collection when editing a chapter', async () => {
+  const first = { type: 'image/png', signedUrl: 'https://test.com/first.png' };
+  const second = {
+    type: 'image/png',
+    signedUrl: 'https://test.com/second.png',
+  };
+  const config = {
+    ...BASE_CONFIG,
+    chapters: [
+      {
+        ...BASE_CONFIG.chapters[0],
+        media: undefined,
+        mediaItems: [first, second],
+        mediaPresentation: 'gallery',
+      },
+      ...BASE_CONFIG.chapters.slice(1),
+    ],
+  };
+  const { onSaveDraft } = await setup({ config });
+
+  testChapter({ title: 'Chapter 1', image: first.signedUrl });
+  await changeChaper({
+    title: 'Chapter 1',
+    newDescription: 'Updated description',
+  });
+  await expectSave();
+  expect(onSaveDraft.mock.calls[0][0].chapters[0]).toEqual(
+    expect.objectContaining({
+      mediaItems: [first, second],
+      mediaPresentation: 'gallery',
+    })
+  );
+});
+
+test('StoryMapForm: deleting the first collection item preserves the remaining media', async () => {
+  const first = { type: 'image/png', signedUrl: 'https://test.com/first.png' };
+  const second = {
+    type: 'image/png',
+    signedUrl: 'https://test.com/second.png',
+  };
+  const config = {
+    ...BASE_CONFIG,
+    chapters: [
+      {
+        ...BASE_CONFIG.chapters[0],
+        media: undefined,
+        mediaItems: [first, second],
+      },
+      ...BASE_CONFIG.chapters.slice(1),
+    ],
+  };
+  const { onSaveDraft } = await setup({ config });
+  const chapter = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(
+      within(chapter).getByRole('button', {
+        name: 'storyMap.form_media_delete',
+      })
+    )
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Delete image?' });
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Delete image' })
+    )
+  );
+  await expectSave();
+  expect(onSaveDraft.mock.calls[0][0].chapters[0]).toEqual(
+    expect.objectContaining({ media: second, mediaItems: [second] })
+  );
+  testChapter({ title: 'Chapter 1', image: second.signedUrl });
+});
+
 test('StoryMapForm: Add embedded media', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
