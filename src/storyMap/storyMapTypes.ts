@@ -85,13 +85,13 @@ export type ChapterConfig = {
   title: string;
   description: Descendant;
   alignment: ChapterAlignment;
-  media: {
-    type: 'image' | 'video' | 'embedded';
-    url: string;
-    signedUrl: string;
-  };
-  mediaItems?: ChapterMedia[];
-  mediaPresentation?: 'carousel' | 'gallery';
+  mediaItems: ChapterMedia[];
+  mediaPresentation: 'carousel' | 'gallery';
+  /**
+   * @deprecated Legacy persisted field. `normalizeChapterMedia` converts it to
+   * `mediaItems`; use `mediaItems` for new writes.
+   */
+  media?: ChapterMedia;
 } & Transition;
 
 export type StoryMapThemeId =

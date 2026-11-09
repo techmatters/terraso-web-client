@@ -51,20 +51,11 @@ const shouldFlushBufferedFieldOnBlur = fieldConfig =>
 
 const buildChapterConfigUpdater = (chapterId, nextChapterFields) => config => ({
   ...config,
-  chapters: config.chapters.map(configChapter => {
-    if (configChapter.id !== chapterId) {
-      return configChapter;
-    }
-    const nextChapter = { ...configChapter, ...nextChapterFields };
-    if ('media' in nextChapterFields && configChapter.mediaItems != null) {
-      const remaining = configChapter.mediaItems.slice(1);
-      const mediaItems = nextChapterFields.media
-        ? [nextChapterFields.media, ...remaining]
-        : remaining;
-      return { ...nextChapter, mediaItems, media: mediaItems[0] };
-    }
-    return nextChapter;
-  }),
+  chapters: config.chapters.map(configChapter =>
+    configChapter.id === chapterId
+      ? { ...configChapter, ...nextChapterFields }
+      : configChapter
+  ),
 });
 
 const pickBufferedFieldValues = (chapter, bufferedFieldNames) =>

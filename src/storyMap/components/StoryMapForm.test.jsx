@@ -495,7 +495,7 @@ const testChapter = ({ title, description, image }) => {
 
   if (image) {
     const imageElement = within(chapterSection).getByRole('img', {
-      name: 'Chapter media',
+      name: 'image media',
     });
     expect(imageElement).toHaveAttribute('src', image);
   }
@@ -541,7 +541,7 @@ const changeChaper = async ({
       name: 'Add media',
     });
     const dropZone = within(mediaDialog).getByRole('button', {
-      name: 'Upload a photo or audio file Select File Accepted formats: .aac, .gif, .jpeg, .jpg, .mp3, .mp4, .png, .wav, .webp Maximum file size: 10 MB',
+      name: /Drag and drop your file here or select one from your device/,
     });
     const data = {
       dataTransfer: {
@@ -1212,10 +1212,12 @@ test('StoryMapForm: Adds new chapter', async () => {
           id: 'chapter-1',
           title: 'Chapter 1',
           description: 'Chapter 1 description',
-          media: {
-            type: 'image/png',
-            signedUrl: 'https://test.com/image.png',
-          },
+          mediaItems: [
+            {
+              type: 'image/png',
+              signedUrl: 'https://test.com/image.png',
+            },
+          ],
         }),
       ]),
     }),
@@ -1223,79 +1225,6 @@ test('StoryMapForm: Adds new chapter', async () => {
     expect.any(Number)
   );
 });
-test('StoryMapForm: displays collection media and preserves the collection when editing a chapter', async () => {
-  const first = { type: 'image/png', signedUrl: 'https://test.com/first.png' };
-  const second = {
-    type: 'image/png',
-    signedUrl: 'https://test.com/second.png',
-  };
-  const config = {
-    ...BASE_CONFIG,
-    chapters: [
-      {
-        ...BASE_CONFIG.chapters[0],
-        media: undefined,
-        mediaItems: [first, second],
-        mediaPresentation: 'gallery',
-      },
-      ...BASE_CONFIG.chapters.slice(1),
-    ],
-  };
-  const { onSaveDraft } = await setup({ config });
-
-  testChapter({ title: 'Chapter 1', image: first.signedUrl });
-  await changeChaper({
-    title: 'Chapter 1',
-    newDescription: 'Updated description',
-  });
-  await expectSave();
-  expect(onSaveDraft.mock.calls[0][0].chapters[0]).toEqual(
-    expect.objectContaining({
-      mediaItems: [first, second],
-      mediaPresentation: 'gallery',
-    })
-  );
-});
-
-test('StoryMapForm: deleting the first collection item preserves the remaining media', async () => {
-  const first = { type: 'image/png', signedUrl: 'https://test.com/first.png' };
-  const second = {
-    type: 'image/png',
-    signedUrl: 'https://test.com/second.png',
-  };
-  const config = {
-    ...BASE_CONFIG,
-    chapters: [
-      {
-        ...BASE_CONFIG.chapters[0],
-        media: undefined,
-        mediaItems: [first, second],
-      },
-      ...BASE_CONFIG.chapters.slice(1),
-    ],
-  };
-  const { onSaveDraft } = await setup({ config });
-  const chapter = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
-  await act(async () =>
-    fireEvent.click(
-      within(chapter).getByRole('button', {
-        name: 'storyMap.form_media_delete',
-      })
-    )
-  );
-  const dialog = screen.getByRole('dialog', { name: 'Delete image?' });
-  await act(async () =>
-    fireEvent.click(
-      within(dialog).getByRole('button', { name: 'Delete image' })
-    )
-  );
-  await expectSave();
-  expect(onSaveDraft.mock.calls[0][0].chapters[0]).toEqual(
-    expect.objectContaining({ media: second, mediaItems: [second] })
-  );
-  testChapter({ title: 'Chapter 1', image: second.signedUrl });
-});
-
 test('StoryMapForm: Add embedded media', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
@@ -1309,7 +1238,7 @@ test('StoryMapForm: Add embedded media', async () => {
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0].chapters[1].media).toEqual(
+  expect(saveCall[0].chapters[1].mediaItems[0]).toEqual(
     expect.objectContaining({
       source: 'youtube',
       type: 'embedded',
@@ -1332,17 +1261,42 @@ test('StoryMapForm: Add audio media', async () => {
 
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0].chapters[1].media).toEqual(
+  expect(saveCall[0].chapters[1].mediaItems[0]).toEqual(
     expect.objectContaining({
       filename: 'test.jpg',
       type: 'audio/mp3',
     })
   );
 
-  expect(saveCall[0].chapters[1].media.contentId).toEqual(
+  expect(saveCall[0].chapters[1].mediaItems[0].contentId).toEqual(
     Object.keys(saveCall[1])[0]
   );
 });
+test('StoryMapForm: a first image upload shows full-image fill without saving synthetic crop settings', async () => {
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+  await changeChaper({
+    title: 'Chapter 2',
+    newFile: new File(['image content'], 'portrait.jpg', {
+      type: 'image/jpeg',
+    }),
+  });
+  const chapter = screen.getByRole('region', { name: 'Chapter: Chapter 2' });
+  expect(within(chapter).getByTestId('carousel-viewport')).toHaveStyle({
+    'aspect-ratio': '16/9',
+  });
+  expect(within(chapter).getByTestId('image-fit-preview')).toBeInTheDocument();
+  expect(within(chapter).getByRole('img', { name: 'image media' })).toHaveStyle(
+    { objectFit: 'contain' }
+  );
+  await expectSave();
+  const savedImage = onSaveDraft.mock.calls.at(-1)[0].chapters[1].mediaItems[0];
+  expect(savedImage).not.toHaveProperty('crop');
+  expect(savedImage.contentId).toEqual(
+    Object.keys(onSaveDraft.mock.calls.at(-1)[1])[0]
+  );
+  expect(within(chapter).getByTestId('image-fit-preview')).toBeInTheDocument();
+});
+
 test('StoryMapForm: Show preview', async () => {
   await setup({ config: BASE_CONFIG });
 
@@ -1371,6 +1325,47 @@ test('StoryMapForm: Show preview', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Exit Preview' }))
   );
+});
+
+test('StoryMapForm: persists gallery selection and reordered media through the real editor', async () => {
+  const images = [
+    {
+      id: 'image-1',
+      type: 'image/jpeg',
+      signedUrl: 'https://test.com/first.jpg',
+      altText: 'First image',
+    },
+    {
+      id: 'image-2',
+      type: 'image/jpeg',
+      signedUrl: 'https://test.com/second.jpg',
+      crop: { position: { x: 0.3, y: 0.7 }, scale: 2 },
+    },
+  ];
+  const config = {
+    ...BASE_CONFIG,
+    chapters: [
+      { ...BASE_CONFIG.chapters[0], media: undefined, mediaItems: images },
+    ],
+  };
+  const { onSaveDraft, unmount } = await setup({ config });
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Move image media 1 later' })
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+  await waitFor(() => expect(onSaveDraft).toHaveBeenCalled());
+  const savedConfig = onSaveDraft.mock.calls.at(-1)[0];
+  expect(savedConfig.chapters[0].mediaItems).toEqual([images[1], images[0]]);
+  expect(savedConfig.chapters[0].mediaPresentation).toBe('gallery');
+  expect(savedConfig.chapters[0]).not.toHaveProperty('media');
+  unmount();
+  await setup({ config: savedConfig });
+  expect(screen.getByTestId('gallery-media-grid')).toBeInTheDocument();
+  const renderedImages = within(
+    screen.getByTestId('gallery-media-grid')
+  ).getAllByRole('img');
+  expect(renderedImages[0]).toHaveAttribute('src', images[1].signedUrl);
+  expect(renderedImages[1]).toHaveAttribute('alt', images[0].altText);
 });
 
 test('StoryMapForm: Show preview without title uses blank preview copy', async () => {

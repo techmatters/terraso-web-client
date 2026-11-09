@@ -24,6 +24,11 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapsToolHome', () => ({
   default: () => <div>Story Maps Tool Home</div>,
 }));
 
+jest.mock('terraso-web-client/storyMap/components/UserStoryMap', () => ({
+  __esModule: true,
+  default: () => <div>User Story Map</div>,
+}));
+
 test('Routes: /tools redirects to /tools/story-maps', async () => {
   window.history.pushState({}, '', '/tools');
 
