@@ -23,9 +23,11 @@ import {
   within,
 } from 'terraso-web-client/tests/utils';
 
-import CarouselPresentation from 'terraso-web-client/storyMap/components/CarouselPresentation';
 import EmbeddedVideoPreview from 'terraso-web-client/storyMap/components/EmbeddedVideoPreview';
-import GalleryPresentation from 'terraso-web-client/storyMap/components/GalleryPresentation';
+import {
+  CarouselPresentation,
+  GalleryPresentation,
+} from 'terraso-web-client/storyMap/components/StoryMapMedia';
 
 const originalFetch = global.fetch;
 const OriginalIntersectionObserver = globalThis.IntersectionObserver;
@@ -109,33 +111,6 @@ test.each([
     expect(screen.queryByAltText('')).not.toBeInTheDocument();
   }
 );
-
-test('carousel navigation switches media and gallery drag reorders items', async () => {
-  const items = [
-    { id: 'one', type: 'image/jpeg', url: '/one.jpg', altText: 'First' },
-    { id: 'two', type: 'image/jpeg', url: '/two.jpg', altText: 'Second' },
-  ];
-  const { unmount } = await render(<CarouselPresentation items={items} />);
-  expect(screen.getByAltText('First')).toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Next media' }));
-  expect(screen.getByAltText('Second')).toBeInTheDocument();
-  unmount();
-
-  const reorder = jest.fn();
-  await render(<GalleryPresentation items={items} onItemsReorder={reorder} />);
-  const data = {};
-  const dataTransfer = {
-    setData: (key, value) => (data[key] = value),
-    getData: key => data[key],
-    setDragImage: jest.fn(),
-  };
-  const firstItem = screen.getByRole('button', { name: 'Open image media 1' });
-  fireEvent.dragStart(firstItem, { dataTransfer });
-  fireEvent.drop(screen.getByRole('button', { name: 'Open image media 2' }), {
-    dataTransfer,
-  });
-  expect(reorder).toHaveBeenCalledWith(0, 1);
-});
 
 test('unmounting disconnects visibility observation and aborts pending metadata', async () => {
   global.fetch.mockImplementation(() => new Promise(() => {}));

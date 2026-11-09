@@ -272,10 +272,10 @@ const ChapterForm = props => {
             }}
           />
           <EditableMedia
-            key={record.mediaItems?.length}
-            label={t('storyMap.form_chapter_media_label')}
-            value={record.media}
-            onChange={onFieldChange('media')}
+            onPresentationChange={onFieldChange('mediaPresentation')}
+            presentation={record.mediaPresentation || 'carousel'}
+            value={record.mediaItems}
+            onChange={onFieldChange('mediaItems')}
           />
           <EditableRichText
             label={t('storyMap.form_chapter_description_label')}

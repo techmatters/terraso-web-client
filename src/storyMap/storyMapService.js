@@ -28,7 +28,6 @@ import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/inde
 
 import { TILESET_STATUS_READY } from 'terraso-web-client/sharedData/sharedDataConstants';
 import {
-  adaptStoryMapConfigForSingleMedia,
   compareStoryMapsByUpdatedAt,
   extractStoryMap,
   getStoryMapConfig,
@@ -98,7 +97,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),
-      config: adaptStoryMapConfigForSingleMedia(
+      config: normalizeStoryMapConfig(
         storyMap.publishedConfiguration
           ? JSON.parse(storyMap.publishedConfiguration)
           : JSON.parse(storyMap.configuration)
@@ -130,9 +129,7 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),
-      config: adaptStoryMapConfigForSingleMedia(
-        JSON.parse(storyMap.configuration)
-      ),
+      config: normalizeStoryMapConfig(JSON.parse(storyMap.configuration)),
       memberships: extractMemberships(storyMap.membershipList),
       accountMembership: extractAccountMembership(storyMap.membershipList),
     }));

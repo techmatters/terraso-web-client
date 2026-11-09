@@ -28,10 +28,7 @@ import {
   ALIGNMENTS,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
-import {
-  chapterHasVisualMedia,
-  normalizeChapterMedia,
-} from 'terraso-web-client/storyMap/storyMapUtils';
+import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
 import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
 
@@ -49,6 +46,7 @@ import {
   getStoryMapThemeCssVariables,
   getStoryMapThemeOption,
 } from 'terraso-web-client/storyMap/storyMapThemeUtils';
+import { normalizeChapterMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
 import theme from 'terraso-web-client/theme';
 
