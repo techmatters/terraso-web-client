@@ -63,6 +63,23 @@ export type ChapterAlignment = 'left' | 'right' | 'center';
  */
 export type MapBounds = [number, number, number, number];
 
+export type ChapterMedia = {
+  id?: string;
+  contentId?: string;
+  filename?: string;
+  type: string;
+  url?: string;
+  signedUrl?: string;
+  source?: string;
+  title?: string;
+  altText?: string;
+  crop?: {
+    position: { x: number; y: number };
+    scale: number;
+    fitScale?: number;
+  };
+};
+
 export type ChapterConfig = {
   id: string;
   title: string;
@@ -73,6 +90,8 @@ export type ChapterConfig = {
     url: string;
     signedUrl: string;
   };
+  mediaItems?: ChapterMedia[];
+  mediaPresentation?: 'carousel' | 'gallery';
 } & Transition;
 
 export type StoryMapThemeId =

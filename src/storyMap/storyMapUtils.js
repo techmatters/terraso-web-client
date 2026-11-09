@@ -37,6 +37,25 @@ export const isChapterEmpty = chapter => {
   return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(media);
 };
 
+export const normalizeChapterMedia = chapter => {
+  const { media, ...rest } = chapter;
+  return {
+    ...rest,
+    mediaItems: chapter.mediaItems ?? (media ? [media] : []),
+    mediaPresentation: chapter.mediaPresentation ?? 'carousel',
+  };
+};
+
+export const normalizeStoryMapConfig = config =>
+  config
+    ? {
+        ...config,
+        ...(config.chapters && {
+          chapters: config.chapters.map(normalizeChapterMedia),
+        }),
+      }
+    : config;
+
 export const generateStoryMapUrl = storyMap => {
   const { storyMapId, slug } = storyMap;
   return `/tools/story-maps/${storyMapId}/${slug}`;
