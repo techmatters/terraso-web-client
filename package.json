@@ -41,7 +41,7 @@
     "path-browserify": "^1.0.1",
     "query-string": "^9.3.1",
     "react": "19.2.5",
-    "react-avatar-editor": "^15.1.0",
+    "react-avatar-editor": "16.0.0",
     "react-dom": "19.2.5",
     "react-dropzone": "^15.0.0",
     "react-error-boundary": "^6.1.1",
