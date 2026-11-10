@@ -22,6 +22,11 @@ import logger from 'terraso-client-shared/monitoring/logger';
 
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
+  generateLayerId,
+  LAYER_TYPE_STACK_ORDER,
+  LAYER_TYPES,
+} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
+import {
   LAYER_PAINT_TYPES,
   LayerPaintType,
   STORY_MAP_TITLE_ID,
@@ -31,6 +36,7 @@ import {
   ChapterConfig,
   LayerConfig,
   MapBounds,
+  MapLayerTransition,
   MapPosition,
   StoryMapConfig,
   Transition,
@@ -286,6 +292,63 @@ const startLayerTransition = (
   );
 };
 
+/**
+ * Bottom-to-top stacking order of the mapbox layers generated for a map layer
+ * — imported from VisualizationMapLayer (the insertion order of its
+ * sublayers) so there is a single source of truth.
+ */
+
+/**
+ * Rearranges the mapbox layers to match `mapLayers` order (index 0 topmost).
+ * Mapbox z-order is global, so this runs on every chapter transition and
+ * whenever a layer is added to the map. Sublayers that are not on the map yet
+ * are skipped (they will be ordered on the next pass, e.g. after
+ * `onLayerAdded`).
+ *
+ * Always applies the moves (there is no "already ordered" cache): sublayers
+ * can be re-added on top of the stack asynchronously — the marker sublayer
+ * only renders once its icon image resolves, and a `Layer` effect re-run
+ * removes and re-adds its mapbox layer on top — so the applied order can be
+ * invalidated without this helper being called. Re-arranging is idempotent
+ * and layer existence is checked with `map.getLayer`, never with
+ * `map.getStyle()` (which deep-clones the whole style).
+ */
+export const enforceMapLayerOrder = (
+  map: mapboxgl.Map,
+  mapLayers: MapLayerTransition[]
+) => {
+  const exists = (id: string) => Boolean(map.getLayer(id));
+
+  // Desired order, topmost first. Within a map layer, keep the layer's own
+  // stacking (markers below polygons outline below polygons fill).
+  const desiredTopFirst = mapLayers.flatMap(({ layerId }) =>
+    [...LAYER_TYPE_STACK_ORDER]
+      .reverse()
+      .map(layerType => generateLayerId(layerId, layerType))
+      .filter(exists)
+  );
+  if (desiredTopFirst.length === 0) {
+    return;
+  }
+
+  // moveLayer() moves a layer to the top of the stack, so apply bottom-first.
+  desiredTopFirst
+    .slice()
+    .reverse()
+    .forEach(id => map.moveLayer(id));
+};
+
+const startMapLayerOrder = (
+  map: mapboxgl.Map,
+  transition: ChapterConfig | Transition
+) => {
+  // Legacy chapters (no mapLayers) keep today's behavior unchanged.
+  if (transition.mapLayers === undefined) {
+    return;
+  }
+  enforceMapLayerOrder(map, transition.mapLayers);
+};
+
 export type StartTransitionOptions = {
   config: StoryMapConfig;
   chapterId: string;
@@ -307,4 +370,5 @@ export const startTransition = (
 
   startCameraTransition(map, isMobile, mapDimensions, transition);
   startLayerTransition(map, chapterId, config);
+  startMapLayerOrder(map, transition);
 };
