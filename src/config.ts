@@ -32,11 +32,55 @@ export const REACT_APP_BASE_URL =
 
 export const GRAPHQL_ENDPOINT = 'graphql/';
 
+const CONFIGURED_COOKIES_DOMAIN = import.meta.env.REACT_APP_COOKIES_DOMAIN;
+
 export const COOKIES_DOMAIN =
-  import.meta.env.REACT_APP_COOKIES_DOMAIN || window.location.hostname;
+  CONFIGURED_COOKIES_DOMAIN || window.location.hostname;
+
+export const getCookieDomainForHost = (
+  hostname: string,
+  cookieDomain = CONFIGURED_COOKIES_DOMAIN
+) => {
+  if (!cookieDomain) {
+    return undefined;
+  }
+
+  const normalizedHostname = hostname.toLowerCase();
+  const normalizedCookieDomain = cookieDomain.replace(/^\./, '').toLowerCase();
+
+  return normalizedHostname === normalizedCookieDomain ||
+    normalizedHostname.endsWith(`.${normalizedCookieDomain}`)
+    ? cookieDomain
+    : undefined;
+};
 
 // 30 days expiration for both access and refresh tokens, since refresh token rotation is implemented on the backend
 const COOKIES_PARAMS = { path: '/', expires: 30 };
+
+export const createTokenStorage = (
+  getHostname: () => string,
+  configuredCookieDomain?: string
+) => ({
+  getToken: Cookies.get,
+  removeToken: (name: string) => {
+    Cookies.remove(name, COOKIES_PARAMS);
+    Cookies.remove(name, {
+      domain: configuredCookieDomain || getHostname(),
+      ...COOKIES_PARAMS,
+    });
+  },
+  setToken: (name: string, token: string) => {
+    Cookies.remove(name, COOKIES_PARAMS);
+    const cookieDomain = getCookieDomainForHost(
+      getHostname(),
+      configuredCookieDomain
+    );
+    Cookies.set(name, token, {
+      ...(cookieDomain ? { domain: cookieDomain } : {}),
+      ...COOKIES_PARAMS,
+    });
+  },
+});
 
 export const SENTRY_DSN = import.meta.env.REACT_APP_SENTRY_DSN || '';
 
@@ -46,17 +90,10 @@ export const SENTRY_ENABLED =
 setAPIConfig({
   terrasoAPIURL: TERRASO_API_URL,
   graphQLEndpoint: GRAPHQL_ENDPOINT,
-  tokenStorage: {
-    getToken: Cookies.get,
-    removeToken: name => {
-      // make sure we remove cookie regardless of whether we set it on frontend or backend
-      Cookies.remove(name, COOKIES_PARAMS);
-      Cookies.remove(name, { domain: COOKIES_DOMAIN, ...COOKIES_PARAMS });
-    },
-    setToken: (name, token) => {
-      Cookies.set(name, token, COOKIES_PARAMS);
-    },
-  },
+  tokenStorage: createTokenStorage(
+    () => window.location.hostname,
+    CONFIGURED_COOKIES_DOMAIN
+  ),
   logger: (severity: Severity, ...args) => console.log(...args),
 });
 
