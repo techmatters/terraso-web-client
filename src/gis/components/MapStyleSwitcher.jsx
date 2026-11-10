@@ -43,7 +43,7 @@ class SwitcherControl {
 }
 
 const MapStyleSwitcher = props => {
-  const { position = 'top-right', onStyleChange } = props;
+  const { position = 'top-right', onStyleChange, onOpenChange } = props;
   const { t } = useTranslation();
   const { map, changeStyle } = useMap();
   const [container, setContainer] = useState(null);
@@ -51,12 +51,17 @@ const MapStyleSwitcher = props => {
   const [styleName, setStyleName] = useState('');
   const open = Boolean(anchorEl);
 
-  const handleClick = useCallback(event => {
-    setAnchorEl(event.currentTarget);
-  }, []);
+  const handleClick = useCallback(
+    event => {
+      setAnchorEl(event.currentTarget);
+      onOpenChange?.(true);
+    },
+    [onOpenChange]
+  );
   const handleClose = useCallback(() => {
     setAnchorEl(null);
-  }, []);
+    onOpenChange?.(false);
+  }, [onOpenChange]);
 
   const handleChangeStyle = useCallback(
     newStyle => () => {
@@ -85,8 +90,11 @@ const MapStyleSwitcher = props => {
     map.addControl(stylesControl, position);
 
     return () => {
+      // NOTE: no map.off('styledata') here — this control registers no
+      // styledata listener, and off() without a handler removes ALL of them
+      // (including switchStyle's once-handler that restores images/localizes
+      // labels after a style change).
       map.removeControl(stylesControl);
-      map.off('styledata');
     };
   }, [map, position]);
 

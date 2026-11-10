@@ -74,7 +74,13 @@ const MapGeocoder = props => {
     map.addControl(geocoder, position);
 
     return () => {
-      if (!geocoder._container?.parentNode) {
+      // Skip removeControl when the control's DOM is already gone (e.g. the
+      // map was torn down and recreated on a style PROP change): the
+      // geocoder's onRemove crashes on `container.parentNode.removeChild`
+      // when it is already detached. NOTE: the geocoder sets `container`
+      // (v5) — a `_container` check here silently never matches and stacks
+      // a new search control on the shared map on every effect re-run.
+      if (!geocoder.container?.parentNode) {
         return;
       }
 
