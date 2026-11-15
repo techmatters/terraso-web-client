@@ -18,6 +18,7 @@
 import * as api from 'terraso-client-shared/terrasoApi/api';
 
 import {
+  addStoryMap,
   fetchStoryMap,
   fetchStoryMapForm,
   updateStoryMap,
@@ -53,6 +54,38 @@ test('draft and published legacy configurations load into the same media model',
     publishedMedia,
   ]);
 });
+
+test.each([addStoryMap, updateStoryMap])(
+  'sends only files referenced by the saved configuration',
+  async save => {
+    api.request.mockClear();
+    api.request.mockResolvedValue({});
+    const referenced = new File(['image'], 'image.jpg', {
+      type: 'image/jpeg',
+    });
+    const pending = new File(['pending'], 'pending.jpg', {
+      type: 'image/jpeg',
+    });
+    await save({
+      storyMap: {
+        id: 'story-1',
+        config: {
+          featuredImage: { contentId: 'featured' },
+          chapters: [{ media: { contentId: 'chapter', type: 'image/jpeg' } }],
+        },
+        publish: false,
+      },
+      files: {
+        featured: { file: referenced },
+        chapter: { file: referenced },
+        pending: { file: pending },
+      },
+    });
+    const files = api.request.mock.calls[0][0].body.getAll('files');
+    expect(files.map(file => file.name)).toEqual(['featured', 'chapter']);
+    expect(files.every(file => file.size === referenced.size)).toBe(true);
+  }
+);
 
 test('saving ordered media preserves metadata and uses backend-resolved media on reload', async () => {
   const image = {

@@ -28,6 +28,7 @@ import { flushSync } from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  getStoryMapMediaContentIds,
   normalizeStoryMapConfig,
   parseStoryMapConfiguration,
 } from 'terraso-web-client/storyMap/storyMapUtils';
@@ -127,10 +128,6 @@ export const StoryMapConfigContextProvider = props => {
     return id;
   }, []);
 
-  const clearMediaFiles = useCallback(() => {
-    setMediaFiles({});
-  }, []);
-
   const getMediaFile = useCallback(id => mediaFiles[id]?.content, [mediaFiles]);
 
   const isCurrentRevision = useCallback(
@@ -150,7 +147,7 @@ export const StoryMapConfigContextProvider = props => {
   );
 
   const applySavedRevisionConfig = useCallback(
-    (revision, savedConfig) => {
+    (revision, savedConfig, submittedConfig, submittedFiles) => {
       if (!isCurrentRevision(revision)) {
         return false;
       }
@@ -163,12 +160,25 @@ export const StoryMapConfigContextProvider = props => {
         : latestConfigRef.current;
       latestConfigRef.current = nextConfig;
       setConfig(nextConfig);
-      clearMediaFiles();
+      if (savedConfig) {
+        const submittedIds = getStoryMapMediaContentIds(submittedConfig);
+        const remainingIds = getStoryMapMediaContentIds(nextConfig);
+        setMediaFiles(previous =>
+          Object.fromEntries(
+            Object.entries(previous).filter(
+              ([id, entry]) =>
+                !submittedIds.has(id) ||
+                remainingIds.has(id) ||
+                submittedFiles?.[id] !== entry
+            )
+          )
+        );
+      }
       setIsConfigDirty(false);
 
       return true;
     },
-    [clearMediaFiles, isCurrentRevision]
+    [isCurrentRevision]
   );
 
   const updateConfig = useCallback(
@@ -288,9 +298,8 @@ export const StoryMapConfigContextProvider = props => {
       mediaFiles,
       addMediaFile,
       getMediaFile,
-      clearMediaFiles,
     }),
-    [mediaFiles, addMediaFile, getMediaFile, clearMediaFiles]
+    [mediaFiles, addMediaFile, getMediaFile]
   );
 
   const configActionsContextValue = useMemo(
