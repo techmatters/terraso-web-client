@@ -76,7 +76,6 @@ export type ChapterMedia = {
   crop?: {
     position: { x: number; y: number };
     scale: number;
-    fitScale?: number;
   };
 };
 
