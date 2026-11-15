@@ -23,6 +23,7 @@ import { Box, Typography } from '@mui/material';
 import { AudioWaveformPreview } from 'terraso-web-client/storyMap/components/AudioWaveform';
 import EmbeddedVideoPreview from 'terraso-web-client/storyMap/components/EmbeddedVideoPreview';
 import StoryMapMediaItem from 'terraso-web-client/storyMap/components/StoryMapMediaItem';
+import useMediaPreviewVisibility from 'terraso-web-client/storyMap/components/useMediaPreviewVisibility';
 import {
   calculateMediaFitScale as calculateFitScale,
   calculateMediaCropStyle,
@@ -119,6 +120,7 @@ const CroppedImagePreview = ({
 const VideoPreview = ({ item, objectFit }) => {
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef(null);
+  const { previewRef, shouldLoad } = useMediaPreviewVisibility();
 
   const capturePreviewFrame = () => {
     const video = videoRef.current;
@@ -153,25 +155,28 @@ const VideoPreview = ({ item, objectFit }) => {
   return (
     <Box
       data-testid="gallery-video-preview"
+      ref={previewRef}
       sx={{ height: '100%', position: 'relative', width: '100%' }}
     >
-      <video
-        aria-label={mediaLabel(item)}
-        muted
-        onError={() => setHasError(true)}
-        onLoadedMetadata={capturePreviewFrame}
-        onSeeked={() => videoRef.current?.pause()}
-        playsInline
-        preload="metadata"
-        ref={videoRef}
-        src={getMediaSource(item)}
-        style={{
-          display: 'block',
-          height: '100%',
-          objectFit,
-          width: '100%',
-        }}
-      />
+      {shouldLoad && (
+        <video
+          aria-label={mediaLabel(item)}
+          muted
+          onError={() => setHasError(true)}
+          onLoadedMetadata={capturePreviewFrame}
+          onSeeked={() => videoRef.current?.pause()}
+          playsInline
+          preload="metadata"
+          ref={videoRef}
+          src={getMediaSource(item)}
+          style={{
+            display: 'block',
+            height: '100%',
+            objectFit,
+            width: '100%',
+          }}
+        />
+      )}
       <PlayCircleOutlineIcon
         aria-hidden
         sx={{
@@ -226,7 +231,13 @@ const MediaPreview = ({ item, objectFit = 'cover', aspectRatio = 4 / 3 }) => {
     );
   }
 
-  return <VideoPreview item={item} objectFit={objectFit} />;
+  return (
+    <VideoPreview
+      key={getMediaSource(item)}
+      item={item}
+      objectFit={objectFit}
+    />
+  );
 };
 
 export default MediaPreview;

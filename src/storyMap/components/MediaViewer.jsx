@@ -68,7 +68,7 @@ const MediaViewer = ({ item, onClose, theme }) => (
             minHeight: 0,
             overflow: 'hidden',
             width: '100%',
-            '& > img, & > video, & > iframe': {
+            '& > img, & > iframe': {
               height: 'auto !important',
               maxHeight: '100% !important',
               maxWidth: '100%',
@@ -82,6 +82,7 @@ const MediaViewer = ({ item, onClose, theme }) => (
             key={getMediaSource(item)}
             item={item}
             loading="eager"
+            maxHeight="calc(100dvh - 32px)"
           />
         </Box>
         <Tooltip placement="left" title={i18n.t('storyMap.media_close_viewer')}>

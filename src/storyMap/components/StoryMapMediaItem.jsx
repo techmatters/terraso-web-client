@@ -33,6 +33,7 @@ const StoryMapMediaItem = ({
   objectFit = 'contain',
   imageStyle,
   draggable,
+  maxHeight,
   loading = 'lazy',
   onImageLoad,
 }) => {
@@ -40,7 +41,7 @@ const StoryMapMediaItem = ({
   const style = {
     display: 'block',
     height: fill ? '100%' : undefined,
-    maxHeight: fill ? 'none' : '360px',
+    maxHeight: maxHeight ?? (fill ? 'none' : '360px'),
     objectFit,
     width: '100%',
   };
