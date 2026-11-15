@@ -186,20 +186,35 @@ const CarouselPresentation = ({
                     key={item.id || item.contentId || index}
                     onClick={() => setCurrentIndex(index)}
                     sx={{
-                      bgcolor:
-                        index === currentIndex
-                          ? 'var(--story-theme-highlight)'
-                          : 'transparent',
-                      border: '1px solid',
-                      borderColor: 'var(--story-theme-text)',
-                      borderRadius: '50%',
+                      alignItems: 'center',
+                      bgcolor: 'transparent',
+                      border: 0,
                       cursor: 'pointer',
-                      height: 8,
-                      opacity: index === currentIndex ? 1 : 0.75,
+                      display: 'flex',
+                      flexShrink: 0,
+                      height: 24,
+                      justifyContent: 'center',
                       p: 0,
-                      width: 8,
+                      width: 24,
                     }}
-                  />
+                  >
+                    <Box
+                      aria-hidden
+                      component="span"
+                      sx={{
+                        bgcolor:
+                          index === currentIndex
+                            ? 'var(--story-theme-highlight)'
+                            : 'transparent',
+                        border: '1px solid',
+                        borderColor: 'var(--story-theme-text)',
+                        borderRadius: '50%',
+                        height: 8,
+                        opacity: index === currentIndex ? 1 : 0.75,
+                        width: 8,
+                      }}
+                    />
+                  </Box>
                 ))}
               </Stack>
               <Tooltip title={i18n.t('storyMap.media_next')}>

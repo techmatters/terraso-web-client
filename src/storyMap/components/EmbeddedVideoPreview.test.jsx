@@ -137,6 +137,25 @@ test('carousel navigation switches media and gallery drag reorders items', async
   expect(reorder).toHaveBeenCalledWith(0, 1);
 });
 
+test('carousel position buttons have larger targets and select the chosen media', async () => {
+  const items = [
+    { id: 'one', type: 'image/jpeg', url: '/one.jpg', altText: 'First' },
+    { id: 'two', type: 'image/jpeg', url: '/two.jpg', altText: 'Second' },
+  ];
+  await render(<CarouselPresentation items={items} />);
+  const first = screen.getByRole('button', { name: 'image media 1' });
+  const second = screen.getByRole('button', { name: 'image media 2' });
+  expect(first).toHaveAttribute('aria-current', 'true');
+  expect(getComputedStyle(first).width).toBe('24px');
+  expect(getComputedStyle(first).height).toBe('24px');
+  expect(getComputedStyle(first.firstElementChild).width).toBe('8px');
+  expect(getComputedStyle(first.firstElementChild).height).toBe('8px');
+  fireEvent.click(second);
+  expect(second).toHaveAttribute('aria-current', 'true');
+  expect(first).not.toHaveAttribute('aria-current');
+  expect(screen.getByAltText('Second')).toBeInTheDocument();
+});
+
 test('unmounting disconnects visibility observation and aborts pending metadata', async () => {
   global.fetch.mockImplementation(() => new Promise(() => {}));
   const { unmount } = await render(<EmbeddedVideoPreview item={youtube} />);
