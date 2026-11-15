@@ -49,9 +49,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
   const [altText, setAltText] = useState(image.altText || '');
   const [crop, setCrop] = useState(image.crop);
   const [imageSize, setImageSize] = useState();
-  const fitScale = imageSize
-    ? calculateFitScale(imageSize)
-    : image.crop?.fitScale || 1;
+  const fitScale = imageSize ? calculateFitScale(imageSize) : 1;
   const previewCrop = crop || { ...DEFAULT_CROP, scale: fitScale };
   const sourceSize = imageSize || {
     naturalWidth: CROP_WIDTH,

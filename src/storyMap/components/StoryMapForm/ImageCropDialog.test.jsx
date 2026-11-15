@@ -115,21 +115,21 @@ test('ImageCropDialog: the real crop canvas has a localized accessible name at e
   }
 });
 
-test('ImageCropDialog: legacy fit scale is used until image dimensions supply the actual fit threshold', async () => {
+test('ImageCropDialog: uses a default fit threshold until image dimensions load', async () => {
   const { load } = mockCropImage(1280, 360);
   await render(
     <ImageCropDialog
       image={{
         type: 'image/jpeg',
         url: 'https://test.com/wide.jpg',
-        crop: { position: { x: 0.5, y: 0.5 }, scale: 0.8, fitScale: 0.6 },
+        crop: { position: { x: 0.5, y: 0.5 }, scale: 0.8 },
       }}
       onClose={jest.fn()}
       onSave={jest.fn()}
     />
   );
   const zoom = screen.getByRole('slider', { name: 'Zoom' });
-  expect(zoom).toHaveAttribute('aria-valuemin', '0.6');
+  expect(zoom).toHaveAttribute('aria-valuemin', '1');
   const source = screen.getByAltText('Crop source');
   Object.defineProperties(source, {
     naturalWidth: { value: 1280 },
