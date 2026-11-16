@@ -104,6 +104,85 @@ test('StoryMap: Renders title and chapters correctly', async () => {
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
 });
 
+test('StoryMap: renders inline media within chapter text without adding it to the chapter media', async () => {
+  const chapter = {
+    id: 'inline-chapter',
+    title: 'Inline media chapter',
+    description: [
+      { type: 'paragraph', children: [{ text: 'Before media' }] },
+      {
+        type: 'media-collection',
+        collectionId: 'collection-1',
+        presentation: 'carousel',
+        children: [{ text: '' }],
+      },
+      { type: 'paragraph', children: [{ text: 'After media' }] },
+    ],
+    mediaItems: [
+      {
+        id: 'inline-image',
+        inlineCollectionId: 'collection-1',
+        type: 'image/png',
+        signedUrl: 'https://test.com/inline.png',
+      },
+    ],
+  };
+  await render(<StoryMap config={{ ...CONFIG, chapters: [chapter] }} />);
+
+  const section = screen.getByRole('region', {
+    name: 'Chapter: Inline media chapter',
+  });
+  const before = within(section).getByText('Before media');
+  const after = within(section).getByText('After media');
+  const image = within(section).getByRole('img', { name: 'image media' });
+  expect(within(section).getAllByTestId('carousel-viewport')).toHaveLength(1);
+  expect(
+    before.compareDocumentPosition(image) & Node.DOCUMENT_POSITION_FOLLOWING
+  ).toBeTruthy();
+  expect(
+    image.compareDocumentPosition(after) & Node.DOCUMENT_POSITION_FOLLOWING
+  ).toBeTruthy();
+});
+
+test.each([
+  { presentation: 'gallery', count: 0, expected: null },
+  { presentation: 'gallery', count: 1, expected: 'carousel-viewport' },
+  { presentation: 'gallery', count: 2, expected: 'gallery-media-grid' },
+  { presentation: undefined, count: 2, expected: 'carousel-viewport' },
+])(
+  'StoryMap: inline collection with $count items and $presentation preference uses $expected',
+  async ({ presentation, count, expected }) => {
+    const collection = {
+      type: 'media-collection',
+      collectionId: 'group',
+      presentation,
+      children: [{ text: '' }],
+    };
+    const chapter = {
+      id: 'inline-gallery',
+      title: 'Inline gallery',
+      description: [collection],
+      mediaItems: Array.from({ length: count }, (_, index) => ({
+        id: `image-${index}`,
+        inlineCollectionId: 'group',
+        type: 'image/png',
+        signedUrl: `https://test.com/image-${index}.png`,
+      })),
+    };
+    await render(<StoryMap config={{ ...CONFIG, chapters: [chapter] }} />);
+
+    const section = screen.getByRole('region', {
+      name: 'Chapter: Inline gallery',
+    });
+    for (const testId of ['carousel-viewport', 'gallery-media-grid']) {
+      expect(within(section).queryAllByTestId(testId)).toHaveLength(
+        testId === expected ? 1 : 0
+      );
+    }
+    expect(collection.presentation).toBe(presentation);
+  }
+);
+
 test('StoryMap: passes only the theme id needed by custom chapter components', async () => {
   const ChapterComponent = jest.fn(() => null);
   await render(

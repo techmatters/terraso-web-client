@@ -47,6 +47,10 @@ import {
   useStoryMapConfigDataContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
+import {
+  chapterHeaderMediaItems,
+  replaceChapterHeaderMediaItems,
+} from 'terraso-web-client/storyMap/storyMapInlineMedia';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const ConfigButton = withProps(IconButton, {
@@ -176,7 +180,13 @@ const ChapterConfig = props => {
 };
 
 const ChapterForm = props => {
-  const { record, onFieldChange, onFieldBlur } = props;
+  const {
+    record,
+    onFieldChange,
+    onFieldBlur,
+    onCollectionChange,
+    onHeaderMediaChange,
+  } = props;
   const { t } = useTranslation();
   const { setConfig, init } = useStoryMapConfigActionsContext();
   const [isNew, setIsNew] = useState(false);
@@ -274,10 +284,18 @@ const ChapterForm = props => {
           <EditableMedia
             onPresentationChange={onFieldChange('mediaPresentation')}
             presentation={record.mediaPresentation || 'carousel'}
-            value={record.mediaItems}
-            onChange={onFieldChange('mediaItems')}
+            value={chapterHeaderMediaItems(record)}
+            onChange={
+              onHeaderMediaChange ||
+              (items =>
+                onFieldChange('mediaItems')(
+                  replaceChapterHeaderMediaItems(record, items)
+                ))
+            }
           />
           <EditableRichText
+            chapter={record}
+            onCollectionChange={onCollectionChange}
             label={t('storyMap.form_chapter_description_label')}
             placeholder={t('storyMap.form_chapter_description_placeholder')}
             value={record.description}

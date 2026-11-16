@@ -57,6 +57,7 @@ import {
   GalleryPresentation,
 } from 'terraso-web-client/storyMap/components/StoryMapMedia';
 import {
+  isGalleryPresentation,
   MAX_CHAPTER_MEDIA_ITEMS,
   getMediaLabel as mediaLabel,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
@@ -173,7 +174,7 @@ const ImageAltTextBadge = ({ hasAltText, label, onClick }) => (
   </Tooltip>
 );
 
-const EmptyMediaPlaceholder = ({ onUpload }) => {
+const EmptyMediaPlaceholder = ({ onUpload, collectionAction }) => {
   const { t } = useTranslation();
 
   return (
@@ -191,9 +192,21 @@ const EmptyMediaPlaceholder = ({ onUpload }) => {
       <Typography variant="caption" sx={{ textAlign: 'center' }}>
         {t('storyMap.form_media_placeholder')}
       </Typography>
-      <Button variant="outlined" onClick={onUpload}>
-        {t('storyMap.form_media_upload')}
-      </Button>
+      {collectionAction ? (
+        <Stack
+          direction="row"
+          sx={{ flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}
+        >
+          {collectionAction(false)}
+          <Button variant="outlined" onClick={onUpload}>
+            {t('storyMap.form_media_upload')}
+          </Button>
+        </Stack>
+      ) : (
+        <Button variant="outlined" onClick={onUpload}>
+          {t('storyMap.form_media_upload')}
+        </Button>
+      )}
     </Stack>
   );
 };
@@ -461,6 +474,8 @@ const EditableMedia = ({
   onPresentationChange,
   presentation = 'carousel',
   value,
+  maxItems = MAX_CHAPTER_MEDIA_ITEMS,
+  collectionAction,
 }) => {
   useTranslation();
   const { config } = useStoryMapConfigDataContext();
@@ -469,8 +484,9 @@ const EditableMedia = ({
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const mediaItems = value || [];
-  const canAddMedia = mediaItems.length < MAX_CHAPTER_MEDIA_ITEMS;
+  const canAddMedia = mediaItems.length < maxItems;
   const hasMultipleItems = mediaItems.length > 1;
+  const isGallery = isGalleryPresentation(presentation, mediaItems.length);
   const carouselThemeStyles = useMemo(
     () => getStoryMapThemeCssVariables(config),
     [config]
@@ -479,10 +495,7 @@ const EditableMedia = ({
     () => getResolvedStoryMapTheme(config),
     [config]
   );
-  const Presentation =
-    hasMultipleItems && presentation === 'gallery'
-      ? GalleryPresentation
-      : CarouselPresentation;
+  const Presentation = isGallery ? GalleryPresentation : CarouselPresentation;
 
   const updateImage = (crop, altText) => {
     onChange(
@@ -547,29 +560,31 @@ const EditableMedia = ({
         />
       )}
       {!mediaItems.length && (
-        <EmptyMediaPlaceholder onUpload={() => setOpen(true)} />
+        <EmptyMediaPlaceholder
+          collectionAction={collectionAction}
+          onUpload={() => setOpen(true)}
+        />
       )}
       {mediaItems.length > 0 && (
         <Stack spacing={1}>
           <Presentation
             currentIndex={selectedIndex}
             headerAction={
-              <AddMediaButton
-                compact
-                disabled={!canAddMedia}
-                onClick={() => setOpen(true)}
-              />
+              <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
+                {collectionAction?.(true)}
+                <AddMediaButton
+                  compact
+                  disabled={!canAddMedia}
+                  onClick={() => setOpen(true)}
+                />
+              </Stack>
             }
             items={mediaItems.map(media => ({
               ...media,
               url: media.url || getMediaFile(media.contentId),
             }))}
             onCurrentIndexChange={setSelectedIndex}
-            onItemsReorder={
-              hasMultipleItems && presentation === 'gallery'
-                ? reorderMediaAtIndex
-                : undefined
-            }
+            onItemsReorder={isGallery ? reorderMediaAtIndex : undefined}
             presentationAction={
               hasMultipleItems && (
                 <ToggleButtonGroup

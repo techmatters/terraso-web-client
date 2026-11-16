@@ -20,6 +20,9 @@ import i18n from 'i18next';
 export const MEDIA_ASPECT_RATIO = 16 / 9;
 export const MAX_CHAPTER_MEDIA_ITEMS = 6;
 
+export const isGalleryPresentation = (presentation, itemCount) =>
+  presentation === 'gallery' && itemCount > 1;
+
 export const calculateMediaFitScale = ({ naturalHeight, naturalWidth }) => {
   if (!naturalHeight || !naturalWidth) {
     return 1;

@@ -87,6 +87,71 @@ test.each([addStoryMap, updateStoryMap])(
   }
 );
 
+test('saves an inline collection with its referenced media file', async () => {
+  const config = {
+    chapters: [
+      {
+        id: 'chapter-1',
+        description: [
+          {
+            type: 'media-collection',
+            collectionId: 'group-1',
+            presentation: 'carousel',
+            children: [{ text: '' }],
+          },
+        ],
+        mediaItems: [
+          {
+            id: 'image-1',
+            inlineCollectionId: 'group-1',
+            contentId: 'upload-1',
+            type: 'image/jpeg',
+          },
+        ],
+      },
+    ],
+  };
+  api.request.mockClear();
+  api.request.mockResolvedValue({ configuration: JSON.stringify(config) });
+  const file = new File(['image'], 'image.jpg', { type: 'image/jpeg' });
+  await updateStoryMap({
+    storyMap: { id: 'story-1', config, publish: false },
+    files: { 'upload-1': { file } },
+  });
+
+  const body = api.request.mock.calls[0][0].body;
+  expect(JSON.parse(body.get('configuration'))).toEqual({
+    chapters: [{ ...config.chapters[0], mediaPresentation: 'carousel' }],
+  });
+  expect(body.get('files').name).toBe('upload-1');
+});
+
+test.each([addStoryMap, updateStoryMap])(
+  'publishing preserves inline media even if its collection block is missing',
+  async save => {
+    const orphan = {
+      type: 'image/jpeg',
+      contentId: 'upload-1',
+      inlineCollectionId: 'missing',
+    };
+    const config = { chapters: [{ description: [], mediaItems: [orphan] }] };
+    const file = new File(['image'], 'image.jpg', { type: 'image/jpeg' });
+    api.request.mockClear();
+    api.request.mockResolvedValue({});
+
+    await save({
+      storyMap: { id: 'story-1', config, publish: true },
+      files: { 'upload-1': { file } },
+    });
+
+    const body = api.request.mock.calls[0][0].body;
+    expect(
+      JSON.parse(body.get('configuration')).chapters[0].mediaItems
+    ).toEqual([orphan]);
+    expect(body.getAll('files').map(entry => entry.name)).toEqual(['upload-1']);
+  }
+);
+
 test('saving ordered media preserves metadata and uses backend-resolved media on reload', async () => {
   const image = {
     id: 'image-1',

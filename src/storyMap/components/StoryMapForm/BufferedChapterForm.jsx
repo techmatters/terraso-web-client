@@ -15,10 +15,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import { useCallback } from 'react';
+
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
+import {
+  useStoryMapBufferedChapterActionsContext,
+  useStoryMapConfigActionsContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import useBufferedChapterFields, {
   BUFFERED_FIELD_COMMIT_STRATEGIES,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
+import {
+  collectInlineCollectionIds,
+  replaceChapterHeaderMediaItems,
+  replaceInlineCollectionItems,
+} from 'terraso-web-client/storyMap/storyMapInlineMedia';
 
 const TEXT_COMMIT_DEBOUNCE = 500;
 const BUFFERED_CHAPTER_FIELDS = {
@@ -36,17 +47,68 @@ const BUFFERED_CHAPTER_FIELDS = {
 };
 
 const BufferedChapterForm = ({ record: persistedChapter }) => {
+  const { setConfig } = useStoryMapConfigActionsContext();
+  const { flushBufferedChapterEdits } =
+    useStoryMapBufferedChapterActionsContext();
   const { chapter, getFieldBlurHandler, getFieldChangeHandler } =
     useBufferedChapterFields({
       chapter: persistedChapter,
       bufferedFields: BUFFERED_CHAPTER_FIELDS,
     });
 
+  const onCollectionChange = useCallback(
+    (collectionId, items) => {
+      flushBufferedChapterEdits();
+      setConfig(config => ({
+        ...config,
+        chapters: config.chapters.map(currentChapter =>
+          currentChapter.id === persistedChapter.id &&
+          collectInlineCollectionIds(currentChapter.description).has(
+            collectionId
+          )
+            ? {
+                ...currentChapter,
+                mediaItems: replaceInlineCollectionItems(
+                  currentChapter,
+                  collectionId,
+                  items
+                ),
+              }
+            : currentChapter
+        ),
+      }));
+    },
+    [flushBufferedChapterEdits, persistedChapter.id, setConfig]
+  );
+
+  const onHeaderMediaChange = useCallback(
+    items => {
+      flushBufferedChapterEdits();
+      setConfig(config => ({
+        ...config,
+        chapters: config.chapters.map(currentChapter =>
+          currentChapter.id === persistedChapter.id
+            ? {
+                ...currentChapter,
+                mediaItems: replaceChapterHeaderMediaItems(
+                  currentChapter,
+                  items
+                ),
+              }
+            : currentChapter
+        ),
+      }));
+    },
+    [flushBufferedChapterEdits, persistedChapter.id, setConfig]
+  );
+
   return (
     <ChapterForm
       record={chapter}
       onFieldChange={getFieldChangeHandler}
       onFieldBlur={getFieldBlurHandler}
+      onCollectionChange={onCollectionChange}
+      onHeaderMediaChange={onHeaderMediaChange}
     />
   );
 };

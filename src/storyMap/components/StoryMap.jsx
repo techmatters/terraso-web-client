@@ -28,6 +28,10 @@ import {
   ALIGNMENTS,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
+import {
+  chapterHeaderMediaItems,
+  inlineCollectionItems,
+} from 'terraso-web-client/storyMap/storyMapInlineMedia';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
 import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
@@ -42,6 +46,7 @@ import {
   GalleryPresentation,
 } from 'terraso-web-client/storyMap/components/StoryMapMedia';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
+import { isGalleryPresentation } from 'terraso-web-client/storyMap/storyMapMediaUtils';
 import {
   getStoryMapThemeCssVariables,
   getStoryMapThemeOption,
@@ -52,13 +57,57 @@ import theme from 'terraso-web-client/theme';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
+const isInlineMediaElement = element => element.type === 'media-collection';
+
+const ChapterDescription = ({ record, active, themeId }) => {
+  const renderInlineMedia = useCallback(
+    ({ attributes, children, element }) => {
+      if (!isInlineMediaElement(element)) {
+        return null;
+      }
+      const items = inlineCollectionItems(record, element.collectionId);
+      const InlinePresentation = isGalleryPresentation(
+        element.presentation,
+        items.length
+      )
+        ? GalleryPresentation
+        : CarouselPresentation;
+      return (
+        <Box {...attributes} contentEditable={false}>
+          {children}
+          {items.length > 0 && (
+            <InlinePresentation
+              items={items}
+              active={active}
+              theme={getStoryMapThemeOption(themeId)}
+            />
+          )}
+        </Box>
+      );
+    },
+    [active, record, themeId]
+  );
+
+  return (
+    <RichTextEditor
+      value={record.description}
+      editable={false}
+      isCustomVoidElement={isInlineMediaElement}
+      renderCustomElement={renderInlineMedia}
+    />
+  );
+};
+
 const Chapter = ({ record, active, themeId }) => {
   const { t } = useTranslation();
-  const { mediaItems, mediaPresentation } = normalizeChapterMedia(record);
-  const Presentation =
-    mediaItems.length > 1 && mediaPresentation === 'gallery'
-      ? GalleryPresentation
-      : CarouselPresentation;
+  const { mediaPresentation } = normalizeChapterMedia(record);
+  const mediaItems = chapterHeaderMediaItems(record);
+  const Presentation = isGalleryPresentation(
+    mediaPresentation,
+    mediaItems.length
+  )
+    ? GalleryPresentation
+    : CarouselPresentation;
   const className = [
     'step-container',
     ALIGNMENTS[record.alignment] || 'centered',
@@ -94,7 +143,11 @@ const Chapter = ({ record, active, themeId }) => {
           />
         )}
         {record.description && (
-          <RichTextEditor value={record.description} editable={false} />
+          <ChapterDescription
+            record={record}
+            active={active}
+            themeId={themeId}
+          />
         )}
       </Box>
     </Box>

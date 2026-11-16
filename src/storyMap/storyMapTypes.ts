@@ -64,6 +64,8 @@ export type ChapterAlignment = 'left' | 'right' | 'center';
 export type MapBounds = [number, number, number, number];
 
 export type ChapterMedia = {
+  /** Matches a media-collection node's collectionId; absent for header media. */
+  inlineCollectionId?: string | null;
   id?: string;
   contentId?: string;
   filename?: string;
