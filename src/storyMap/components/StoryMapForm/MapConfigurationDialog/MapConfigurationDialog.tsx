@@ -54,6 +54,8 @@ import {
   StoryMapConfig,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 
+import { MAPBOX_PROJECTION_DEFAULT } from 'terraso-web-client/config';
+
 const BearingIcon = () => {
   const { t } = useTranslation();
   return (
@@ -268,7 +270,8 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const getFraming = useMemo(
     () =>
       makeStoryMapFraming({
-        projection: config.projection,
+        // Story map configs usually omit projection; the Map defaults to globe
+        projection: config.projection ?? MAPBOX_PROJECTION_DEFAULT,
         alignment: chapterAlignment,
       }),
     [config.projection, chapterAlignment]
