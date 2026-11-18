@@ -1272,7 +1272,7 @@ test('StoryMapForm: Add audio media', async () => {
     Object.keys(saveCall[1])[0]
   );
 });
-test('StoryMapForm: a first image upload shows full-image fill without saving synthetic crop settings', async () => {
+test('StoryMapForm: a first image upload shows the full image without saving synthetic crop settings', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
   await changeChaper({
     title: 'Chapter 2',
@@ -1281,20 +1281,21 @@ test('StoryMapForm: a first image upload shows full-image fill without saving sy
     }),
   });
   const chapter = screen.getByRole('region', { name: 'Chapter: Chapter 2' });
-  expect(within(chapter).getByTestId('carousel-viewport')).toHaveStyle({
-    'aspect-ratio': '16/9',
+  const image = within(chapter).getByRole('img', { name: 'image media' });
+  expect(within(chapter).getByTestId('carousel-viewport')).not.toHaveStyle({
+    aspectRatio: '16 / 9',
   });
-  expect(within(chapter).getByTestId('image-fit-preview')).toBeInTheDocument();
-  expect(within(chapter).getByRole('img', { name: 'image media' })).toHaveStyle(
-    { objectFit: 'contain' }
-  );
+  expect(image).toHaveStyle({ width: '100%', maxHeight: 'none' });
+  expect(image.closest('[data-cropped-media-preview]')).toBeNull();
   await expectSave();
   const savedImage = onSaveDraft.mock.calls.at(-1)[0].chapters[1].mediaItems[0];
   expect(savedImage).not.toHaveProperty('crop');
   expect(savedImage.contentId).toEqual(
     Object.keys(onSaveDraft.mock.calls.at(-1)[1])[0]
   );
-  expect(within(chapter).getByTestId('image-fit-preview')).toBeInTheDocument();
+  expect(
+    within(chapter).getByRole('img', { name: 'image media' })
+  ).toBeInTheDocument();
 });
 
 test('StoryMapForm: Show preview', async () => {
