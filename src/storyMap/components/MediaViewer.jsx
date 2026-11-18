@@ -21,6 +21,7 @@ import { Box, Dialog, IconButton, Tooltip } from '@mui/material';
 
 import StoryMapMediaItem from 'terraso-web-client/storyMap/components/StoryMapMediaItem';
 import {
+  getMediaKind,
   getMediaSource,
   getMediaLabel as mediaLabel,
 } from 'terraso-web-client/storyMap/storyMapMediaUtils';
@@ -60,29 +61,35 @@ const MediaViewer = ({ item, onClose, theme }) => (
         <Box
           data-testid="gallery-media-viewer-stage"
           sx={{
-            alignItems: 'center',
+            alignItems:
+              item && getMediaKind(item) === 'image' ? 'flex-start' : 'center',
             bgcolor: 'var(--story-theme-background)',
             display: 'flex',
             justifyContent: 'center',
             maxHeight: 'calc(100dvh - 32px)',
             minHeight: 0,
-            overflow: 'hidden',
+            overflowX: 'hidden',
+            overflowY: 'auto',
             width: '100%',
             '& > img, & > iframe': {
               height: 'auto !important',
-              maxHeight: '100% !important',
               maxWidth: '100%',
               objectFit: 'contain',
               width: '100%',
             },
-            '& > iframe': { aspectRatio: '16 / 9' },
+            '& > iframe': {
+              aspectRatio: '16 / 9',
+              maxHeight: '100% !important',
+            },
           }}
         >
           <StoryMapMediaItem
             key={getMediaSource(item)}
             item={item}
             loading="eager"
-            maxHeight="calc(100dvh - 32px)"
+            maxHeight={
+              getMediaKind(item) === 'image' ? 'none' : 'calc(100dvh - 32px)'
+            }
           />
         </Box>
         <Tooltip placement="left" title={i18n.t('storyMap.media_close_viewer')}>

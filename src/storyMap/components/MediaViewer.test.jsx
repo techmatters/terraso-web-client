@@ -19,6 +19,23 @@ import { render, screen } from 'terraso-web-client/tests/utils';
 
 import MediaViewer from 'terraso-web-client/storyMap/components/MediaViewer';
 
+test('expanded image allows scrolling without a height constraint', async () => {
+  await render(
+    <MediaViewer
+      item={{
+        type: 'image/jpeg',
+        url: 'https://test.com/tall.jpg',
+        altText: 'Tall image',
+      }}
+      onClose={jest.fn()}
+    />
+  );
+  const stage = screen.getByTestId('gallery-media-viewer-stage');
+  const image = screen.getByRole('img', { name: 'Tall image' });
+  expect(getComputedStyle(stage).overflowY).toBe('auto');
+  expect(getComputedStyle(image).maxHeight).toBe('none');
+});
+
 test('expanded video has controls and is constrained to the viewport', async () => {
   await render(
     <MediaViewer
