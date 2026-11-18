@@ -43,7 +43,7 @@ type FramingOptions = {
 
 export const STORY_MAP_FRAMING: FramingOptions = {
   // Beyond this zoom the globe looks like a flat map. Tune with visual QA.
-  minZoom: 3.75,
+  minZoom: 4.75,
   // Assume the story map viewer is at least this size
   referenceWidth: 1200,
   referenceHeight: 800,
