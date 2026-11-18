@@ -25,10 +25,11 @@ import {
 } from '@mui/material';
 
 import {
+  generateStoryMapUrl,
   getStoryMapImage,
+  getStoryMapImageAlt,
   STORY_MAP_FALLBACK_IMAGE,
-} from 'terraso-web-client/storyMap/components/storyMapHomeListItemUtils';
-import { generateStoryMapUrl } from 'terraso-web-client/storyMap/storyMapUtils';
+} from 'terraso-web-client/storyMap/storyMapUtils';
 
 const STORY_MAP_DESCRIPTION_LINE_CLAMP = 4;
 
@@ -81,9 +82,6 @@ const getFirstChapterDescriptionPreview = chapters => {
 
 const getStoryMapTitle = storyMap => storyMap.config?.title || storyMap.title;
 
-const getStoryMapImageAlt = storyMap =>
-  storyMap.config?.featuredImage?.description || getStoryMapTitle(storyMap);
-
 const getStoryMapDescription = storyMap => {
   const description = toCleanText(storyMap.config?.description);
 
@@ -124,7 +122,7 @@ const StoryMapGalleryCard = ({ storyMap }) => {
         <CardMedia
           component="img"
           image={getStoryMapImage(storyMap.config)}
-          alt={getStoryMapImageAlt(storyMap)}
+          alt={getStoryMapImageAlt(storyMap.config, getStoryMapTitle(storyMap))}
           onError={handleImageError}
           sx={{ height: 190 }}
         />

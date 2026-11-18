@@ -30,6 +30,10 @@ import {
   useStoryMapBufferedChapterActionsContext,
   useStoryMapConfigActionsContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  collectInlineCollectionIds,
+  reconcileChapterDescription,
+} from 'terraso-web-client/storyMap/storyMapInlineMedia';
 
 export const BUFFERED_FIELD_COMMIT_STRATEGIES = {
   DEBOUNCED: 'debounced',
@@ -53,7 +57,15 @@ const buildChapterConfigUpdater = (chapterId, nextChapterFields) => config => ({
   ...config,
   chapters: config.chapters.map(configChapter =>
     configChapter.id === chapterId
-      ? { ...configChapter, ...nextChapterFields }
+      ? {
+          ...(Object.hasOwn(nextChapterFields, 'description')
+            ? reconcileChapterDescription(
+                configChapter,
+                nextChapterFields.description
+              )
+            : configChapter),
+          ...nextChapterFields,
+        }
       : configChapter
   ),
 });
@@ -463,10 +475,19 @@ const useBufferedChapterFields = props => {
 
       updateBufferedFieldValues(nextBufferedFieldValues);
 
+      const nextCollectionIds =
+        fieldName === 'description' ? collectInlineCollectionIds(value) : null;
+      const removedCollection =
+        nextCollectionIds &&
+        [
+          ...collectInlineCollectionIds(currentBufferedFieldValues.description),
+        ].some(id => !nextCollectionIds.has(id));
       scheduleBufferedFieldPersist(
         fieldName,
         value,
-        getBufferedFieldPersistOptions(bufferedFieldConfig)
+        removedCollection
+          ? { defer: false }
+          : getBufferedFieldPersistOptions(bufferedFieldConfig)
       );
     },
     [

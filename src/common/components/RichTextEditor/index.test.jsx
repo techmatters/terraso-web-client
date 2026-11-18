@@ -23,7 +23,8 @@ import {
   waitFor,
   within,
 } from 'terraso-web-client/tests/utils';
-import { createEditor, Editor } from 'slate';
+import { createEditor, Editor, Transforms } from 'slate';
+import { useSlate } from 'slate-react';
 
 import RichTextEditor, {
   getCurrentBlockType,
@@ -270,6 +271,121 @@ test('RichTextEditor: read-only link click opens link', async () => {
     '_blank',
     'noopener,noreferrer'
   );
+});
+
+const renderCustomElement = ({ attributes, children, element }) =>
+  element.type === 'custom-block' ? (
+    <div {...attributes} data-testid="custom-block">
+      <span contentEditable={false}>Custom block</span>
+      {children}
+    </div>
+  ) : null;
+
+const InsertCustomBlock = () => {
+  const editor = useSlate();
+  return (
+    <button
+      type="button"
+      onMouseDown={event => {
+        event.preventDefault();
+        Transforms.select(editor, { path: [0, 0], offset: 6 });
+        Transforms.insertNodes(editor, {
+          type: 'custom-block',
+          children: [{ text: '' }],
+        });
+      }}
+    >
+      Insert custom block
+    </button>
+  );
+};
+
+const CheckCustomVoid = ({ onCheck }) => {
+  const editor = useSlate();
+  return (
+    <button type="button" onClick={() => onCheck(editor)}>
+      Check custom void
+    </button>
+  );
+};
+
+test('RichTextEditor: custom void blocks render alongside regular elements', async () => {
+  Editor.nodes.mockImplementation(actualSlateEditor.nodes);
+  const value = [
+    { type: 'paragraph', children: [{ text: 'Before' }] },
+    { type: 'custom-block', children: [{ text: '' }] },
+    { type: 'heading-one', children: [{ text: 'After' }] },
+  ];
+  const onCheck = jest.fn();
+  const { rerender } = await render(
+    <RichTextEditor
+      value={value}
+      renderCustomElement={renderCustomElement}
+      isCustomVoidElement={element => element.type === 'custom-block'}
+      customToolbar={<CheckCustomVoid onCheck={onCheck} />}
+    />
+  );
+
+  const block = screen.getByTestId('custom-block');
+  expect(block).toHaveAttribute('data-slate-node', 'element');
+  expect(block).toHaveAttribute('data-slate-void', 'true');
+  expect(block.querySelector('[data-slate-node="text"]')).toBeInTheDocument();
+  expect(screen.getByText('Before').closest('p')).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: 'After', level: 4 })
+  ).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Check custom void' }));
+  const editor = onCheck.mock.lastCall[0];
+  expect(editor.isVoid(value[1])).toBe(true);
+
+  await act(async () => {
+    rerender(
+      <RichTextEditor
+        value={value}
+        renderCustomElement={renderCustomElement}
+        isCustomVoidElement={() => false}
+        customToolbar={<CheckCustomVoid onCheck={onCheck} />}
+      />
+    );
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Check custom void' }));
+  expect(onCheck.mock.lastCall[0]).toBe(editor);
+  expect(editor.isVoid(value[1])).toBe(false);
+});
+
+test('RichTextEditor: custom toolbar inserts a void block at the cursor', async () => {
+  Editor.nodes.mockImplementation(actualSlateEditor.nodes);
+  const onChange = jest.fn();
+  await render(
+    <RichTextEditor
+      initialFocused
+      value={[{ type: 'paragraph', children: [{ text: 'BeforeAfter' }] }]}
+      onChange={onChange}
+      renderCustomElement={renderCustomElement}
+      isCustomVoidElement={element => element.type === 'custom-block'}
+      customToolbar={<InsertCustomBlock />}
+    />
+  );
+
+  const toolbar = screen.getByRole('toolbar');
+  const button = within(toolbar).getByRole('button', {
+    name: 'Insert custom block',
+  });
+  await act(async () => {
+    fireEvent.mouseDown(button);
+  });
+
+  expect(screen.getByText('Before').closest('p')).toBeInTheDocument();
+  expect(screen.getByTestId('custom-block')).toHaveAttribute(
+    'data-slate-void',
+    'true'
+  );
+  expect(screen.getByText('After').closest('p')).toBeInTheDocument();
+  expect(onChange).toHaveBeenLastCalledWith([
+    { type: 'paragraph', children: [{ text: 'Before' }] },
+    { type: 'custom-block', children: [{ text: '' }] },
+    { type: 'paragraph', children: [{ text: 'After' }] },
+  ]);
 });
 
 test('RichTextEditor: selection-only operations are not content changes', () => {
