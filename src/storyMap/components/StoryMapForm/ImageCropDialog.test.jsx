@@ -74,6 +74,26 @@ const mockCropImage = (width = 640, height = 360) => {
   };
 };
 
+test('ImageCropDialog: alt-only editing preserves the stored crop without showing crop controls', async () => {
+  const crop = { position: { x: 0.9, y: 0.1 }, scale: 0.4 };
+  const onSave = jest.fn();
+  await render(
+    <ImageCropDialog
+      altOnly
+      image={{ type: 'image/jpeg', url: 'https://test.com/image.jpg', crop }}
+      onClose={jest.fn()}
+      onSave={onSave}
+    />
+  );
+  expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+  expect(screen.queryByRole('application')).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole('textbox'), {
+    target: { value: '  A description  ' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+  expect(onSave).toHaveBeenCalledWith(crop, 'A description');
+});
+
 test('ImageCropDialog: the real crop canvas has a localized accessible name at every zoom level', async () => {
   const { load } = mockCropImage();
   const previousLanguage = i18n.language;

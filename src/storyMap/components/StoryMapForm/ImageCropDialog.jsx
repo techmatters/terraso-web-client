@@ -43,7 +43,7 @@ const CROP_WIDTH = 640;
 const CROP_HEIGHT = CROP_WIDTH / CAROUSEL_ASPECT_RATIO;
 const CROP_BORDER = 20;
 
-const ImageCropDialog = ({ image, onClose, onSave }) => {
+const ImageCropDialog = ({ altOnly = false, image, onClose, onSave }) => {
   const { getMediaFile } = useStoryMapMediaContext();
   const { t } = useTranslation();
   const [altText, setAltText] = useState(image.altText || '');
@@ -92,98 +92,110 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
       maxWidth="md"
       open
       onClose={onClose}
-      slotProps={{ paper: { 'aria-label': t('storyMap.media_crop') } }}
+      slotProps={{
+        paper: {
+          'aria-label': t(
+            altOnly ? 'storyMap.media_edit_alt' : 'storyMap.media_crop'
+          ),
+        },
+      }}
     >
       <DialogContent>
         <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
-          <Box
-            ref={localizeCropSurface}
-            onMouseDownCapture={blockFixedPanning}
-            onTouchStartCapture={blockFixedPanning}
-            onKeyDownCapture={blockFixedPanning}
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              height: CROP_HEIGHT + 2 * CROP_BORDER,
-              justifyContent: 'center',
-              maxWidth: '100%',
-              overflow: 'hidden',
-              width: CROP_WIDTH + 2 * CROP_BORDER,
-            }}
-          >
-            <img
-              alt={t('storyMap.media_crop_source')}
-              onLoad={({ currentTarget }) => {
-                const nextImageSize = {
-                  naturalWidth: currentTarget.naturalWidth,
-                  naturalHeight: currentTarget.naturalHeight,
-                };
-                const nextFitScale = calculateFitScale(nextImageSize);
-                setImageSize(nextImageSize);
-                setCrop(currentCrop =>
-                  currentCrop
-                    ? boundCrop(
-                        {
-                          ...currentCrop,
-                          scale: Math.max(currentCrop.scale, nextFitScale),
-                        },
-                        nextImageSize
-                      )
-                    : currentCrop
-                );
-              }}
-              src={imageSrc}
-              style={{ display: 'none' }}
-            />
-            <AvatarEditor
-              style={{
-                maxWidth: '100%',
-                height: 'auto',
-                ...(!canPan ? { cursor: 'default' } : {}),
-              }}
-              image={imageSrc}
-              width={CROP_WIDTH * Math.min(1, geometry.scaledWidth)}
-              height={CROP_HEIGHT * Math.min(1, geometry.scaledHeight)}
-              border={CROP_BORDER}
-              color={[255, 255, 255, 0.6]}
-              position={previewCrop.position}
-              // The visible crop surface covers the image at sub-1 zoom, so
-              // the library can enforce its normal bounds on both axes.
-              scale={Math.max(1, previewCrop.scale)}
-              onPositionChange={position =>
-                setCrop({ ...previewCrop, position })
-              }
-            />
-          </Box>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ alignItems: 'center', width: '100%' }}
-          >
-            <Typography id="carousel-crop-zoom-label">
-              {t('storyMap.media_zoom')}
-            </Typography>
-            <Slider
-              aria-labelledby="carousel-crop-zoom-label"
-              min={fitScale}
-              max={3}
-              step={0.1}
-              value={previewCrop.scale}
-              valueLabelDisplay="auto"
-              valueLabelFormat={scale =>
-                scale === fitScale ? t('storyMap.media_fit_image') : `${scale}x`
-              }
-              onChange={(event, scale) =>
-                setCrop(
-                  boundCrop({
-                    ...previewCrop,
-                    position: geometry.position,
-                    scale,
-                  })
-                )
-              }
-            />
-          </Stack>
+          {!altOnly && (
+            <>
+              <Box
+                ref={localizeCropSurface}
+                onMouseDownCapture={blockFixedPanning}
+                onTouchStartCapture={blockFixedPanning}
+                onKeyDownCapture={blockFixedPanning}
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  height: CROP_HEIGHT + 2 * CROP_BORDER,
+                  justifyContent: 'center',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  width: CROP_WIDTH + 2 * CROP_BORDER,
+                }}
+              >
+                <img
+                  alt={t('storyMap.media_crop_source')}
+                  onLoad={({ currentTarget }) => {
+                    const nextImageSize = {
+                      naturalWidth: currentTarget.naturalWidth,
+                      naturalHeight: currentTarget.naturalHeight,
+                    };
+                    const nextFitScale = calculateFitScale(nextImageSize);
+                    setImageSize(nextImageSize);
+                    setCrop(currentCrop =>
+                      currentCrop
+                        ? boundCrop(
+                            {
+                              ...currentCrop,
+                              scale: Math.max(currentCrop.scale, nextFitScale),
+                            },
+                            nextImageSize
+                          )
+                        : currentCrop
+                    );
+                  }}
+                  src={imageSrc}
+                  style={{ display: 'none' }}
+                />
+                <AvatarEditor
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                    ...(!canPan ? { cursor: 'default' } : {}),
+                  }}
+                  image={imageSrc}
+                  width={CROP_WIDTH * Math.min(1, geometry.scaledWidth)}
+                  height={CROP_HEIGHT * Math.min(1, geometry.scaledHeight)}
+                  border={CROP_BORDER}
+                  color={[255, 255, 255, 0.6]}
+                  position={previewCrop.position}
+                  // The visible crop surface covers the image at sub-1 zoom, so
+                  // the library can enforce its normal bounds on both axes.
+                  scale={Math.max(1, previewCrop.scale)}
+                  onPositionChange={position =>
+                    setCrop({ ...previewCrop, position })
+                  }
+                />
+              </Box>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{ alignItems: 'center', width: '100%' }}
+              >
+                <Typography id="carousel-crop-zoom-label">
+                  {t('storyMap.media_zoom')}
+                </Typography>
+                <Slider
+                  aria-labelledby="carousel-crop-zoom-label"
+                  min={fitScale}
+                  max={3}
+                  step={0.1}
+                  value={previewCrop.scale}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={scale =>
+                    scale === fitScale
+                      ? t('storyMap.media_fit_image')
+                      : `${scale}x`
+                  }
+                  onChange={(event, scale) =>
+                    setCrop(
+                      boundCrop({
+                        ...previewCrop,
+                        position: geometry.position,
+                        scale,
+                      })
+                    )
+                  }
+                />
+              </Stack>
+            </>
+          )}
           <OutlinedInput
             fullWidth
             inputProps={{
@@ -202,7 +214,12 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
         <Button onClick={onClose}>{t('storyMap.media_cancel')}</Button>
         <Button
           variant="contained"
-          onClick={() => onSave(crop ? boundCrop(crop) : crop, altText.trim())}
+          onClick={() =>
+            onSave(
+              altOnly ? image.crop : crop ? boundCrop(crop) : crop,
+              altText.trim()
+            )
+          }
         >
           {t('storyMap.media_done')}
         </Button>
