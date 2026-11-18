@@ -28,10 +28,10 @@ import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/inde
 
 import { TILESET_STATUS_READY } from 'terraso-web-client/sharedData/sharedDataConstants';
 import {
-  adaptStoryMapConfigForSingleMedia,
   compareStoryMapsByUpdatedAt,
   extractStoryMap,
   getStoryMapConfig,
+  getStoryMapMediaContentIds,
   normalizeStoryMapConfig,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -98,7 +98,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),
-      config: adaptStoryMapConfigForSingleMedia(
+      config: normalizeStoryMapConfig(
         storyMap.publishedConfiguration
           ? JSON.parse(storyMap.publishedConfiguration)
           : JSON.parse(storyMap.configuration)
@@ -130,9 +130,7 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),
-      config: adaptStoryMapConfigForSingleMedia(
-        JSON.parse(storyMap.configuration)
-      ),
+      config: normalizeStoryMapConfig(JSON.parse(storyMap.configuration)),
       memberships: extractMemberships(storyMap.membershipList),
       accountMembership: extractAccountMembership(storyMap.membershipList),
     }));
@@ -140,6 +138,15 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
 
 const generateValidTitle = inputTitle =>
   _.isEmpty(inputTitle) ? i18n.t('storyMap.form_untitled') : inputTitle.trim();
+
+const appendReferencedMediaFiles = (form, config, files) => {
+  const referencedIds = getStoryMapMediaContentIds(config);
+  Object.entries(files).forEach(([fileId, { file }]) => {
+    if (referencedIds.has(fileId)) {
+      form.append('files', file, fileId);
+    }
+  });
+};
 
 export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';
@@ -152,10 +159,7 @@ export const addStoryMap = async ({ storyMap, files }) => {
     'configuration',
     JSON.stringify(normalizeStoryMapConfig(storyMap.config))
   );
-  Object.keys(files).forEach((fileId, index) => {
-    const file = files[fileId].file;
-    storyMapForm.append('files', file, fileId);
-  });
+  appendReferencedMediaFiles(storyMapForm, storyMap.config, files);
 
   const jsonResponse = await terrasoApi.request({ path, body: storyMapForm });
 
@@ -183,10 +187,7 @@ export const updateStoryMap = async ({ storyMap, files }) => {
       JSON.stringify(normalizeStoryMapConfig(storyMap.config))
     );
   }
-  Object.keys(files).forEach((fileId, index) => {
-    const file = files[fileId].file;
-    storyMapForm.append('files', file, fileId);
-  });
+  appendReferencedMediaFiles(storyMapForm, storyMap.config, files);
 
   const jsonResponse = await terrasoApi.request({ path, body: storyMapForm });
 

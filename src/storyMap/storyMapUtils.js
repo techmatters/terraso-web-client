@@ -49,6 +49,16 @@ export const normalizeChapterMedia = chapter => {
   };
 };
 
+export const getStoryMapMediaContentIds = config =>
+  new Set(
+    [
+      config?.featuredImage?.contentId,
+      ...(config?.chapters ?? []).flatMap(chapter =>
+        normalizeChapterMedia(chapter).mediaItems.map(item => item.contentId)
+      ),
+    ].filter(Boolean)
+  );
+
 export const STORY_MAP_FALLBACK_IMAGE = '/storyMap/terraso-story-maps-img.jpg';
 
 const getStoryMapCoverMedia = config => {
@@ -84,21 +94,6 @@ export const normalizeStoryMapConfig = config =>
         ...config,
         ...(config.chapters && {
           chapters: config.chapters.map(normalizeChapterMedia),
-        }),
-      }
-    : config;
-
-// Temporary projection for single-media consumers while collection UI is introduced.
-export const adaptStoryMapConfigForSingleMedia = config =>
-  config
-    ? {
-        ...config,
-        ...(config.chapters && {
-          chapters: config.chapters.map(chapter =>
-            chapter.mediaItems == null
-              ? chapter
-              : { ...chapter, media: chapter.mediaItems[0] }
-          ),
         }),
       }
     : config;
@@ -140,7 +135,7 @@ export const parseStoryMapConfiguration = configuration => {
 };
 
 export const getStoryMapConfig = storyMap =>
-  adaptStoryMapConfigForSingleMedia(
+  normalizeStoryMapConfig(
     storyMap?.config || parseStoryMapConfiguration(storyMap?.configuration)
   );
 
