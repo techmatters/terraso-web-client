@@ -903,6 +903,15 @@
         "no_options": "No existen opciones"
     },
     "storyMap": {
+        "media_unavailable": "Contenido multimedia no disponible",
+        "media_video_unavailable": "Vista previa no disponible",
+        "media_waveform_unavailable": "Vista previa no disponible. Puedes reproducir el audio.",
+        "media_waveform_preview_unavailable": "Vista previa no disponible",
+        "media_close_viewer": "Cerrar visor multimedia",
+        "media_image_label": "imagen multimedia",
+        "media_audio_label": "audio multimedia",
+        "media_video_label": "video multimedia",
+        "media_embedded_label": "Video incrustado",
         "item_type": "Story Map",
         "not_found": "Story Map no encontrado",
         "story_maps_title": "Story Maps de {{name}}",
