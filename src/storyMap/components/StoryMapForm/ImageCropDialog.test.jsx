@@ -384,6 +384,7 @@ test.each([
             url: 'https://test.com/image.jpg',
             crop: { position: { x: -1, y: -1 }, scale: 0.8 },
           },
+          { type: 'image/jpeg', url: 'https://test.com/other.jpg' },
         ]}
       />
     );
