@@ -619,9 +619,10 @@ const EditableMedia = ({
                 canMoveLater: index < mediaItems.length - 1,
                 deleteConfirmProps,
                 label: mediaLabel(media, index),
-                onCrop: media.type.startsWith(MEDIA_TYPES.IMAGE)
-                  ? () => setCropIndex(index)
-                  : null,
+                onCrop:
+                  hasMultipleItems && media.type.startsWith(MEDIA_TYPES.IMAGE)
+                    ? () => setCropIndex(index)
+                    : null,
                 onDelete: () => removeMediaAtIndex(index),
                 onMoveEarlier: hasMultipleItems
                   ? () => moveMediaAtIndex(index, -1)
@@ -651,6 +652,7 @@ const EditableMedia = ({
       )}
       {cropIndex !== null && (
         <ImageCropDialog
+          altOnly={!hasMultipleItems}
           image={mediaItems[cropIndex]}
           onClose={() => setCropIndex(null)}
           onSave={updateImage}

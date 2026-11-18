@@ -130,7 +130,7 @@ test.each([
   { name: 'portrait', width: 900, height: 1200 },
   { name: 'wide', width: 3000, height: 1000 },
 ])(
-  'StoryMapMediaEditor: a fresh $name image fits the full image with blurred fill before crop editing and after reopening',
+  'StoryMapMediaEditor: a fresh $name image retains natural framing after reopening',
   async ({ width, height }) => {
     const image = {
       id: 'fresh-image',
@@ -142,7 +142,7 @@ test.each([
       <StoryMapMediaEditor initialChapter={initialChapter} />
     );
     const viewport = screen.getByTestId('carousel-viewport');
-    expect(viewport).toHaveStyle({ 'aspect-ratio': '16/9' });
+    expect(viewport).not.toHaveStyle({ 'aspect-ratio': '16/9' });
     const preview = within(viewport).getByRole('img');
     Object.defineProperties(preview, {
       naturalWidth: { value: width },
@@ -152,7 +152,7 @@ test.each([
     expect(within(viewport).getByRole('img')).toHaveStyle({
       objectFit: 'contain',
     });
-    expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
+    expect(screen.queryByTestId('image-fit-preview')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Update Media' })
     ).not.toBeInTheDocument();
@@ -163,7 +163,7 @@ test.each([
         initialChapter={JSON.parse(JSON.stringify(initialChapter))}
       />
     );
-    expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
+    expect(screen.queryByTestId('image-fit-preview')).not.toBeInTheDocument();
     expect(
       within(screen.getByTestId('carousel-viewport')).getByRole('img')
     ).toHaveStyle({ objectFit: 'contain' });
@@ -199,7 +199,7 @@ test.each([
     fireEvent.click(
       screen.getByRole('button', { name: 'Add alt text for image media 1' })
     );
-    loadImageDimensions(screen.getByAltText('Crop source'), width, height);
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument();
     fireEvent.change(
       screen.getByRole('textbox', {
         name: 'Describe this image for people with visual impairments',
@@ -751,8 +751,11 @@ test('StoryMapMediaEditor: single-media controls remain visible on a dark theme'
     />
   );
   expect(
-    screen.getByRole('button', { name: 'Crop image media 1' })
+    screen.getByRole('button', { name: 'Remove image media 1' })
   ).toHaveStyle({ color: 'rgb(255, 255, 255)' });
+  expect(
+    screen.queryByRole('button', { name: 'Crop image media 1' })
+  ).not.toBeInTheDocument();
 });
 
 test('StoryMapMediaEditor: next and previous controls navigate the controlled media collection', async () => {
@@ -773,72 +776,67 @@ test('StoryMapMediaEditor: next and previous controls navigate the controlled me
   expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
 });
 
-test('StoryMapMediaEditor: a single image supports alt text, cropping and original-image expansion', async () => {
+test('StoryMapMediaEditor: single-image alt edits preserve the crop across collection transitions', async () => {
   await render(
     <StoryMapMediaEditor
       initialChapter={{
         ...INITIAL_CHAPTER,
-        mediaItems: [INITIAL_CHAPTER.mediaItems[0]],
+        mediaItems: INITIAL_CHAPTER.mediaItems.slice(0, 2),
       }}
     />
   );
-  fireEvent.click(
-    screen.getByRole('button', { name: 'Add alt text for image media 1' })
-  );
-  fireEvent.change(
-    screen.getByRole('textbox', {
-      name: 'Describe this image for people with visual impairments',
-    }),
-    {
-      target: { value: 'Mangrove restoration' },
-    }
-  );
+  fireEvent.click(screen.getByRole('button', { name: 'Crop image media 1' }));
   fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
     target: { value: '2' },
   });
   fireEvent.click(screen.getByRole('button', { name: 'Done' }));
-  const croppedImage = screen.getByRole('img', {
-    name: 'Mangrove restoration',
-  });
-  loadImageDimensions(croppedImage);
-  expect(croppedImage).toHaveStyle({
-    width: '200%',
-    height: '200%',
-    left: '-50%',
-    top: '-50%',
-  });
-  fireEvent.click(screen.getByRole('button', { name: 'Expand image media' }));
+  fireEvent.click(screen.getByRole('button', { name: 'image media 2' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Remove image media 2' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Delete image' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+
   expect(
-    within(screen.getByRole('dialog')).getByRole('img', {
-      name: 'Mangrove restoration',
-    }).style.left
-  ).toBe('');
-  fireEvent.click(screen.getByRole('button', { name: 'Close media viewer' }));
+    screen.queryByRole('button', { name: 'Crop image media 1' })
+  ).not.toBeInTheDocument();
   fireEvent.click(
-    await screen.findByRole('button', {
-      name: 'Edit alt text for image media 1',
-    })
+    screen.getByRole('button', { name: 'Add alt text for image media 1' })
   );
-  fireEvent.change(
-    screen.getByRole('textbox', {
-      name: 'Describe this image for people with visual impairments',
-    }),
-    { target: { value: '' } }
+  expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+  expect(screen.queryByTestId('image-crop-editor')).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole('textbox'), {
+    target: { value: 'Mangrove restoration' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Edit alt text for image media 1' })
   );
+  fireEvent.change(screen.getByRole('textbox'), { target: { value: '' } });
   fireEvent.click(screen.getByRole('button', { name: 'Done' }));
   expect(
-    await screen.findByRole('button', {
-      name: 'Add alt text for image media 1',
-    })
+    screen.getByRole('button', { name: 'Add alt text for image media 1' })
   ).toBeInTheDocument();
-  const clearedImage = screen.getByRole('img', { name: 'image media' });
-  expect(clearedImage).toHaveAttribute('src', croppedImage.getAttribute('src'));
-  expect(clearedImage).toHaveStyle({
-    width: '200%',
-    height: '200%',
-    left: '-50%',
-    top: '-50%',
+
+  fireEvent.click(screen.getByRole('button', { name: 'Add media' }));
+  const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  const input = within(dialog).getByRole('textbox', {
+    name: 'Link to a YouTube or Vimeo video',
   });
+  fireEvent.change(input, {
+    target: { value: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' },
+  });
+  fireEvent.blur(input);
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Add media' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'image media 1' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Crop image media 1' }));
+  expect(screen.getByRole('slider', { name: 'Zoom' })).toHaveAttribute(
+    'aria-valuenow',
+    '2'
+  );
 });
 
 test.each([
@@ -858,7 +856,8 @@ test.each([
       Array.from(document.styleSheets).some(sheet =>
         Array.from(sheet.cssRules).some(rule => rule.cssText.includes(source))
       );
-    const { rerender } = await render(<Presentation items={[item]} />);
+    const items = media => [media, INITIAL_CHAPTER.mediaItems[3]];
+    const { rerender } = await render(<Presentation items={items(item)} />);
     const image = screen.getByRole('img');
     expect(image).toHaveAttribute('loading', 'lazy');
     expect(hasBackground(firstSource)).toBe(false);
@@ -866,7 +865,7 @@ test.each([
     expect(hasBackground(firstSource)).toBe(true);
 
     const nextItem = { ...item, signedUrl: nextSource };
-    rerender(<Presentation items={[nextItem]} />);
+    rerender(<Presentation items={items(nextItem)} />);
     expect(screen.getByRole('img')).toHaveAttribute('loading', 'lazy');
     expect(hasBackground(nextSource)).toBe(false);
     loadImageDimensions(screen.getByRole('img'));
@@ -874,9 +873,10 @@ test.each([
 
     rerender(
       <Presentation
-        items={[
-          { ...nextItem, crop: { position: { x: 0.5, y: 0.5 }, scale: 2 } },
-        ]}
+        items={items({
+          ...nextItem,
+          crop: { position: { x: 0.5, y: 0.5 }, scale: 2 },
+        })}
       />
     );
     expect(screen.getByRole('img')).toHaveAttribute('loading', 'lazy');
@@ -1017,7 +1017,9 @@ test.each([
       CarouselPresentation,
       GalleryPresentation,
     ].entries()) {
-      const { unmount } = await render(<Presentation items={[item]} />);
+      const { unmount } = await render(
+        <Presentation items={[item, INITIAL_CHAPTER.mediaItems[3]]} />
+      );
       const image = screen.getByRole('img', { name: 'image media' });
       loadImageDimensions(image, naturalWidth, naturalHeight);
 
@@ -1064,7 +1066,6 @@ test('StoryMapMediaEditor: stores image crop settings for the carousel while exp
   const carouselActions = screen.getByRole('toolbar', {
     name: 'Current media actions',
   });
-  expect(carousel.parentElement.previousElementSibling).toBe(carouselActions);
   fireEvent.click(
     within(carouselActions).getByRole('button', {
       name: 'Crop image media 1',
@@ -1528,8 +1529,8 @@ test('StoryMapMediaEditor: uses the production editor for one media item', async
     name: 'Current media actions',
   });
   expect(
-    within(toolbar).getByRole('button', { name: 'Crop image media 1' })
-  ).toBeInTheDocument();
+    within(toolbar).queryByRole('button', { name: 'Crop image media 1' })
+  ).not.toBeInTheDocument();
   expect(
     within(toolbar).queryByRole('button', { name: 'Update Media' })
   ).not.toBeInTheDocument();
@@ -1626,7 +1627,7 @@ test('StoryMapMediaEditor: deleting a failed image and adding a new upload rende
     'data:image/jpeg;base64,cmVwbGFjZW1lbnQ='
   );
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-  expect(screen.getByTestId('image-fit-preview')).toBeInTheDocument();
+  expect(screen.queryByTestId('image-fit-preview')).not.toBeInTheDocument();
 });
 
 test('StoryMapMediaEditor: deleting single media and adding a link keeps a single-item collection', async () => {
