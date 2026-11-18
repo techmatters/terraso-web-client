@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import i18n from 'i18next';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -33,6 +33,7 @@ import {
 } from 'terraso-web-client/storyMap/components/MediaPresentationControls';
 import MediaPreview from 'terraso-web-client/storyMap/components/MediaPreview';
 import MediaViewer from 'terraso-web-client/storyMap/components/MediaViewer';
+import StoryMapMediaItem from 'terraso-web-client/storyMap/components/StoryMapMediaItem';
 import {
   MEDIA_ASPECT_RATIO as CAROUSEL_ASPECT_RATIO,
   getMediaKind as mediaKind,
@@ -49,30 +50,65 @@ const ExpandableCarouselStage = ({
   testId,
   onExpand,
   objectFit = 'contain',
-}) => (
-  <MediaPreviewButton
-    aria-label={i18n.t('storyMap.media_expand', { label: mediaLabel(item) })}
-    data-testid={testId}
-    onClick={onExpand}
-    sx={{
-      alignItems: 'center',
-      aspectRatio: '16 / 9',
-      bgcolor:
-        mediaKind(item) === 'image'
-          ? 'var(--story-theme-background)'
-          : MEDIA_PREVIEW_BACKGROUND,
-      display: 'flex',
-      justifyContent: 'center',
-      minWidth: 0,
-    }}
-  >
-    <MediaPreview
-      aspectRatio={CAROUSEL_ASPECT_RATIO}
-      item={item}
-      objectFit={objectFit}
-    />
-  </MediaPreviewButton>
-);
+  singleItem,
+}) => {
+  const [videoAspectRatio, setVideoAspectRatio] = useState();
+  const stageRef = useRef(null);
+  const kind = mediaKind(item);
+  const naturalImage = singleItem && kind === 'image';
+  const naturalVideo = singleItem && kind === 'video';
+
+  useEffect(() => {
+    if (!naturalVideo) {
+      return;
+    }
+    const stage = stageRef.current;
+    const updateAspectRatio = event => {
+      const { videoWidth, videoHeight } = event.target;
+      if (videoWidth && videoHeight) {
+        setVideoAspectRatio(videoWidth / videoHeight);
+      }
+    };
+    stage.addEventListener('loadedmetadata', updateAspectRatio, true);
+    return () =>
+      stage.removeEventListener('loadedmetadata', updateAspectRatio, true);
+  }, [naturalVideo]);
+
+  return (
+    <Box ref={stageRef}>
+      <MediaPreviewButton
+        aria-label={i18n.t('storyMap.media_expand', {
+          label: mediaLabel(item),
+        })}
+        data-testid={testId}
+        onClick={onExpand}
+        sx={{
+          alignItems: 'center',
+          aspectRatio: naturalImage
+            ? undefined
+            : (naturalVideo && videoAspectRatio) || '16 / 9',
+          bgcolor:
+            kind === 'image'
+              ? 'var(--story-theme-background)'
+              : MEDIA_PREVIEW_BACKGROUND,
+          display: 'flex',
+          justifyContent: 'center',
+          minWidth: 0,
+        }}
+      >
+        {naturalImage ? (
+          <StoryMapMediaItem item={item} draggable={false} maxHeight="none" />
+        ) : (
+          <MediaPreview
+            aspectRatio={CAROUSEL_ASPECT_RATIO}
+            item={item}
+            objectFit={objectFit}
+          />
+        )}
+      </MediaPreviewButton>
+    </Box>
+  );
+};
 
 const CarouselPresentation = ({
   active = true,
@@ -138,8 +174,9 @@ const CarouselPresentation = ({
           )}
           <Box sx={{ position: 'relative' }}>
             <ExpandableCarouselStage
-              key={`${currentItem.id || currentItem.contentId || currentIndex}-${active}`}
+              key={`${currentItem.id || currentItem.contentId || currentIndex}-${active}-${items.length === 1}`}
               item={currentItem}
+              singleItem={items.length === 1}
               onExpand={() => {
                 pauseMediaPlayback(mediaRef.current);
                 setExpandedItem(currentItem);
