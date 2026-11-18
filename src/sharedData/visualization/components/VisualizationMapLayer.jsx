@@ -24,6 +24,7 @@ import { Box, Portal, Stack, Typography } from '@mui/material';
 import Layer from 'terraso-web-client/gis/components/Layer';
 import { useMap } from 'terraso-web-client/gis/components/Map';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
+import { toWorldShape } from 'terraso-web-client/gis/mercator';
 import { getLayerImage } from 'terraso-web-client/sharedData/visualization/visualizationMarkers';
 
 const DEFAULT_MARKER_OPACITY = 1;
@@ -48,61 +49,112 @@ export const getLayerOpacity = (type, visualizationConfig) => {
   return opacity / 100;
 };
 
-const getSourceBounds = async (map, sourceId) => {
-  const source = map.getSource(sourceId);
-  const loaded = source?.loaded();
-  if (!source) {
-    return;
-  }
+// Keep the geometry pass bounded for very large layers; bounds still use all
+// features, only the framing search is sampled.
+const MAX_SUMMARY_SHAPES = 20000;
 
-  const loadedSource = loaded
-    ? source
-    : await new Promise(resolve => {
-        map.on('sourcedata', () => {
-          const source = map.getSource(sourceId);
-          if (source.loaded()) {
-            resolve(source);
-          }
-        });
-      });
+const waitForSource = (map, sourceId) =>
+  new Promise(resolve => {
+    const finish = source => {
+      map.off('sourcedata', onSourceData);
+      map.off('remove', onRemove);
+      resolve(source);
+    };
+    const onSourceData = () => {
+      const source = map.getSource(sourceId);
+      if (source?.loaded()) {
+        finish(source);
+      }
+    };
+    const onRemove = () => finish(null);
+    map.on('sourcedata', onSourceData);
+    map.on('remove', onRemove);
+    onSourceData();
+  });
 
-  if (loadedSource.bounds) {
-    return new mapboxgl.LngLatBounds(loadedSource.bounds);
-  }
-
-  let sourceData = loadedSource._data;
+const readSourceData = async source => {
+  let sourceData = source._data;
 
   if (typeof sourceData === 'string') {
     try {
       const response = await fetch(sourceData);
       sourceData = await response.json();
     } catch {
-      return;
+      return null;
     }
   }
 
-  if (!sourceData || typeof sourceData !== 'object') {
-    return;
+  return sourceData && typeof sourceData === 'object' ? sourceData : null;
+};
+
+const summarizeGeoJson = geoJson => {
+  const features = Array.isArray(geoJson.features)
+    ? geoJson.features
+    : [geoJson];
+  const stride = Math.max(1, Math.ceil(features.length / MAX_SUMMARY_SHAPES));
+  const shapes = [];
+  let west = Infinity;
+  let south = Infinity;
+  let east = -Infinity;
+  let north = -Infinity;
+
+  features.forEach((feature, index) => {
+    let calculatedBbox;
+    try {
+      calculatedBbox = bbox(feature);
+    } catch {
+      return;
+    }
+    if (!calculatedBbox || !calculatedBbox.every(Number.isFinite)) {
+      return;
+    }
+
+    west = Math.min(west, calculatedBbox[0]);
+    south = Math.min(south, calculatedBbox[1]);
+    east = Math.max(east, calculatedBbox[2]);
+    north = Math.max(north, calculatedBbox[3]);
+
+    if (index % stride === 0) {
+      const shape = toWorldShape(calculatedBbox);
+      if (shape) {
+        shapes.push(shape);
+      }
+    }
+  });
+
+  if (!Number.isFinite(west)) {
+    return null;
   }
 
-  let calculatedBbox;
-  try {
-    calculatedBbox = bbox(sourceData);
-  } catch {
-    return;
-  }
-  if (
-    calculatedBbox.some(
-      value => !value || value === Infinity || value === -Infinity
-    )
-  ) {
-    return;
+  return {
+    bounds: new mapboxgl.LngLatBounds([west, south], [east, north]),
+    shapes,
+  };
+};
+
+const getSourceSummary = async (map, sourceId) => {
+  const source = map.getSource(sourceId);
+  if (!source) {
+    return null;
   }
 
-  return new mapboxgl.LngLatBounds(
-    [calculatedBbox[0], calculatedBbox[1]],
-    [calculatedBbox[2], calculatedBbox[3]]
-  );
+  const loadedSource = source.loaded()
+    ? source
+    : await waitForSource(map, sourceId);
+  if (!loadedSource) {
+    return null;
+  }
+
+  // Remote/tileset sources only expose bounds, there are no features to weigh
+  if (loadedSource.bounds) {
+    return {
+      bounds: new mapboxgl.LngLatBounds(loadedSource.bounds),
+      shapes: null,
+    };
+  }
+
+  const sourceData = await readSourceData(loadedSource);
+  return sourceData ? summarizeGeoJson(sourceData) : null;
 };
 
 const parseMarkerPopupJsonFields = content => {
@@ -155,6 +207,7 @@ const MapboxLayer = props => {
     useTileset,
     isMapFile,
     opacity: initialOpacity,
+    getFraming,
     onLayerAdded,
   } = props;
   const { map } = useMap();
@@ -256,6 +309,9 @@ const MapboxLayer = props => {
     }
 
     let cancelled = false;
+    let summaryPromise = null;
+    const loadSummary = () =>
+      (summaryPromise ??= getSourceSummary(map, sourceName));
 
     const getConfigBounds = () => {
       const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
@@ -272,27 +328,74 @@ const MapboxLayer = props => {
       return new mapboxgl.LngLatBounds(sw, ne);
     };
 
-    const applyBounds = bounds => {
-      if (!cancelled && bounds && !bounds.isEmpty()) {
+    const getViewport = () => {
+      const { clientWidth, clientHeight } = map.getContainer();
+      return { width: clientWidth, height: clientHeight };
+    };
+
+    const frame = (bounds, shapes) => {
+      if (!getFraming) {
+        return null;
+      }
+      return getFraming({
+        bounds: [
+          bounds.getWest(),
+          bounds.getSouth(),
+          bounds.getEast(),
+          bounds.getNorth(),
+        ],
+        shapes,
+        editor: getViewport(),
+      });
+    };
+
+    const applyBounds = async bounds => {
+      if (cancelled || !bounds || bounds.isEmpty()) {
+        return;
+      }
+
+      const framing = frame(bounds, null);
+      if (!framing) {
         map.fitBounds(bounds, {
           animate: false,
         });
+        return;
       }
+
+      // The framing is capped, so it is worth parsing the features now
+      let focus = framing.focus;
+      if (!focus) {
+        const summary = await loadSummary();
+        if (cancelled) {
+          return;
+        }
+        focus = frame(bounds, summary?.shapes ?? null)?.focus ?? null;
+      }
+
+      if (cancelled) {
+        return;
+      }
+      map.jumpTo({
+        center: focus ?? bounds.getCenter().toArray(),
+        zoom: framing.zoom,
+      });
     };
 
     if (useConfigBounds) {
       const configBounds = getConfigBounds();
       if (configBounds) {
-        applyBounds(configBounds);
-        return;
+        applyBounds(configBounds).catch(() => {});
+        return () => {
+          cancelled = true;
+        };
       }
     }
 
     // Bounds must come from the source. This fetch only runs when its result
     // will actually be consumed, because it will re-parse the GeoJSON, and may
     // even re-download it depending on browser.
-    getSourceBounds(map, sourceName)
-      .then(applyBounds)
+    loadSummary()
+      .then(summary => summary && applyBounds(summary.bounds))
       .catch(() => {
         // If fitBounds throws (e.g. on invalid bounds), just ignore it.
       });
@@ -306,6 +409,7 @@ const MapboxLayer = props => {
     useConfigBounds,
     sourceName,
     changeBounds,
+    getFraming,
   ]);
 
   const layer = useMemo(() => {

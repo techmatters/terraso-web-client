@@ -46,6 +46,7 @@ import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher
 import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerDialog';
 import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
+import { makeStoryMapFraming } from 'terraso-web-client/storyMap/mapFraming';
 import {
   MapBounds,
   MapLayerConfig,
@@ -259,6 +260,20 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
 
   const mapRef = useRef(null);
 
+  const chapterAlignment = useMemo(
+    () => config.chapters.find(chapter => chapter.id === chapterId)?.alignment,
+    [config.chapters, chapterId]
+  );
+
+  const getFraming = useMemo(
+    () =>
+      makeStoryMapFraming({
+        projection: config.projection,
+        alignment: chapterAlignment,
+      }),
+    [config.projection, chapterAlignment]
+  );
+
   const initialLocation = useMemo(() => {
     if (location) {
       return location;
@@ -411,6 +426,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                 config={mapLayerConfig}
                 useConfigBounds={true}
                 changeBounds={changeBounds}
+                getFraming={getFraming}
               />
             )}
           </Map>
