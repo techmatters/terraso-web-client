@@ -103,30 +103,6 @@ const safeDimensions = (
   height: Math.max(1, mapDimensions.height - padding.top - padding.bottom),
 });
 
-/**
- * Commit the panel inset as persistent map padding.
- *
- * This is deliberately a `jumpTo` (setPadding) rather than interpolating
- * padding inside flyTo/easeTo: padding is already applied before the camera
- * animation starts, so the animation only needs to move center/zoom, and no
- * padding interpolation takes part in the globe transform.
- */
-export const applyPanelPadding = (map: mapboxgl.Map, inset: PanelInset) => {
-  const padding = paddingForInset(inset);
-  const current = map.getPadding();
-  const unchanged =
-    (current.left ?? 0) === padding.left &&
-    (current.right ?? 0) === padding.right &&
-    (current.top ?? 0) === padding.top &&
-    (current.bottom ?? 0) === padding.bottom;
-
-  if (unchanged) {
-    return;
-  }
-
-  map.setPadding(padding);
-};
-
 const fitBoundsAnimated = (
   map: mapboxgl.Map,
   mapDimensions: { height: number; width: number },
@@ -144,8 +120,7 @@ const fitBoundsAnimated = (
   map[mapAnimation]({
     center: viewport.center,
     zoom: viewport.zoom,
-    // Matches the ambient padding, so this does not interpolate or shift
-    // anything; it keeps the camera call self-describing.
+    // Let Mapbox interpolate the vanishing point together with center/zoom.
     padding,
     linear: false,
     pitch,
@@ -292,10 +267,6 @@ export const startTransition = (
   if (!map) {
     return;
   }
-
-  // Padding tracks the panel even for chapters without a camera move, so a
-  // chapter that only changes layers still recenters the projection.
-  applyPanelPadding(map, panelInset);
 
   if (!transition) {
     return;
