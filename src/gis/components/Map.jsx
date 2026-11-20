@@ -327,7 +327,6 @@ const Map = forwardRef((props, ref) => {
     sx,
     onBoundsChange,
     disableElevation = false,
-    padding,
     children,
   } = props;
   const { i18n } = useTranslation();
@@ -336,6 +335,9 @@ const Map = forwardRef((props, ref) => {
   const [bounds] = useState(initialBounds);
   const [initialLocation] = useState(propsInitialLocation);
 
+  // NOTE: viewport padding is not a prop. Applying it declaratively would
+  // recreate the whole map whenever it changed, so consumers that need it (the
+  // story map) set it imperatively on the map instance instead.
   useEffect(() => {
     const validBounds = isValidBounds(bounds);
 
@@ -354,10 +356,6 @@ const Map = forwardRef((props, ref) => {
 
     if (ref) {
       ref.current = map;
-    }
-
-    if (padding) {
-      map.setPadding(padding);
     }
 
     map.on('load', function () {
@@ -401,7 +399,6 @@ const Map = forwardRef((props, ref) => {
     setMap,
     bounds,
     disableElevation,
-    padding,
     ref,
   ]);
 

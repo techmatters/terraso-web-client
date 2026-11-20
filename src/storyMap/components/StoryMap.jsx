@@ -25,6 +25,12 @@ import mapboxgl from 'terraso-web-client/gis/mapbox';
 import useActiveStep from 'terraso-web-client/storyMap/components/useActiveStep';
 import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
 import {
+  getPanelCard,
+  insetsEqual,
+  measurePanelInset,
+  NO_PANEL_INSET,
+} from 'terraso-web-client/storyMap/panelInset';
+import {
   ALIGNMENTS,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
@@ -179,21 +185,85 @@ const Title = props => {
   );
 };
 
+// The strip of the map the active chapter card covers is read from the card's
+// own layout (viewport units, visual media, story map gutters) instead of being
+// derived from the map's dimensions, then clamped to a sane share of the map.
 const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
+  const mapContainer = map?.getContainer();
+
+  const alignment = useMemo(
+    () =>
+      config.chapters.find(chapter => chapter.id === currentChapter)?.alignment,
+    [config.chapters, currentChapter]
+  );
+
+  // Bumped only when the measured inset actually changes, so a card that grows
+  // vertically does not restart the camera transition.
+  const [panelRevision, setPanelRevision] = useState(0);
+  const lastInset = useRef(NO_PANEL_INSET);
 
   useEffect(() => {
-    if (!mapDimensions) {
+    if (!mapContainer) {
       return;
     }
+
+    const measure = () => {
+      const next = measurePanelInset({
+        mapContainer,
+        chapterId: currentChapter,
+        alignment,
+        isMobile,
+      });
+      if (insetsEqual(lastInset.current, next)) {
+        return;
+      }
+      lastInset.current = next;
+      setPanelRevision(revision => revision + 1);
+    };
+
+    const card = getPanelCard(currentChapter, alignment, isMobile);
+    if (!card || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(card);
+
+    return () => observer.disconnect();
+  }, [mapContainer, currentChapter, alignment, isMobile]);
+
+  useEffect(() => {
+    if (!mapDimensions || !mapContainer) {
+      return;
+    }
+    // Measured inline so the first transition for a chapter already uses the
+    // right inset instead of replaying it with the previous chapter's value.
+    const panelInset = measurePanelInset({
+      mapContainer,
+      chapterId: currentChapter,
+      alignment,
+      isMobile,
+    });
+    lastInset.current = panelInset;
     startTransition(map, {
       config,
       chapterId: currentChapter,
       mapDimensions,
-      isMobile,
+      panelInset,
     });
-  }, [map, config, mapDimensions, currentChapter, isMobile, layerRevision]);
+  }, [
+    map,
+    mapContainer,
+    config,
+    mapDimensions,
+    currentChapter,
+    alignment,
+    isMobile,
+    panelRevision,
+    layerRevision,
+  ]);
 
   return null;
 };
@@ -204,7 +274,8 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
 // it's called in a useEffect, which depends on:
 //   - the story map's config, to pick up chapter alignment changes
 //   - the current chapter, which is a piece of state updated by an IntersectionObserver hook
-//   - whether we're in a mobile viewport (which forces a centered chapter)
+//   - the panel inset (the strip of the map covered by the active chapter card),
+//     which is zero on mobile and when the chapter is centered
 //   - the map dimensions, so we readjust when the map's size changes
 const StoryMap = props => {
   const { t } = useTranslation();
