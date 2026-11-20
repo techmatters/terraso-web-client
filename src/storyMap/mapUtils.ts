@@ -244,6 +244,56 @@ const startLayerTransition = (
   );
 };
 
+type TransitionLocation = MapPosition & { duration?: number };
+
+const hasLocation = (
+  location: TransitionLocation | null | undefined
+): location is TransitionLocation => Boolean(location && !_.isEmpty(location));
+
+/**
+ * Chapters without a location inherit one so that alignment changes still
+ * reframe the map: nearest previous chapter, then nearest later chapter, then
+ * the title transition's location.
+ */
+const resolveTransitionLocation = (
+  config: StoryMapConfig,
+  chapterId: string
+): TransitionLocation | undefined => {
+  if (chapterId === STORY_MAP_TITLE_ID) {
+    const titleLocation = config.titleTransition?.location;
+    return hasLocation(titleLocation) ? titleLocation : undefined;
+  }
+
+  const chapterIndex = config.chapters.findIndex(
+    chapter => chapter.id === chapterId
+  );
+  if (chapterIndex === -1) {
+    return undefined;
+  }
+
+  const ownLocation = config.chapters[chapterIndex].location;
+  if (hasLocation(ownLocation)) {
+    return ownLocation;
+  }
+
+  for (let index = chapterIndex - 1; index >= 0; index--) {
+    const location = config.chapters[index].location;
+    if (hasLocation(location)) {
+      return location;
+    }
+  }
+
+  for (let index = chapterIndex + 1; index < config.chapters.length; index++) {
+    const location = config.chapters[index].location;
+    if (hasLocation(location)) {
+      return location;
+    }
+  }
+
+  const titleLocation = config.titleTransition?.location;
+  return hasLocation(titleLocation) ? titleLocation : undefined;
+};
+
 export type StartTransitionOptions = {
   config: StoryMapConfig;
   chapterId: string;
@@ -272,6 +322,9 @@ export const startTransition = (
     return;
   }
 
-  startCameraTransition(map, mapDimensions, panelInset, transition);
+  const location = resolveTransitionLocation(config, chapterId);
+  const cameraTransition = location ? { ...transition, location } : transition;
+
+  startCameraTransition(map, mapDimensions, panelInset, cameraTransition);
   startLayerTransition(map, chapterId, config);
 };
