@@ -18,7 +18,6 @@
 import * as geoViewport from '@placemarkio/geo-viewport';
 
 import {
-  applyPanelPadding,
   startTransition,
   type StartTransitionOptions,
 } from 'terraso-web-client/storyMap/mapUtils';
@@ -67,7 +66,7 @@ const configWith = (overrides: Partial<ChapterConfig>) => {
   } as unknown as StoryMapConfig;
 };
 
-const makeMap = (padding = { top: 0, right: 0, bottom: 0, left: 0 }) => {
+const makeMap = () => {
   const calls: string[] = [];
   const recorder = (name: string) =>
     jest.fn((_options?: unknown) => {
@@ -75,7 +74,6 @@ const makeMap = (padding = { top: 0, right: 0, bottom: 0, left: 0 }) => {
     });
   return {
     calls,
-    getPadding: jest.fn(() => padding),
     setPadding: recorder('setPadding'),
     flyTo: recorder('flyTo'),
     easeTo: recorder('easeTo'),
@@ -113,12 +111,6 @@ test('left panel fits the uncropped bounds into the visible strip', () => {
   const expected = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
   const options = cameraOptions(map);
 
-  expect(map.setPadding).toHaveBeenCalledWith({
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: PANEL,
-  });
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
   expect(options.padding).toEqual({
@@ -144,12 +136,6 @@ test('right panel mirrors the left panel', () => {
   const right = makeMap();
   transition(right, { panelInset: { side: 'right', width: PANEL } });
 
-  expect(right.setPadding).toHaveBeenCalledWith({
-    top: 0,
-    right: PANEL,
-    bottom: 0,
-    left: 0,
-  });
   const leftOptions = cameraOptions(left);
   const rightOptions = cameraOptions(right);
   expect(rightOptions.center).toEqual(leftOptions.center);
@@ -157,18 +143,12 @@ test('right panel mirrors the left panel', () => {
 });
 
 test('centered chapters fit the full width and clear the padding', () => {
-  const map = makeMap({ top: 0, right: PANEL, bottom: 0, left: 0 });
+  const map = makeMap();
   transition(map, { panelInset: NO_PANEL_INSET });
 
   const expected = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
-  expect(map.setPadding).toHaveBeenCalledWith({
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  });
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
   expect(options.padding).toEqual({ top: 0, right: 0, bottom: 0, left: 0 });
 });
@@ -195,13 +175,12 @@ test('legacy chapters fit their backfilled bounds without cropping', () => {
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
 });
 
-test('padding is committed before the camera move starts', () => {
+test('padding is interpolated by the camera move', () => {
   const map = makeMap();
   transition(map, { panelInset: { side: 'left', width: PANEL } });
 
-  // setPadding is a jumpTo, which stops running animations: it has to land
-  // before flyTo/easeTo, not during or after it
-  expect(map.calls).toEqual(['setPadding', 'flyTo']);
+  expect(map.calls).toEqual(['flyTo']);
+  expect(map.setPadding).not.toHaveBeenCalled();
 });
 
 test('keeps easeTo for chapters that ask for it', () => {
@@ -215,24 +194,13 @@ test('keeps easeTo for chapters that ask for it', () => {
   expect(map.flyTo).not.toHaveBeenCalled();
 });
 
-test('chapters without a location still update the panel padding', () => {
+test('chapters without a location do not move the camera', () => {
   const map = makeMap();
   transition(map, {
     config: configWith({ location: undefined } as Partial<ChapterConfig>),
     panelInset: { side: 'left', width: PANEL },
   });
 
-  expect(map.setPadding).toHaveBeenCalledWith(
-    expect.objectContaining({ left: PANEL })
-  );
   expect(map.flyTo).not.toHaveBeenCalled();
-});
-
-test('applyPanelPadding is a no-op when the padding already matches', () => {
-  const map = makeMap({ top: 0, right: 0, bottom: 0, left: PANEL });
-  applyPanelPadding(map as unknown as mapboxgl.Map, {
-    side: 'left',
-    width: PANEL,
-  });
-  expect(map.setPadding).not.toHaveBeenCalled();
+  expect(map.easeTo).not.toHaveBeenCalled();
 });

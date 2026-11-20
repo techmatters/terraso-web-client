@@ -38,7 +38,6 @@ export const createMapMock = (overrides = {}) => ({
   getContainer: jest.fn(),
   hasImage: jest.fn(),
   addImage: jest.fn(),
-  getPadding: jest.fn(() => ({ top: 0, right: 0, bottom: 0, left: 0 })),
   setPadding: jest.fn(),
   scrollZoom: { enable: jest.fn(), disable: jest.fn() },
   boxZoom: { enable: jest.fn(), disable: jest.fn() },
