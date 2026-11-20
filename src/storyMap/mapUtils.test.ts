@@ -66,6 +66,28 @@ const configWith = (overrides: Partial<ChapterConfig>) => {
   } as unknown as StoryMapConfig;
 };
 
+const configWithChapters = (
+  chapters: Partial<ChapterConfig>[],
+  titleTransition?: StoryMapConfig['titleTransition']
+) =>
+  ({
+    style: 'mapbox://styles/mapbox/satellite-v9',
+    title: '',
+    chapters: chapters.map((overrides, index) =>
+      chapter({ id: `chapter-${index + 1}`, ...overrides })
+    ),
+    ...(titleTransition ? { titleTransition } : {}),
+  }) as unknown as StoryMapConfig;
+
+const location = (bounds: MapBounds): MapPosition =>
+  ({
+    center: { lng: 0, lat: 0 },
+    zoom: 5,
+    pitch: 0,
+    bearing: 0,
+    bounds,
+  }) as unknown as MapPosition;
+
 const makeMap = () => {
   const calls: string[] = [];
   const recorder = (name: string) =>
@@ -194,7 +216,7 @@ test('keeps easeTo for chapters that ask for it', () => {
   expect(map.flyTo).not.toHaveBeenCalled();
 });
 
-test('chapters without a location do not move the camera', () => {
+test('chapters without any inheritable location do not move the camera', () => {
   const map = makeMap();
   transition(map, {
     config: configWith({ location: undefined } as Partial<ChapterConfig>),
@@ -203,4 +225,87 @@ test('chapters without a location do not move the camera', () => {
 
   expect(map.flyTo).not.toHaveBeenCalled();
   expect(map.easeTo).not.toHaveBeenCalled();
+});
+
+test('inherits the closest previous chapter location', () => {
+  const map = makeMap();
+  const previousBounds: MapBounds = [-130, -10, -110, 10];
+  const laterBounds: MapBounds = [-10, -10, 10, 10];
+  const config = configWithChapters([
+    { location: location(previousBounds) },
+    { location: undefined, alignment: 'right' },
+    { location: location(laterBounds) },
+  ]);
+
+  startTransition(map as unknown as mapboxgl.Map, {
+    config,
+    chapterId: 'chapter-2',
+    mapDimensions: { width: WIDTH, height: HEIGHT },
+    panelInset: { side: 'right', width: PANEL },
+  });
+
+  const expected = viewport(previousBounds, [WIDTH - PANEL, HEIGHT]);
+  const options = cameraOptions(map);
+
+  expect(options.center).toEqual(expected.center);
+  expect(options.zoom).toBeCloseTo(expected.zoom, 10);
+  expect(options.padding).toEqual({
+    top: 0,
+    right: PANEL,
+    bottom: 0,
+    left: 0,
+  });
+});
+
+test('inherits the closest later chapter location when there is no previous', () => {
+  const map = makeMap();
+  const closestLaterBounds: MapBounds = [-10, -10, 10, 10];
+  const fartherLaterBounds: MapBounds = [20, 20, 40, 40];
+  const config = configWithChapters([
+    { location: undefined },
+    { location: undefined },
+    { location: location(closestLaterBounds) },
+    { location: location(fartherLaterBounds) },
+  ]);
+
+  startTransition(map as unknown as mapboxgl.Map, {
+    config,
+    chapterId: 'chapter-2',
+    mapDimensions: { width: WIDTH, height: HEIGHT },
+    panelInset: { side: 'left', width: PANEL },
+  });
+
+  const expected = viewport(closestLaterBounds, [WIDTH - PANEL, HEIGHT]);
+  const options = cameraOptions(map);
+
+  expect(options.center).toEqual(expected.center);
+  expect(options.zoom).toBeCloseTo(expected.zoom, 10);
+});
+
+test('falls back to the title transition location', () => {
+  const map = makeMap();
+  const titleBounds: MapBounds = [20, 20, 40, 40];
+  const config = configWithChapters(
+    [{ location: undefined }, { location: undefined }],
+    { location: location(titleBounds) }
+  );
+
+  startTransition(map as unknown as mapboxgl.Map, {
+    config,
+    chapterId: 'chapter-2',
+    mapDimensions: { width: WIDTH, height: HEIGHT },
+    panelInset: { side: 'right', width: PANEL },
+  });
+
+  const expected = viewport(titleBounds, [WIDTH - PANEL, HEIGHT]);
+  const options = cameraOptions(map);
+
+  expect(options.center).toEqual(expected.center);
+  expect(options.zoom).toBeCloseTo(expected.zoom, 10);
+  expect(options.padding).toEqual({
+    top: 0,
+    right: PANEL,
+    bottom: 0,
+    left: 0,
+  });
 });
