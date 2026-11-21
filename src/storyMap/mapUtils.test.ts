@@ -18,10 +18,12 @@
 import * as geoViewport from '@placemarkio/geo-viewport';
 
 import {
+  getDefaultTitleLocation,
   startTransition,
   type StartTransitionOptions,
 } from 'terraso-web-client/storyMap/mapUtils';
 import { NO_PANEL_INSET } from 'terraso-web-client/storyMap/panelInset';
+import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import type {
   ChapterConfig,
   MapBounds,
@@ -88,7 +90,19 @@ const location = (bounds: MapBounds): MapPosition =>
     bounds,
   }) as unknown as MapPosition;
 
-const makeMap = () => {
+const ZERO_PADDING = { top: 0, right: 0, bottom: 0, left: 0 };
+
+type MapCamera = {
+  padding?: typeof ZERO_PADDING;
+  center?: { lng: number; lat: number };
+  zoom?: number;
+};
+
+const makeMap = ({
+  padding = ZERO_PADDING,
+  center = { lng: 0, lat: 0 },
+  zoom = 5,
+}: MapCamera = {}) => {
   const calls: string[] = [];
   const recorder = (name: string) =>
     jest.fn((_options?: unknown) => {
@@ -96,6 +110,9 @@ const makeMap = () => {
     });
   return {
     calls,
+    getPadding: jest.fn(() => padding),
+    getCenter: jest.fn(() => center),
+    getZoom: jest.fn(() => zoom),
     setPadding: recorder('setPadding'),
     flyTo: recorder('flyTo'),
     easeTo: recorder('easeTo'),
@@ -308,4 +325,112 @@ test('falls back to the title transition location', () => {
     bottom: 0,
     left: 0,
   });
+});
+
+test('enforces a 500ms minimum for same-center alignment changes', () => {
+  const target = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
+  const map = makeMap({
+    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom,
+  });
+
+  transition(map, {
+    config: configWith({
+      location: { ...location(BOUNDS), duration: 0 },
+    }),
+    panelInset: { side: 'left', width: PANEL },
+  });
+
+  expect(cameraOptions(map).duration).toBe(500);
+});
+
+test('preserves an explicit duration above the alignment minimum', () => {
+  const target = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
+  const map = makeMap({
+    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom,
+  });
+
+  transition(map, {
+    config: configWith({
+      location: { ...location(BOUNDS), duration: 1200 },
+    }),
+    panelInset: { side: 'left', width: PANEL },
+  });
+
+  expect(cameraOptions(map).duration).toBe(1200);
+});
+
+test('does not override duration when the camera center changes', () => {
+  const map = makeMap({
+    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
+    center: { lng: 0, lat: 0 },
+    zoom: 5,
+  });
+
+  transition(map, {
+    config: configWith({
+      location: { ...location(BOUNDS), duration: 0 },
+    }),
+    panelInset: { side: 'left', width: PANEL },
+  });
+
+  expect(cameraOptions(map).duration).toBe(0);
+});
+
+test('getDefaultTitleLocation prefers the title transition location', () => {
+  const titleBounds: MapBounds = [-10, -10, 10, 10];
+  const config = configWithChapters([{ location: location(BOUNDS) }], {
+    location: location(titleBounds),
+  });
+
+  expect(getDefaultTitleLocation(config)?.bounds).toEqual(titleBounds);
+});
+
+test('getDefaultTitleLocation falls back to the first chapter location', () => {
+  const config = configWithChapters([
+    { location: undefined },
+    { location: location(BOUNDS) },
+  ]);
+
+  expect(getDefaultTitleLocation(config)?.bounds).toEqual(BOUNDS);
+});
+
+test('getDefaultTitleLocation is undefined when there is no location', () => {
+  const config = configWithChapters([{ location: undefined }]);
+  expect(getDefaultTitleLocation(config)).toBeUndefined();
+});
+
+test('restores the default title location when the title has no transition', () => {
+  const map = makeMap();
+  const config = configWithChapters([{ location: location(BOUNDS) }]);
+
+  startTransition(map as unknown as mapboxgl.Map, {
+    config,
+    chapterId: STORY_MAP_TITLE_ID,
+    mapDimensions: { width: WIDTH, height: HEIGHT },
+    panelInset: NO_PANEL_INSET,
+  });
+
+  const expected = viewport(BOUNDS, [WIDTH, HEIGHT]);
+  const options = cameraOptions(map);
+
+  expect(options.center).toEqual(expected.center);
+  expect(options.zoom).toBeCloseTo(expected.zoom, 10);
+});
+
+test('preserves a longer adaptive duration for same-center zoom changes', () => {
+  const target = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
+  const map = makeMap({
+    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom - 3,
+  });
+
+  transition(map, { panelInset: { side: 'left', width: PANEL } });
+
+  const expected = (1000 * 3 * Math.LN2) / (1.42 * 1.2);
+  expect(cameraOptions(map).duration).toBeCloseTo(expected, 5);
 });

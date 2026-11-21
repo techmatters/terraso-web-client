@@ -994,7 +994,9 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(chapter2).not.toHaveAttribute('aria-current', 'step');
   expect(title).not.toHaveAttribute('aria-current', 'step');
 
-  expect(map.flyTo).toHaveBeenCalledTimes(0);
+  // Chapter 1 has no location of its own and inherits chapter 2's location.
+  expect(map.flyTo).toHaveBeenCalled();
+  const callsAfterChapter1 = map.flyTo.mock.calls.length;
 
   // Trigger on chapter 2
   await act(async () => {
@@ -1009,7 +1011,7 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(chapter2).toHaveAttribute('aria-current', 'step');
   expect(title).not.toHaveAttribute('aria-current', 'step');
 
-  expect(map.flyTo).toHaveBeenCalledTimes(1);
+  expect(map.flyTo.mock.calls.length).toBeGreaterThan(callsAfterChapter1);
 
   // Trigger on title
   await act(async () => {

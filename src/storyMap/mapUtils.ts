@@ -17,7 +17,7 @@
 
 import * as geoViewport from '@placemarkio/geo-viewport';
 import _ from 'lodash/fp';
-import type { LngLat } from 'mapbox-gl';
+import type { LngLat, PaddingOptions } from 'mapbox-gl';
 import logger from 'terraso-client-shared/monitoring/logger';
 
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
@@ -47,6 +47,12 @@ const DEFAULT_ASSUMED_CLIENT_WIDTH = 1200;
 const DEFAULT_ASSUMED_CLIENT_HEIGHT = 600;
 
 const ROTATION_DURATION = 30000;
+// Alignment-only moves have no center/zoom distance for Mapbox to derive a
+// duration from; keep them from collapsing to a sub-second transition.
+const MIN_SAME_CENTER_TRANSITION_DURATION = 500;
+// Mapbox flyTo defaults, mirrored for its same-center zoom-only duration branch.
+const MAPBOX_FLY_CURVE = 1.42;
+const MAPBOX_FLY_SPEED = 1.2;
 
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
@@ -103,6 +109,36 @@ const safeDimensions = (
   height: Math.max(1, mapDimensions.height - padding.top - padding.bottom),
 });
 
+const paddingEquals = (a: PaddingOptions, b: MapPadding) =>
+  (a.top ?? 0) === b.top &&
+  (a.right ?? 0) === b.right &&
+  (a.bottom ?? 0) === b.bottom &&
+  (a.left ?? 0) === b.left;
+
+const longitudeDistance = (a: number, b: number) =>
+  Math.abs(((((a - b) % 360) + 540) % 360) - 180);
+
+const sameCenter = (map: mapboxgl.Map, center: [number, number]): boolean => {
+  const current = map.getCenter();
+  return (
+    longitudeDistance(current.lng, center[0]) < 1e-7 &&
+    Math.abs(current.lat - center[1]) < 1e-7
+  );
+};
+
+/**
+ * Mapbox's flyTo duration when the center does not move: it uses the zoom-only
+ * branch of its flight calculation. Reproduced here so a minimum duration does
+ * not shorten a legitimately longer zoom transition.
+ */
+const zoomOnlyFlyDuration = (zoomDelta: number) => {
+  const logScale = Math.abs(zoomDelta) * Math.LN2;
+  if (logScale < 1e-9) {
+    return MIN_SAME_CENTER_TRANSITION_DURATION;
+  }
+  return (1000 * logScale) / (MAPBOX_FLY_CURVE * MAPBOX_FLY_SPEED);
+};
+
 const fitBoundsAnimated = (
   map: mapboxgl.Map,
   mapDimensions: { height: number; width: number },
@@ -117,6 +153,18 @@ const fitBoundsAnimated = (
     allowFloat: true,
     tileSize: 512,
   });
+
+  const paddingChanged = !paddingEquals(map.getPadding(), padding);
+  const alignmentTransition =
+    paddingChanged && sameCenter(map, viewport.center);
+  const effectiveDuration = alignmentTransition
+    ? Math.max(
+        MIN_SAME_CENTER_TRANSITION_DURATION,
+        zoomOnlyFlyDuration(viewport.zoom - map.getZoom()),
+        duration ?? 0
+      )
+    : duration;
+
   map[mapAnimation]({
     center: viewport.center,
     zoom: viewport.zoom,
@@ -126,7 +174,7 @@ const fitBoundsAnimated = (
     pitch,
     bearing,
     essential: true,
-    ...(duration === undefined ? {} : { duration }),
+    ...(effectiveDuration === undefined ? {} : { duration: effectiveDuration }),
   });
 };
 
@@ -250,6 +298,17 @@ const hasLocation = (
   location: TransitionLocation | null | undefined
 ): location is TransitionLocation => Boolean(location && !_.isEmpty(location));
 
+export const getDefaultTitleLocation = (
+  config: StoryMapConfig
+): TransitionLocation | undefined => {
+  const titleLocation = config.titleTransition?.location;
+  if (hasLocation(titleLocation)) {
+    return titleLocation;
+  }
+  return config.chapters.find(chapter => hasLocation(chapter.location))
+    ?.location;
+};
+
 /**
  * Chapters without a location inherit one so that alignment changes still
  * reframe the map: nearest previous chapter, then nearest later chapter, then
@@ -260,8 +319,7 @@ const resolveTransitionLocation = (
   chapterId: string
 ): TransitionLocation | undefined => {
   if (chapterId === STORY_MAP_TITLE_ID) {
-    const titleLocation = config.titleTransition?.location;
-    return hasLocation(titleLocation) ? titleLocation : undefined;
+    return getDefaultTitleLocation(config);
   }
 
   const chapterIndex = config.chapters.findIndex(
@@ -290,8 +348,7 @@ const resolveTransitionLocation = (
     }
   }
 
-  const titleLocation = config.titleTransition?.location;
-  return hasLocation(titleLocation) ? titleLocation : undefined;
+  return getDefaultTitleLocation(config);
 };
 
 export type StartTransitionOptions = {
@@ -318,13 +375,18 @@ export const startTransition = (
     return;
   }
 
-  if (!transition) {
+  const location = resolveTransitionLocation(config, chapterId);
+  if (!transition && !location) {
     return;
   }
 
-  const location = resolveTransitionLocation(config, chapterId);
-  const cameraTransition = location ? { ...transition, location } : transition;
+  const cameraTransition = {
+    ...(transition ?? {}),
+    ...(location ? { location } : {}),
+  } as ChapterConfig | Transition;
 
   startCameraTransition(map, mapDimensions, panelInset, cameraTransition);
-  startLayerTransition(map, chapterId, config);
+  if (transition) {
+    startLayerTransition(map, chapterId, config);
+  }
 };

@@ -23,7 +23,10 @@ import { Box, useMediaQuery } from '@mui/material';
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import useActiveStep from 'terraso-web-client/storyMap/components/useActiveStep';
-import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
+import {
+  getDefaultTitleLocation,
+  startTransition,
+} from 'terraso-web-client/storyMap/mapUtils';
 import {
   getPanelCard,
   insetsEqual,
@@ -306,15 +309,10 @@ const StoryMap = props => {
 
   const currentChapter = activeId ?? STORY_MAP_TITLE_ID;
 
-  const initialLocation = useMemo(() => {
-    if (config.titleTransition?.location) {
-      return config.titleTransition?.location;
-    }
-    const firstChapterWithLocation = config.chapters.find(
-      chapter => chapter.location
-    );
-    return firstChapterWithLocation?.location;
-  }, [config.chapters, config.titleTransition?.location]);
+  const initialLocation = useMemo(
+    () => getDefaultTitleLocation(config),
+    [config]
+  );
 
   const filteredChapters = useMemo(() => {
     if (!chaptersFilter) {
