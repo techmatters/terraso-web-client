@@ -17,17 +17,22 @@
 
 import * as geoViewport from '@placemarkio/geo-viewport';
 import _ from 'lodash/fp';
-import type { LngLat } from 'mapbox-gl';
+import type { LngLat, PaddingOptions } from 'mapbox-gl';
 import logger from 'terraso-client-shared/monitoring/logger';
 
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
+import {
+  NO_PANEL_INSET,
+  paddingForInset,
+  type MapPadding,
+  type PanelInset,
+} from 'terraso-web-client/storyMap/panelInset';
 import {
   LAYER_PAINT_TYPES,
   LayerPaintType,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import {
-  ChapterAlignment,
   ChapterConfig,
   LayerConfig,
   MapBounds,
@@ -42,6 +47,12 @@ const DEFAULT_ASSUMED_CLIENT_WIDTH = 1200;
 const DEFAULT_ASSUMED_CLIENT_HEIGHT = 600;
 
 const ROTATION_DURATION = 30000;
+// Alignment-only moves have no center/zoom distance for Mapbox to derive a
+// duration from; keep them from collapsing to a sub-second transition.
+const MIN_SAME_CENTER_TRANSITION_DURATION = 500;
+// Mapbox flyTo defaults, mirrored for its same-center zoom-only duration branch.
+const MAPBOX_FLY_CURVE = 1.42;
+const MAPBOX_FLY_SPEED = 1.2;
 
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
@@ -85,119 +96,114 @@ const calculateLegacyBounds = (center: LngLat, zoom: number): MapBounds => {
 };
 
 /**
- * Adjust bounds for legacy chapters based on alignment
- * Crops out the area that would be covered by the chapter panel
+ * The chapter card overlays the map, so the camera fits the chapter's bounds
+ * into the strip the panel leaves visible. Padding (applied on the map itself)
+ * puts the projection center in the middle of that strip, which is why the fit
+ * is computed against the safe dimensions instead of expanding the bounds.
  */
-const adjustBoundsForAlignment = (
-  bounds: MapBounds,
-  alignment: ChapterAlignment
-): MapBounds => {
-  if (!alignment || alignment === 'center') {
-    return bounds;
-  }
+const safeDimensions = (
+  mapDimensions: { height: number; width: number },
+  padding: MapPadding
+) => ({
+  width: Math.max(1, mapDimensions.width - padding.left - padding.right),
+  height: Math.max(1, mapDimensions.height - padding.top - padding.bottom),
+});
 
-  const [swLng, swLat, neLng, neLat] = bounds;
-  const lngRange = neLng - swLng;
+const paddingEquals = (a: PaddingOptions, b: MapPadding) =>
+  (a.top ?? 0) === b.top &&
+  (a.right ?? 0) === b.right &&
+  (a.bottom ?? 0) === b.bottom &&
+  (a.left ?? 0) === b.left;
 
-  if (alignment === 'left') {
-    // Crop out lefthand 40% - shift west bound eastward
-    return [swLng + lngRange * 0.4, swLat, neLng, neLat];
-  } else if (alignment === 'right') {
-    // Crop out righthand 40% - shift east bound westward
-    return [swLng, swLat, neLng - lngRange * 0.4, neLat];
-  }
+const longitudeDistance = (a: number, b: number) =>
+  Math.abs(((((a - b) % 360) + 540) % 360) - 180);
 
-  return bounds;
+const sameCenter = (map: mapboxgl.Map, center: [number, number]): boolean => {
+  const current = map.getCenter();
+  return (
+    longitudeDistance(current.lng, center[0]) < 1e-7 &&
+    Math.abs(current.lat - center[1]) < 1e-7
+  );
 };
 
 /**
- * Add padding area to bounds for display based on alignment
- * Expands the bounds to account for the chapter panel
+ * Mapbox's flyTo duration when the center does not move: it uses the zoom-only
+ * branch of its flight calculation. Reproduced here so a minimum duration does
+ * not shorten a legitimately longer zoom transition.
  */
-const expandBoundsForDisplay = (
-  bounds: MapBounds,
-  alignment: ChapterAlignment
-): MapBounds => {
-  if (!alignment || alignment === 'center') {
-    return bounds;
+const zoomOnlyFlyDuration = (zoomDelta: number) => {
+  const logScale = Math.abs(zoomDelta) * Math.LN2;
+  if (logScale < 1e-9) {
+    return MIN_SAME_CENTER_TRANSITION_DURATION;
   }
-
-  const [swLng, swLat, neLng, neLat] = bounds;
-  const lngRange = neLng - swLng;
-  const expansion = lngRange * (2 / 3); // Add area that's 2/3 the original size
-
-  if (alignment === 'left') {
-    // Add area to the left - expand west bound westward
-    return [swLng - expansion, swLat, neLng, neLat];
-  } else if (alignment === 'right') {
-    // Add area to the right - expand east bound eastward
-    return [swLng, swLat, neLng + expansion, neLat];
-  }
-
-  return bounds;
-};
-
-/**
- * Backfill bounds for legacy chapters from center/zoom
- * Applies alignment adjustment when calculating
- */
-const backfillBounds = (location: MapPosition, alignment: ChapterAlignment) => {
-  // Calculate bounds assuming default editor viewport size
-  const bounds = calculateLegacyBounds(location.center, location.zoom);
-
-  // Adjust for alignment (crop out covered area)
-  return adjustBoundsForAlignment(bounds, alignment);
+  return (1000 * logScale) / (MAPBOX_FLY_CURVE * MAPBOX_FLY_SPEED);
 };
 
 const fitBoundsAnimated = (
   map: mapboxgl.Map,
   mapDimensions: { height: number; width: number },
+  inset: PanelInset,
   mapAnimation: 'flyTo' | 'easeTo',
   { bounds, pitch, bearing, duration }: MapPosition & { duration?: number }
 ) => {
-  const viewport = geoViewport.viewport(
-    bounds,
-    [mapDimensions.width, mapDimensions.height],
-    { allowAntiMeridian: true, allowFloat: true, tileSize: 512 }
-  );
+  const padding = paddingForInset(inset);
+  const safe = safeDimensions(mapDimensions, padding);
+  const viewport = geoViewport.viewport(bounds, [safe.width, safe.height], {
+    allowAntiMeridian: true,
+    allowFloat: true,
+    tileSize: 512,
+  });
+
+  const paddingChanged = !paddingEquals(map.getPadding(), padding);
+  const alignmentTransition =
+    paddingChanged && sameCenter(map, viewport.center);
+  const effectiveDuration = alignmentTransition
+    ? Math.max(
+        MIN_SAME_CENTER_TRANSITION_DURATION,
+        zoomOnlyFlyDuration(viewport.zoom - map.getZoom()),
+        duration ?? 0
+      )
+    : duration;
+
   map[mapAnimation]({
     center: viewport.center,
     zoom: viewport.zoom,
+    // Let Mapbox interpolate the vanishing point together with center/zoom.
+    padding,
     linear: false,
     pitch,
     bearing,
     essential: true,
-    ...(duration === undefined ? {} : { duration }),
+    ...(effectiveDuration === undefined ? {} : { duration: effectiveDuration }),
   });
 };
 
 const startCameraTransition = (
   map: mapboxgl.Map,
-  isMobile: boolean,
   mapDimensions: { height: number; width: number },
+  inset: PanelInset,
   transition: ChapterConfig | Transition
 ) => {
   if (transition.location && !_.isEmpty(transition.location)) {
-    const alignment =
-      isMobile || !('alignment' in transition)
-        ? 'center'
-        : transition.alignment;
-
     let boundsToUse = transition.location.bounds;
 
-    // If no bounds, backfill from center/zoom for legacy chapters
+    // If no bounds, backfill from center/zoom for legacy chapters. The legacy
+    // bounds are the area the author framed in the editor, so they are fitted
+    // as-is: cropping for the panel would double-count the padding.
     if (!boundsToUse || !isValidBounds(boundsToUse)) {
-      const legacyAlignment =
-        'alignment' in transition ? transition.alignment : 'center';
-      boundsToUse = backfillBounds(transition.location, legacyAlignment);
+      boundsToUse = calculateLegacyBounds(
+        transition.location.center,
+        transition.location.zoom
+      );
     }
 
-    const displayBounds = expandBoundsForDisplay(boundsToUse, alignment);
-
-    fitBoundsAnimated(map, mapDimensions, transition.mapAnimation ?? 'flyTo', {
-      ...transition.location,
-      bounds: displayBounds,
-    });
+    fitBoundsAnimated(
+      map,
+      mapDimensions,
+      inset,
+      transition.mapAnimation ?? 'flyTo',
+      { ...transition.location, bounds: boundsToUse }
+    );
   }
 
   if (transition.rotateAnimation) {
@@ -286,25 +292,101 @@ const startLayerTransition = (
   );
 };
 
+type TransitionLocation = MapPosition & { duration?: number };
+
+const hasLocation = (
+  location: TransitionLocation | null | undefined
+): location is TransitionLocation => Boolean(location && !_.isEmpty(location));
+
+export const getDefaultTitleLocation = (
+  config: StoryMapConfig
+): TransitionLocation | undefined => {
+  const titleLocation = config.titleTransition?.location;
+  if (hasLocation(titleLocation)) {
+    return titleLocation;
+  }
+  return config.chapters.find(chapter => hasLocation(chapter.location))
+    ?.location;
+};
+
+/**
+ * Chapters without a location inherit one so that alignment changes still
+ * reframe the map: nearest previous chapter, then nearest later chapter, then
+ * the title transition's location.
+ */
+const resolveTransitionLocation = (
+  config: StoryMapConfig,
+  chapterId: string
+): TransitionLocation | undefined => {
+  if (chapterId === STORY_MAP_TITLE_ID) {
+    return getDefaultTitleLocation(config);
+  }
+
+  const chapterIndex = config.chapters.findIndex(
+    chapter => chapter.id === chapterId
+  );
+  if (chapterIndex === -1) {
+    return undefined;
+  }
+
+  const ownLocation = config.chapters[chapterIndex].location;
+  if (hasLocation(ownLocation)) {
+    return ownLocation;
+  }
+
+  for (let index = chapterIndex - 1; index >= 0; index--) {
+    const location = config.chapters[index].location;
+    if (hasLocation(location)) {
+      return location;
+    }
+  }
+
+  for (let index = chapterIndex + 1; index < config.chapters.length; index++) {
+    const location = config.chapters[index].location;
+    if (hasLocation(location)) {
+      return location;
+    }
+  }
+
+  return getDefaultTitleLocation(config);
+};
+
 export type StartTransitionOptions = {
   config: StoryMapConfig;
   chapterId: string;
   mapDimensions: { height: number; width: number };
-  isMobile: boolean;
+  panelInset?: PanelInset;
 };
 export const startTransition = (
   map: mapboxgl.Map,
-  { config, chapterId, isMobile, mapDimensions }: StartTransitionOptions
+  {
+    config,
+    chapterId,
+    mapDimensions,
+    panelInset = NO_PANEL_INSET,
+  }: StartTransitionOptions
 ) => {
   const transition = getTransition({
     config,
     id: chapterId,
   });
 
-  if (!map || !transition) {
+  if (!map) {
     return;
   }
 
-  startCameraTransition(map, isMobile, mapDimensions, transition);
-  startLayerTransition(map, chapterId, config);
+  const location = resolveTransitionLocation(config, chapterId);
+  if (!transition && !location) {
+    return;
+  }
+
+  const cameraTransition = {
+    ...(transition ?? {}),
+    ...(location ? { location } : {}),
+  } as ChapterConfig | Transition;
+
+  startCameraTransition(map, mapDimensions, panelInset, cameraTransition);
+  if (transition) {
+    startLayerTransition(map, chapterId, config);
+  }
 };
