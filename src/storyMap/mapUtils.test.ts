@@ -349,7 +349,23 @@ test('falls back to the title transition location', () => {
   });
 });
 
-test('enforces a 500ms minimum for same-camera alignment changes', () => {
+test('enforces a 500ms minimum for short alignment transitions', () => {
+  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const map = makeMap({
+    padding: RIGHT_PADDING,
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom,
+  });
+
+  transition(map, {
+    config: configWith({ location: location(BOUNDS) }),
+    padding: LEFT_PADDING,
+  });
+
+  expect(cameraOptions(map).duration).toBe(500);
+});
+
+test('respects an explicit duration of zero', () => {
   const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
@@ -364,10 +380,10 @@ test('enforces a 500ms minimum for same-camera alignment changes', () => {
     padding: LEFT_PADDING,
   });
 
-  expect(cameraOptions(map).duration).toBe(500);
+  expect(cameraOptions(map).duration).toBe(0);
 });
 
-test('preserves an explicit duration above the alignment minimum', () => {
+test('preserves an explicit duration above the minimum', () => {
   const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
@@ -393,16 +409,14 @@ test('does not override duration when the camera center changes', () => {
   });
 
   transition(map, {
-    config: configWith({
-      location: { ...location(BOUNDS), duration: 0 },
-    }),
+    config: configWith({ location: location(BOUNDS) }),
     padding: LEFT_PADDING,
   });
 
-  expect(cameraOptions(map).duration).toBe(0);
+  expect(cameraOptions(map).duration).toBeUndefined();
 });
 
-test('does not override duration when the camera zoom changes', () => {
+test('floors a small zoom change', () => {
   const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
@@ -411,16 +425,30 @@ test('does not override duration when the camera zoom changes', () => {
   });
 
   transition(map, {
-    config: configWith({
-      location: { ...location(BOUNDS), duration: 0 },
-    }),
+    config: configWith({ location: location(BOUNDS) }),
     padding: LEFT_PADDING,
   });
 
-  expect(cameraOptions(map).duration).toBe(0);
+  expect(cameraOptions(map).duration).toBe(500);
 });
 
-test('does not override duration when the camera pitch changes', () => {
+test('does not override duration for a large zoom change', () => {
+  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const map = makeMap({
+    padding: RIGHT_PADDING,
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom - 1,
+  });
+
+  transition(map, {
+    config: configWith({ location: location(BOUNDS) }),
+    padding: LEFT_PADDING,
+  });
+
+  expect(cameraOptions(map).duration).toBeUndefined();
+});
+
+test('floors a pitch change during a short center/zoom flight', () => {
   const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
@@ -430,16 +458,14 @@ test('does not override duration when the camera pitch changes', () => {
   });
 
   transition(map, {
-    config: configWith({
-      location: { ...location(BOUNDS), duration: 0 },
-    }),
+    config: configWith({ location: location(BOUNDS) }),
     padding: LEFT_PADDING,
   });
 
-  expect(cameraOptions(map).duration).toBe(0);
+  expect(cameraOptions(map).duration).toBe(500);
 });
 
-test('does not override duration when the camera bearing changes', () => {
+test('floors a bearing change during a short center/zoom flight', () => {
   const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
@@ -449,13 +475,11 @@ test('does not override duration when the camera bearing changes', () => {
   });
 
   transition(map, {
-    config: configWith({
-      location: { ...location(BOUNDS), duration: 0 },
-    }),
+    config: configWith({ location: location(BOUNDS) }),
     padding: LEFT_PADDING,
   });
 
-  expect(cameraOptions(map).duration).toBe(0);
+  expect(cameraOptions(map).duration).toBe(500);
 });
 
 test('getDefaultTitleLocation prefers the title transition location', () => {

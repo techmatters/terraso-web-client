@@ -20,10 +20,7 @@ import _ from 'lodash/fp';
 import type { LngLat } from 'mapbox-gl';
 import logger from 'terraso-client-shared/monitoring/logger';
 
-import {
-  isValidBounds,
-  longitudeDistance,
-} from 'terraso-web-client/gis/gisUtils';
+import { angleDistance, isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
   NO_PADDING,
   paddingEqual,
@@ -49,10 +46,13 @@ const DEFAULT_ASSUMED_CLIENT_WIDTH = 1200;
 const DEFAULT_ASSUMED_CLIENT_HEIGHT = 600;
 
 const ROTATION_DURATION = 30000;
-// Aligning the same camera to a different padding has no center/zoom distance
-// for Mapbox to derive a duration from; keep those moves from collapsing.
-const MIN_SAME_CAMERA_TRANSITION_DURATION = 500;
-const CAMERA_EPSILON = 1e-6;
+const REFERENCE_MAX_VIEWPORT_PX = 1000;
+const CENTER_TOLERANCE_FRACTION = 0.2;
+const CENTER_EPSILON =
+  (CENTER_TOLERANCE_FRACTION * REFERENCE_MAX_VIEWPORT_PX * 360) / 512;
+const ZOOM_EPSILON = 0.9;
+const ANGLE_EPSILON = 0.01;
+const MIN_TRANSITION_DURATION = 500;
 
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
@@ -116,15 +116,53 @@ type CameraTarget = {
   bearing: number;
 };
 
-const sameCamera = (map: mapboxgl.Map, target: CameraTarget): boolean => {
+const sameCenterAndZoom = (
+  map: mapboxgl.Map,
+  target: CameraTarget
+): boolean => {
   const center = map.getCenter();
+  const zoom = map.getZoom();
+  const centerEpsilon = CENTER_EPSILON / 2 ** zoom;
+  const latitudeEpsilon =
+    centerEpsilon * Math.cos((center.lat * Math.PI) / 180);
+
   return (
-    longitudeDistance(center.lng, target.center[0]) < CAMERA_EPSILON &&
-    Math.abs(center.lat - target.center[1]) < CAMERA_EPSILON &&
-    Math.abs(map.getZoom() - target.zoom) < CAMERA_EPSILON &&
-    Math.abs(map.getPitch() - target.pitch) < CAMERA_EPSILON &&
-    longitudeDistance(map.getBearing(), target.bearing) < CAMERA_EPSILON
+    angleDistance(center.lng, target.center[0]) <= centerEpsilon &&
+    Math.abs(center.lat - target.center[1]) <= latitudeEpsilon &&
+    Math.abs(zoom - target.zoom) <= ZOOM_EPSILON
   );
+};
+
+const effectiveTransitionDuration = ({
+  map,
+  target,
+  padding,
+  duration,
+}: {
+  map: mapboxgl.Map;
+  target: CameraTarget;
+  padding: MapPadding;
+  duration?: number;
+}): number | undefined => {
+  // An explicit duration always wins, including 0.
+  if (duration !== undefined) {
+    return duration;
+  }
+
+  // Only Mapbox's center/zoom-based adaptive duration can be too short.
+  // If the center/zoom flight is already long, leave it alone.
+  if (!sameCenterAndZoom(map, target)) {
+    return undefined;
+  }
+
+  const paddingChanged = !paddingEqual(map.getPadding(), padding);
+  const bearingChanged =
+    angleDistance(map.getBearing(), target.bearing) > ANGLE_EPSILON;
+  const pitchChanged = Math.abs(map.getPitch() - target.pitch) > ANGLE_EPSILON;
+
+  return paddingChanged || bearingChanged || pitchChanged
+    ? MIN_TRANSITION_DURATION
+    : undefined;
 };
 
 const fitBoundsAnimated = (
@@ -141,17 +179,18 @@ const fitBoundsAnimated = (
     tileSize: 512,
   });
 
-  const cameraUnchanged = sameCamera(map, {
+  const target = {
     center: viewport.center,
     zoom: viewport.zoom,
     pitch: pitch ?? map.getPitch(),
     bearing: bearing ?? map.getBearing(),
+  };
+  const effectiveDuration = effectiveTransitionDuration({
+    map,
+    target,
+    padding,
+    duration,
   });
-  const paddingChanged = !paddingEqual(map.getPadding(), padding);
-  const effectiveDuration =
-    cameraUnchanged && paddingChanged
-      ? Math.max(MIN_SAME_CAMERA_TRANSITION_DURATION, duration ?? 0)
-      : duration;
 
   map[mapAnimation]({
     center: viewport.center,
