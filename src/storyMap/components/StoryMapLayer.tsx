@@ -18,6 +18,10 @@
 import GeoJsonSource from 'terraso-web-client/gis/components/GeoJsonSource';
 import VisualizationMapLayer from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import VisualizationMapRemoteSource from 'terraso-web-client/sharedData/visualization/components/VisualizationMapRemoteSource';
+import type {
+  Framing,
+  FramingRequest,
+} from 'terraso-web-client/storyMap/mapFraming';
 import type { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
 type Props = {
@@ -25,6 +29,7 @@ type Props = {
   changeBounds: boolean;
   useConfigBounds?: boolean;
   opacity?: number;
+  getFraming?: (request: FramingRequest) => Framing | null;
   onSourceError?: (error: unknown) => void;
   onLayerAdded?: (layerId: string) => void;
 };
@@ -49,6 +54,7 @@ export const StoryMapLayer = ({
   changeBounds,
   opacity,
   useConfigBounds = false,
+  getFraming,
   onSourceError,
   onLayerAdded,
 }: Props) => {
@@ -76,6 +82,7 @@ export const StoryMapLayer = ({
         useTileset={useTileset}
         changeBounds={changeBounds}
         useConfigBounds={useConfigBounds}
+        getFraming={getFraming}
         opacity={opacity}
         onLayerAdded={onLayerAdded}
       />
