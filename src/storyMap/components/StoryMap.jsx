@@ -16,7 +16,6 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Box, useMediaQuery } from '@mui/material';
 
@@ -36,8 +35,10 @@ import 'terraso-web-client/storyMap/components/StoryMap.css';
 
 import { FullscreenButton } from 'terraso-web-client/gis/components/FullscreenControl';
 import Map, { useMap } from 'terraso-web-client/gis/components/Map';
+import { MapConfigLayerStackProvider } from 'terraso-web-client/storyMap/components/mapConfigLayerStack';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
+import { enforceMapLayerOrder } from 'terraso-web-client/storyMap/mapUtils';
 import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 import theme from 'terraso-web-client/theme';
@@ -179,12 +180,21 @@ const Title = props => {
   );
 };
 
-const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
+const MapTransitionController = ({
+  config,
+  currentChapter,
+  layerRevision,
+  mapEditMode,
+}) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
 
   useEffect(() => {
-    if (!mapDimensions) {
+    if (!mapDimensions || mapEditMode) {
+      // While the map configuration overlay is open (mapEditMode), the draft
+      // preview owns the camera and the layer stack: transitions must not
+      // fight the user's map dragging. They resume as soon as the overlay
+      // closes.
       return;
     }
     startTransition(map, {
@@ -193,7 +203,33 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
       mapDimensions,
       isMobile,
     });
-  }, [map, config, mapDimensions, currentChapter, isMobile, layerRevision]);
+  }, [
+    map,
+    config,
+    mapDimensions,
+    currentChapter,
+    isMobile,
+    layerRevision,
+    mapEditMode,
+  ]);
+
+  return null;
+};
+
+/**
+ * Keeps the mapbox z-order in sync with the map configuration overlay's
+ * draft order while it edits the shared map (re-runs when a layer sublayer
+ * lands on the map).
+ */
+const MapLayerOrderSync = ({ mapLayers, revision }) => {
+  const { map } = useMap();
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    enforceMapLayerOrder(map, mapLayers);
+  }, [map, mapLayers, revision]);
 
   return null;
 };
@@ -216,10 +252,24 @@ const StoryMap = props => {
     onReady,
     chaptersFilter,
     isContained = false,
+    // NAMED mode, stated at the call site — never inferred here from the
+    // overlay's presence. In mapEditMode the fullscreen map configuration
+    // overlay is hosted over the shared map and five behaviors change:
+    //   1. the map is interactive (drag/zoom the draft camera),
+    //   2. the chapter content is dimmed, inert and click-through,
+    //   3. chapter transitions are suspended,
+    //   4. the layer stack renders the overlay's DRAFT configs (same mounts),
+    //   5. the draft layer order is enforced on the shared map.
+    mapEditMode = false,
+    mapConfigOverlay = null,
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [layerRevision, setLayerRevision] = useState(0);
+  // The overlay's draft layer stack (published via
+  // MapConfigLayerStackProvider): the same StoryMapLayer mounts take their
+  // dataset from here while editing.
+  const [mapConfigLayerStack, setMapConfigLayerStack] = useState(null);
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const containerRef = useRef();
 
@@ -287,7 +337,7 @@ const StoryMap = props => {
       />
       <Map
         id="map"
-        interactive={isMobile && isMapFullscreen}
+        interactive={mapEditMode || (isMobile && isMapFullscreen)}
         mapStyle={config.style}
         projection={config.projection}
         zoom={1}
@@ -336,16 +386,46 @@ const StoryMap = props => {
           onToggle={() => setIsMapFullscreen(prev => !prev)}
         />
 
-        {!_.isEmpty(config.dataLayers) &&
-          Object.values(config.dataLayers).map(dataLayerConfig => (
-            <StoryMapLayer
-              key={dataLayerConfig.id}
-              config={dataLayerConfig}
-              changeBounds={false}
-              opacity={0}
-              onLayerAdded={onLayerAdded}
-            />
-          ))}
+        {/* ONE mount point per mapbox layer id: while the overlay is open
+            these mounts take their dataset from its DRAFT (a different
+            dataset, same mounts); otherwise from the config's dataLayers.
+            The two sets are never mounted side by side — two owners of one
+            mapbox id steal it from each other and refetch the GeoJSON on
+            every open/cancel. */}
+        {(mapEditMode
+          ? (mapConfigLayerStack?.configs ?? [])
+          : Object.values(config.dataLayers ?? {})
+        ).map(dataLayerConfig => (
+          <StoryMapLayer
+            key={dataLayerConfig.id}
+            config={dataLayerConfig}
+            useConfigBounds={mapEditMode}
+            changeBounds={
+              mapEditMode
+                ? dataLayerConfig.id ===
+                  mapConfigLayerStack?.changeBoundsLayerId
+                : false
+            }
+            // Keep the camera when the just-added layer is already visible:
+            // the union fit only kicks in when the layer is fully outside the
+            // viewport (branch 1's fit-on-add semantics, carried onto the
+            // single mount point).
+            avoidMoveWhenVisible={mapEditMode}
+            opacity={mapEditMode ? undefined : 0}
+            onLayerAdded={onLayerAdded}
+          />
+        ))}
+
+        {mapEditMode && (
+          <MapLayerOrderSync
+            mapLayers={mapConfigLayerStack?.order ?? []}
+            revision={layerRevision}
+          />
+        )}
+
+        <MapConfigLayerStackProvider value={setMapConfigLayerStack}>
+          {mapConfigOverlay}
+        </MapConfigLayerStackProvider>
 
         <MapTransitionController
           // NOTE: the MapTransitionController unfortunately must come AFTER any map layers
@@ -354,12 +434,21 @@ const StoryMap = props => {
           config={config}
           currentChapter={currentChapter}
           layerRevision={layerRevision}
+          mapEditMode={mapEditMode}
         />
       </Map>
       <Box
         sx={({ breakpoints }) => ({
           [breakpoints.not('xs')]: { marginTop: '-100cqh' },
+          // The chapter cards stay visible at ~20% opacity while the map
+          // configuration overlay is open (so the user can see where the
+          // content will sit) but let pointer events through to the map.
+          ...(mapEditMode ? { opacity: 0.2, pointerEvents: 'none' } : {}),
         })}
+        // Modal semantics: the dimmed chapter forms are removed from the
+        // focus order and the accessibility tree while the overlay is open
+        // (20% opacity + pointer-events: none blocks the mouse only).
+        inert={mapEditMode}
         component="section"
         aria-label={t('storyMap.view_chapters_label')}
         id="features"

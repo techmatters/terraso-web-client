@@ -63,16 +63,19 @@ const HelperText = props => {
     useAnchor = true,
     maxWidth = '40rem',
     buttonProps = {},
+    onOpenChange,
   } = props;
   const anchorEl = useRef(null);
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
     setOpen(true);
+    onOpenChange?.(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+    onOpenChange?.(false);
   };
 
   const content = i18nKey ? (
@@ -94,18 +97,22 @@ const HelperText = props => {
             vertical: 'top',
             horizontal: 'left',
           },
-          PaperProps: {
-            sx: {
-              maxWidth,
+          slotProps: {
+            paper: {
+              sx: {
+                maxWidth,
+              },
             },
           },
         })
       : withProps(Dialog, {
           fullWidth: true,
           maxWidth: false,
-          PaperProps: {
-            sx: {
-              maxWidth,
+          slotProps: {
+            paper: {
+              sx: {
+                maxWidth,
+              },
             },
           },
           BackdropProps: {

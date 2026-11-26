@@ -32,6 +32,11 @@ const MapboxRemoteSource = props => {
       type: 'vector',
       url: `mapbox://terraso.${tilesetId}`,
     });
+    // Symmetric teardown (see GeoJsonSource): sources never outlive their
+    // owner on the shared map.
+    return () => {
+      removeSource(sourceName);
+    };
   }, [map, addSource, removeSource, tilesetId, sourceName]);
 
   return null;
