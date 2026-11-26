@@ -18,11 +18,14 @@
 import * as geoViewport from '@placemarkio/geo-viewport';
 
 import {
+  NO_PADDING,
+  type MapPadding,
+} from 'terraso-web-client/storyMap/mapPaddingMath';
+import {
   getDefaultTitleLocation,
   startTransition,
   type StartTransitionOptions,
 } from 'terraso-web-client/storyMap/mapUtils';
-import { NO_PANEL_INSET } from 'terraso-web-client/storyMap/panelInset';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import type {
   ChapterConfig,
@@ -33,10 +36,22 @@ import type {
 
 const WIDTH = 1400;
 const HEIGHT = 800;
-const PANEL = 490;
+const PADDING_WIDTH = 490;
 // wide enough that the fit stays limited by width in both the full canvas and
-// the strip the panel leaves visible
+// the strip the card leaves visible
 const BOUNDS: MapBounds = [-120, 10, -40, 20];
+const LEFT_PADDING: MapPadding = {
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: PADDING_WIDTH,
+};
+const RIGHT_PADDING: MapPadding = {
+  top: 0,
+  right: PADDING_WIDTH,
+  bottom: 0,
+  left: 0,
+};
 
 const viewport = (bounds: MapBounds, dimensions: [number, number]) =>
   geoViewport.viewport(bounds, dimensions, {
@@ -90,18 +105,20 @@ const location = (bounds: MapBounds): MapPosition =>
     bounds,
   }) as unknown as MapPosition;
 
-const ZERO_PADDING = { top: 0, right: 0, bottom: 0, left: 0 };
-
 type MapCamera = {
-  padding?: typeof ZERO_PADDING;
+  padding?: MapPadding;
   center?: { lng: number; lat: number };
   zoom?: number;
+  pitch?: number;
+  bearing?: number;
 };
 
 const makeMap = ({
-  padding = ZERO_PADDING,
+  padding = NO_PADDING,
   center = { lng: 0, lat: 0 },
   zoom = 5,
+  pitch = 0,
+  bearing = 0,
 }: MapCamera = {}) => {
   const calls: string[] = [];
   const recorder = (name: string) =>
@@ -113,6 +130,8 @@ const makeMap = ({
     getPadding: jest.fn(() => padding),
     getCenter: jest.fn(() => center),
     getZoom: jest.fn(() => zoom),
+    getPitch: jest.fn(() => pitch),
+    getBearing: jest.fn(() => bearing),
     setPadding: recorder('setPadding'),
     flyTo: recorder('flyTo'),
     easeTo: recorder('easeTo'),
@@ -129,7 +148,7 @@ const transition = (
     config: configWith({}),
     chapterId: 'chapter-1',
     mapDimensions: { width: WIDTH, height: HEIGHT },
-    panelInset: NO_PANEL_INSET,
+    padding: NO_PADDING,
     ...options,
   });
 };
@@ -143,11 +162,11 @@ const cameraOptions = (
   return fn.mock.calls[0][0] as Record<string, unknown>;
 };
 
-test('left panel fits the uncropped bounds into the visible strip', () => {
+test('left padding fits the uncropped bounds into the visible strip', () => {
   const map = makeMap();
-  transition(map, { panelInset: { side: 'left', width: PANEL } });
+  transition(map, { padding: LEFT_PADDING });
 
-  const expected = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
+  const expected = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
@@ -156,24 +175,24 @@ test('left panel fits the uncropped bounds into the visible strip', () => {
     top: 0,
     right: 0,
     bottom: 0,
-    left: PANEL,
+    left: PADDING_WIDTH,
   });
   // Bounds are not expanded anymore: the same zoom-out comes from fitting the
   // original bounds into the narrower strip, which keeps them inside it
-  // instead of pushing them under the panel.
+  // instead of pushing them under the chapter card.
   const centered = viewport(BOUNDS, [WIDTH, HEIGHT]);
   expect(options.zoom as number).toBeCloseTo(
-    centered.zoom + Math.log2((WIDTH - PANEL) / WIDTH),
+    centered.zoom + Math.log2((WIDTH - PADDING_WIDTH) / WIDTH),
     10
   );
   expect(options.zoom as number).toBeLessThan(centered.zoom);
 });
 
-test('right panel mirrors the left panel', () => {
+test('right padding mirrors the left padding', () => {
   const left = makeMap();
-  transition(left, { panelInset: { side: 'left', width: PANEL } });
+  transition(left, { padding: LEFT_PADDING });
   const right = makeMap();
-  transition(right, { panelInset: { side: 'right', width: PANEL } });
+  transition(right, { padding: RIGHT_PADDING });
 
   const leftOptions = cameraOptions(left);
   const rightOptions = cameraOptions(right);
@@ -183,7 +202,7 @@ test('right panel mirrors the left panel', () => {
 
 test('centered chapters fit the full width and clear the padding', () => {
   const map = makeMap();
-  transition(map, { panelInset: NO_PANEL_INSET });
+  transition(map, { padding: NO_PADDING });
 
   const expected = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const options = cameraOptions(map);
@@ -203,11 +222,11 @@ test('legacy chapters fit their backfilled bounds without cropping', () => {
   } as unknown as MapPosition;
   transition(map, {
     config: configWith({ alignment: 'left', location }),
-    panelInset: { side: 'left', width: PANEL },
+    padding: LEFT_PADDING,
   });
 
   const legacyBounds = geoViewport.bounds([-69, 45], 5, [1200, 600], 512);
-  const expected = viewport(legacyBounds, [WIDTH - PANEL, HEIGHT]);
+  const expected = viewport(legacyBounds, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
@@ -216,7 +235,7 @@ test('legacy chapters fit their backfilled bounds without cropping', () => {
 
 test('padding is interpolated by the camera move', () => {
   const map = makeMap();
-  transition(map, { panelInset: { side: 'left', width: PANEL } });
+  transition(map, { padding: LEFT_PADDING });
 
   expect(map.calls).toEqual(['flyTo']);
   expect(map.setPadding).not.toHaveBeenCalled();
@@ -226,7 +245,7 @@ test('keeps easeTo for chapters that ask for it', () => {
   const map = makeMap();
   transition(map, {
     config: configWith({ mapAnimation: 'easeTo', alignment: 'right' }),
-    panelInset: { side: 'right', width: PANEL },
+    padding: RIGHT_PADDING,
   });
 
   expect(map.easeTo).toHaveBeenCalledTimes(1);
@@ -237,7 +256,7 @@ test('chapters without any inheritable location do not move the camera', () => {
   const map = makeMap();
   transition(map, {
     config: configWith({ location: undefined } as Partial<ChapterConfig>),
-    panelInset: { side: 'left', width: PANEL },
+    padding: LEFT_PADDING,
   });
 
   expect(map.flyTo).not.toHaveBeenCalled();
@@ -258,17 +277,17 @@ test('inherits the closest previous chapter location', () => {
     config,
     chapterId: 'chapter-2',
     mapDimensions: { width: WIDTH, height: HEIGHT },
-    panelInset: { side: 'right', width: PANEL },
+    padding: RIGHT_PADDING,
   });
 
-  const expected = viewport(previousBounds, [WIDTH - PANEL, HEIGHT]);
+  const expected = viewport(previousBounds, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
   expect(options.padding).toEqual({
     top: 0,
-    right: PANEL,
+    right: PADDING_WIDTH,
     bottom: 0,
     left: 0,
   });
@@ -289,10 +308,13 @@ test('inherits the closest later chapter location when there is no previous', ()
     config,
     chapterId: 'chapter-2',
     mapDimensions: { width: WIDTH, height: HEIGHT },
-    panelInset: { side: 'left', width: PANEL },
+    padding: LEFT_PADDING,
   });
 
-  const expected = viewport(closestLaterBounds, [WIDTH - PANEL, HEIGHT]);
+  const expected = viewport(closestLaterBounds, [
+    WIDTH - PADDING_WIDTH,
+    HEIGHT,
+  ]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
@@ -311,26 +333,26 @@ test('falls back to the title transition location', () => {
     config,
     chapterId: 'chapter-2',
     mapDimensions: { width: WIDTH, height: HEIGHT },
-    panelInset: { side: 'right', width: PANEL },
+    padding: RIGHT_PADDING,
   });
 
-  const expected = viewport(titleBounds, [WIDTH - PANEL, HEIGHT]);
+  const expected = viewport(titleBounds, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
   expect(options.padding).toEqual({
     top: 0,
-    right: PANEL,
+    right: PADDING_WIDTH,
     bottom: 0,
     left: 0,
   });
 });
 
-test('enforces a 500ms minimum for same-center alignment changes', () => {
-  const target = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
+test('enforces a 500ms minimum for same-camera alignment changes', () => {
+  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const map = makeMap({
-    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
+    padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
     zoom: target.zoom,
   });
@@ -339,16 +361,16 @@ test('enforces a 500ms minimum for same-center alignment changes', () => {
     config: configWith({
       location: { ...location(BOUNDS), duration: 0 },
     }),
-    panelInset: { side: 'left', width: PANEL },
+    padding: LEFT_PADDING,
   });
 
   expect(cameraOptions(map).duration).toBe(500);
 });
 
 test('preserves an explicit duration above the alignment minimum', () => {
-  const target = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const map = makeMap({
-    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
+    padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
     zoom: target.zoom,
   });
@@ -357,7 +379,7 @@ test('preserves an explicit duration above the alignment minimum', () => {
     config: configWith({
       location: { ...location(BOUNDS), duration: 1200 },
     }),
-    panelInset: { side: 'left', width: PANEL },
+    padding: LEFT_PADDING,
   });
 
   expect(cameraOptions(map).duration).toBe(1200);
@@ -365,7 +387,7 @@ test('preserves an explicit duration above the alignment minimum', () => {
 
 test('does not override duration when the camera center changes', () => {
   const map = makeMap({
-    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
+    padding: RIGHT_PADDING,
     center: { lng: 0, lat: 0 },
     zoom: 5,
   });
@@ -374,7 +396,63 @@ test('does not override duration when the camera center changes', () => {
     config: configWith({
       location: { ...location(BOUNDS), duration: 0 },
     }),
-    panelInset: { side: 'left', width: PANEL },
+    padding: LEFT_PADDING,
+  });
+
+  expect(cameraOptions(map).duration).toBe(0);
+});
+
+test('does not override duration when the camera zoom changes', () => {
+  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const map = makeMap({
+    padding: RIGHT_PADDING,
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom - 0.5,
+  });
+
+  transition(map, {
+    config: configWith({
+      location: { ...location(BOUNDS), duration: 0 },
+    }),
+    padding: LEFT_PADDING,
+  });
+
+  expect(cameraOptions(map).duration).toBe(0);
+});
+
+test('does not override duration when the camera pitch changes', () => {
+  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const map = makeMap({
+    padding: RIGHT_PADDING,
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom,
+    pitch: 10,
+  });
+
+  transition(map, {
+    config: configWith({
+      location: { ...location(BOUNDS), duration: 0 },
+    }),
+    padding: LEFT_PADDING,
+  });
+
+  expect(cameraOptions(map).duration).toBe(0);
+});
+
+test('does not override duration when the camera bearing changes', () => {
+  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const map = makeMap({
+    padding: RIGHT_PADDING,
+    center: { lng: target.center[0], lat: target.center[1] },
+    zoom: target.zoom,
+    bearing: 90,
+  });
+
+  transition(map, {
+    config: configWith({
+      location: { ...location(BOUNDS), duration: 0 },
+    }),
+    padding: LEFT_PADDING,
   });
 
   expect(cameraOptions(map).duration).toBe(0);
@@ -411,7 +489,7 @@ test('restores the default title location when the title has no transition', () 
     config,
     chapterId: STORY_MAP_TITLE_ID,
     mapDimensions: { width: WIDTH, height: HEIGHT },
-    panelInset: NO_PANEL_INSET,
+    padding: NO_PADDING,
   });
 
   const expected = viewport(BOUNDS, [WIDTH, HEIGHT]);
@@ -419,18 +497,4 @@ test('restores the default title location when the title has no transition', () 
 
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
-});
-
-test('preserves a longer adaptive duration for same-center zoom changes', () => {
-  const target = viewport(BOUNDS, [WIDTH - PANEL, HEIGHT]);
-  const map = makeMap({
-    padding: { top: 0, right: PANEL, bottom: 0, left: 0 },
-    center: { lng: target.center[0], lat: target.center[1] },
-    zoom: target.zoom - 3,
-  });
-
-  transition(map, { panelInset: { side: 'left', width: PANEL } });
-
-  const expected = (1000 * 3 * Math.LN2) / (1.42 * 1.2);
-  expect(cameraOptions(map).duration).toBeCloseTo(expected, 5);
 });

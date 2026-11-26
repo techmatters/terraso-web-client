@@ -335,9 +335,6 @@ const Map = forwardRef((props, ref) => {
   const [bounds] = useState(initialBounds);
   const [initialLocation] = useState(propsInitialLocation);
 
-  // NOTE: viewport padding is not a prop. Applying it declaratively would
-  // recreate the whole map whenever it changed, so consumers that need it (the
-  // story map) set it imperatively on the map instance instead.
   useEffect(() => {
     const validBounds = isValidBounds(bounds);
 

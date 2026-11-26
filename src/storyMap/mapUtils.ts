@@ -17,16 +17,15 @@
 
 import * as geoViewport from '@placemarkio/geo-viewport';
 import _ from 'lodash/fp';
-import type { LngLat, PaddingOptions } from 'mapbox-gl';
+import type { LngLat } from 'mapbox-gl';
 import logger from 'terraso-client-shared/monitoring/logger';
 
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
-  NO_PANEL_INSET,
-  paddingForInset,
+  NO_PADDING,
+  paddingEqual,
   type MapPadding,
-  type PanelInset,
-} from 'terraso-web-client/storyMap/panelInset';
+} from 'terraso-web-client/storyMap/mapPaddingMath';
 import {
   LAYER_PAINT_TYPES,
   LayerPaintType,
@@ -47,12 +46,10 @@ const DEFAULT_ASSUMED_CLIENT_WIDTH = 1200;
 const DEFAULT_ASSUMED_CLIENT_HEIGHT = 600;
 
 const ROTATION_DURATION = 30000;
-// Alignment-only moves have no center/zoom distance for Mapbox to derive a
-// duration from; keep them from collapsing to a sub-second transition.
-const MIN_SAME_CENTER_TRANSITION_DURATION = 500;
-// Mapbox flyTo defaults, mirrored for its same-center zoom-only duration branch.
-const MAPBOX_FLY_CURVE = 1.42;
-const MAPBOX_FLY_SPEED = 1.2;
+// Aligning the same camera to a different padding has no center/zoom distance
+// for Mapbox to derive a duration from; keep those moves from collapsing.
+const MIN_SAME_CAMERA_TRANSITION_DURATION = 500;
+const CAMERA_EPSILON = 1e-6;
 
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
@@ -97,7 +94,7 @@ const calculateLegacyBounds = (center: LngLat, zoom: number): MapBounds => {
 
 /**
  * The chapter card overlays the map, so the camera fits the chapter's bounds
- * into the strip the panel leaves visible. Padding (applied on the map itself)
+ * into the strip the card leaves visible. Padding (applied on the map itself)
  * puts the projection center in the middle of that strip, which is why the fit
  * is computed against the safe dimensions instead of expanding the bounds.
  */
@@ -109,44 +106,36 @@ const safeDimensions = (
   height: Math.max(1, mapDimensions.height - padding.top - padding.bottom),
 });
 
-const paddingEquals = (a: PaddingOptions, b: MapPadding) =>
-  (a.top ?? 0) === b.top &&
-  (a.right ?? 0) === b.right &&
-  (a.bottom ?? 0) === b.bottom &&
-  (a.left ?? 0) === b.left;
-
-const longitudeDistance = (a: number, b: number) =>
-  Math.abs(((((a - b) % 360) + 540) % 360) - 180);
-
-const sameCenter = (map: mapboxgl.Map, center: [number, number]): boolean => {
-  const current = map.getCenter();
-  return (
-    longitudeDistance(current.lng, center[0]) < 1e-7 &&
-    Math.abs(current.lat - center[1]) < 1e-7
-  );
+const longitudeDistance = (a: number, b: number) => {
+  const delta = Math.abs(a - b) % 360;
+  return Math.min(delta, 360 - delta);
 };
 
-/**
- * Mapbox's flyTo duration when the center does not move: it uses the zoom-only
- * branch of its flight calculation. Reproduced here so a minimum duration does
- * not shorten a legitimately longer zoom transition.
- */
-const zoomOnlyFlyDuration = (zoomDelta: number) => {
-  const logScale = Math.abs(zoomDelta) * Math.LN2;
-  if (logScale < 1e-9) {
-    return MIN_SAME_CENTER_TRANSITION_DURATION;
-  }
-  return (1000 * logScale) / (MAPBOX_FLY_CURVE * MAPBOX_FLY_SPEED);
+type CameraTarget = {
+  center: [number, number];
+  zoom: number;
+  pitch: number;
+  bearing: number;
+};
+
+const sameCamera = (map: mapboxgl.Map, target: CameraTarget): boolean => {
+  const center = map.getCenter();
+  return (
+    longitudeDistance(center.lng, target.center[0]) < CAMERA_EPSILON &&
+    Math.abs(center.lat - target.center[1]) < CAMERA_EPSILON &&
+    Math.abs(map.getZoom() - target.zoom) < CAMERA_EPSILON &&
+    Math.abs(map.getPitch() - target.pitch) < CAMERA_EPSILON &&
+    longitudeDistance(map.getBearing(), target.bearing) < CAMERA_EPSILON
+  );
 };
 
 const fitBoundsAnimated = (
   map: mapboxgl.Map,
   mapDimensions: { height: number; width: number },
-  inset: PanelInset,
+  padding: MapPadding,
   mapAnimation: 'flyTo' | 'easeTo',
   { bounds, pitch, bearing, duration }: MapPosition & { duration?: number }
 ) => {
-  const padding = paddingForInset(inset);
   const safe = safeDimensions(mapDimensions, padding);
   const viewport = geoViewport.viewport(bounds, [safe.width, safe.height], {
     allowAntiMeridian: true,
@@ -154,16 +143,17 @@ const fitBoundsAnimated = (
     tileSize: 512,
   });
 
-  const paddingChanged = !paddingEquals(map.getPadding(), padding);
-  const alignmentTransition =
-    paddingChanged && sameCenter(map, viewport.center);
-  const effectiveDuration = alignmentTransition
-    ? Math.max(
-        MIN_SAME_CENTER_TRANSITION_DURATION,
-        zoomOnlyFlyDuration(viewport.zoom - map.getZoom()),
-        duration ?? 0
-      )
-    : duration;
+  const cameraUnchanged = sameCamera(map, {
+    center: viewport.center,
+    zoom: viewport.zoom,
+    pitch: pitch ?? map.getPitch(),
+    bearing: bearing ?? map.getBearing(),
+  });
+  const paddingChanged = !paddingEqual(map.getPadding(), padding);
+  const effectiveDuration =
+    cameraUnchanged && paddingChanged
+      ? Math.max(MIN_SAME_CAMERA_TRANSITION_DURATION, duration ?? 0)
+      : duration;
 
   map[mapAnimation]({
     center: viewport.center,
@@ -181,7 +171,7 @@ const fitBoundsAnimated = (
 const startCameraTransition = (
   map: mapboxgl.Map,
   mapDimensions: { height: number; width: number },
-  inset: PanelInset,
+  padding: MapPadding,
   transition: ChapterConfig | Transition
 ) => {
   if (transition.location && !_.isEmpty(transition.location)) {
@@ -189,7 +179,7 @@ const startCameraTransition = (
 
     // If no bounds, backfill from center/zoom for legacy chapters. The legacy
     // bounds are the area the author framed in the editor, so they are fitted
-    // as-is: cropping for the panel would double-count the padding.
+    // as-is: cropping for the chapter card would double-count the padding.
     if (!boundsToUse || !isValidBounds(boundsToUse)) {
       boundsToUse = calculateLegacyBounds(
         transition.location.center,
@@ -200,7 +190,7 @@ const startCameraTransition = (
     fitBoundsAnimated(
       map,
       mapDimensions,
-      inset,
+      padding,
       transition.mapAnimation ?? 'flyTo',
       { ...transition.location, bounds: boundsToUse }
     );
@@ -355,7 +345,7 @@ export type StartTransitionOptions = {
   config: StoryMapConfig;
   chapterId: string;
   mapDimensions: { height: number; width: number };
-  panelInset?: PanelInset;
+  padding?: MapPadding;
 };
 export const startTransition = (
   map: mapboxgl.Map,
@@ -363,7 +353,7 @@ export const startTransition = (
     config,
     chapterId,
     mapDimensions,
-    panelInset = NO_PANEL_INSET,
+    padding = NO_PADDING,
   }: StartTransitionOptions
 ) => {
   const transition = getTransition({
@@ -385,7 +375,7 @@ export const startTransition = (
     ...(location ? { location } : {}),
   } as ChapterConfig | Transition;
 
-  startCameraTransition(map, mapDimensions, panelInset, cameraTransition);
+  startCameraTransition(map, mapDimensions, padding, cameraTransition);
   if (transition) {
     startLayerTransition(map, chapterId, config);
   }

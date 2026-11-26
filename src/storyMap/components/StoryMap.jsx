@@ -24,15 +24,15 @@ import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import useActiveStep from 'terraso-web-client/storyMap/components/useActiveStep';
 import {
+  getChapterCard,
+  measureMapPadding,
+  NO_PADDING,
+  paddingEqual,
+} from 'terraso-web-client/storyMap/mapPaddingMath';
+import {
   getDefaultTitleLocation,
   startTransition,
 } from 'terraso-web-client/storyMap/mapUtils';
-import {
-  getPanelCard,
-  insetsEqual,
-  measurePanelInset,
-  NO_PANEL_INSET,
-} from 'terraso-web-client/storyMap/panelInset';
 import {
   ALIGNMENTS,
   STORY_MAP_TITLE_ID,
@@ -188,9 +188,6 @@ const Title = props => {
   );
 };
 
-// The strip of the map the active chapter card covers is read from the card's
-// own layout (viewport units, visual media, story map gutters) instead of being
-// derived from the map's dimensions, then clamped to a sane share of the map.
 const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
@@ -202,10 +199,10 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
     [config.chapters, currentChapter]
   );
 
-  // Bumped only when the measured inset actually changes, so a card that grows
-  // vertically does not restart the camera transition.
-  const [panelRevision, setPanelRevision] = useState(0);
-  const lastInset = useRef(NO_PANEL_INSET);
+  // Bumped only when the measured padding actually changes, so a card that
+  // grows vertically does not restart the camera transition.
+  const [paddingRevision, setPaddingRevision] = useState(0);
+  const lastPadding = useRef(NO_PADDING);
 
   useEffect(() => {
     if (!mapContainer) {
@@ -213,20 +210,20 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
     }
 
     const measure = () => {
-      const next = measurePanelInset({
+      const next = measureMapPadding({
         mapContainer,
         chapterId: currentChapter,
         alignment,
         isMobile,
       });
-      if (insetsEqual(lastInset.current, next)) {
+      if (paddingEqual(lastPadding.current, next)) {
         return;
       }
-      lastInset.current = next;
-      setPanelRevision(revision => revision + 1);
+      lastPadding.current = next;
+      setPaddingRevision(revision => revision + 1);
     };
 
-    const card = getPanelCard(currentChapter, alignment, isMobile);
+    const card = getChapterCard(currentChapter, alignment, isMobile);
     if (!card || typeof ResizeObserver === 'undefined') {
       return;
     }
@@ -242,19 +239,19 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
       return;
     }
     // Measured inline so the first transition for a chapter already uses the
-    // right inset instead of replaying it with the previous chapter's value.
-    const panelInset = measurePanelInset({
+    // right padding instead of replaying it with the previous chapter's value.
+    const padding = measureMapPadding({
       mapContainer,
       chapterId: currentChapter,
       alignment,
       isMobile,
     });
-    lastInset.current = panelInset;
+    lastPadding.current = padding;
     startTransition(map, {
       config,
       chapterId: currentChapter,
       mapDimensions,
-      panelInset,
+      padding,
     });
   }, [
     map,
@@ -264,7 +261,7 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
     currentChapter,
     alignment,
     isMobile,
-    panelRevision,
+    paddingRevision,
     layerRevision,
   ]);
 
@@ -277,7 +274,7 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
 // it's called in a useEffect, which depends on:
 //   - the story map's config, to pick up chapter alignment changes
 //   - the current chapter, which is a piece of state updated by an IntersectionObserver hook
-//   - the panel inset (the strip of the map covered by the active chapter card),
+//   - the map padding (the strip of the map covered by the active chapter card),
 //     which is zero on mobile and when the chapter is centered
 //   - the map dimensions, so we readjust when the map's size changes
 const StoryMap = props => {
