@@ -33,3 +33,5 @@ src/terrasoApi/shared/graphqlSchema
 
 # Sentry Config File
 .sentryclirc
+
+.playwright-cli
