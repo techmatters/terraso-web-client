@@ -20,7 +20,10 @@ import _ from 'lodash/fp';
 import type { LngLat } from 'mapbox-gl';
 import logger from 'terraso-client-shared/monitoring/logger';
 
-import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
+import {
+  isValidBounds,
+  longitudeDistance,
+} from 'terraso-web-client/gis/gisUtils';
 import {
   NO_PADDING,
   paddingEqual,
@@ -105,11 +108,6 @@ const safeDimensions = (
   width: Math.max(1, mapDimensions.width - padding.left - padding.right),
   height: Math.max(1, mapDimensions.height - padding.top - padding.bottom),
 });
-
-const longitudeDistance = (a: number, b: number) => {
-  const delta = Math.abs(a - b) % 360;
-  return Math.min(delta, 360 - delta);
-};
 
 type CameraTarget = {
   center: [number, number];
