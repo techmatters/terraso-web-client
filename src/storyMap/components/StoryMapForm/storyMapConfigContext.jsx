@@ -27,6 +27,12 @@ import _ from 'lodash/fp';
 import { flushSync } from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
+import {
+  getStoryMapMediaContentIds,
+  normalizeStoryMapConfig,
+  parseStoryMapConfiguration,
+} from 'terraso-web-client/storyMap/storyMapUtils';
+
 const StoryMapConfigDataContext = createContext();
 const StoryMapPreviewContext = createContext();
 const StoryMapMediaContext = createContext();
@@ -71,8 +77,9 @@ export const StoryMapConfigContextProvider = props => {
     throw new Error('StoryMapConfigContextProvider requires a baseConfig');
   }
 
-  const initialConfig = baseConfig;
-  const [config, setConfig] = useState(initialConfig);
+  const [config, setConfig] = useState(() =>
+    normalizeStoryMapConfig(baseConfig)
+  );
   const [configRevision, setConfigRevision] = useState(0);
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
@@ -80,7 +87,7 @@ export const StoryMapConfigContextProvider = props => {
   const [hasBufferedChapterChanges, setHasBufferedChapterChanges] =
     useState(false);
   const init = useRef(false);
-  const latestConfigRef = useRef(initialConfig);
+  const latestConfigRef = useRef(config);
   const latestConfigRevisionRef = useRef(0);
   const bufferedChapterUpdateBuildersRef = useRef(new Map());
   const chaptersWithBufferedChangesRef = useRef(new Set());
@@ -121,10 +128,6 @@ export const StoryMapConfigContextProvider = props => {
     return id;
   }, []);
 
-  const clearMediaFiles = useCallback(() => {
-    setMediaFiles({});
-  }, []);
-
   const getMediaFile = useCallback(id => mediaFiles[id]?.content, [mediaFiles]);
 
   const isCurrentRevision = useCallback(
@@ -144,22 +147,38 @@ export const StoryMapConfigContextProvider = props => {
   );
 
   const applySavedRevisionConfig = useCallback(
-    (revision, savedConfig) => {
+    (revision, savedConfig, submittedConfig, submittedFiles) => {
       if (!isCurrentRevision(revision)) {
         return false;
       }
 
       const nextConfig = savedConfig
-        ? applyConfigUpdate(latestConfigRef.current, savedConfig)
+        ? applyConfigUpdate(
+            latestConfigRef.current,
+            normalizeStoryMapConfig(parseStoryMapConfiguration(savedConfig))
+          )
         : latestConfigRef.current;
       latestConfigRef.current = nextConfig;
       setConfig(nextConfig);
-      clearMediaFiles();
+      if (savedConfig) {
+        const submittedIds = getStoryMapMediaContentIds(submittedConfig);
+        const remainingIds = getStoryMapMediaContentIds(nextConfig);
+        setMediaFiles(previous =>
+          Object.fromEntries(
+            Object.entries(previous).filter(
+              ([id, entry]) =>
+                !submittedIds.has(id) ||
+                remainingIds.has(id) ||
+                submittedFiles?.[id] !== entry
+            )
+          )
+        );
+      }
       setIsConfigDirty(false);
 
       return true;
     },
-    [clearMediaFiles, isCurrentRevision]
+    [isCurrentRevision]
   );
 
   const updateConfig = useCallback(
@@ -279,9 +298,8 @@ export const StoryMapConfigContextProvider = props => {
       mediaFiles,
       addMediaFile,
       getMediaFile,
-      clearMediaFiles,
     }),
-    [mediaFiles, addMediaFile, getMediaFile, clearMediaFiles]
+    [mediaFiles, addMediaFile, getMediaFile]
   );
 
   const configActionsContextValue = useMemo(

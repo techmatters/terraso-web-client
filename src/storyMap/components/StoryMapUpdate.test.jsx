@@ -37,12 +37,29 @@ import { MEMBERSHIP_ROLE_EDITOR } from 'terraso-web-client/storyMap/storyMapCons
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
+let mockShowChapterEditor = false;
+
+jest.mock(
+  'terraso-web-client/common/components/RichTextEditor/index',
+  () => props => (
+    <input
+      type="text"
+      aria-label={props.label}
+      value={props.value}
+      onChange={event => props.onChange(event.target.value)}
+    />
+  )
+);
+
 jest.mock('terraso-web-client/storyMap/components/StoryMap', () => props => {
-  const { TitleComponent, config } = props;
+  const { ChapterComponent, TitleComponent, config } = props;
 
   return (
     <>
       {TitleComponent ? <TitleComponent config={config} /> : null}
+      {mockShowChapterEditor && ChapterComponent ? (
+        <ChapterComponent record={config.chapters[1]} />
+      ) : null}
       <div>Test</div>
     </>
   );
@@ -124,12 +141,15 @@ const PUBLISHED_API_STORY_MAP = {
 
 const createDeferred = () => {
   let resolve;
+  let reject;
 
   return {
-    promise: new Promise(result => {
+    promise: new Promise((result, error) => {
       resolve = result;
+      reject = error;
     }),
     resolve,
+    reject,
   };
 };
 
@@ -181,7 +201,7 @@ test.each([API_STORY_MAP.id, 'another-map'])(
 );
 
 const setup = async user => {
-  await render(<StoryMapUpdate />, {
+  return render(<StoryMapUpdate />, {
     account: {
       currentUser: {
         data: user,
@@ -515,6 +535,216 @@ test('StoryMapUpdate: stale draft save response does not overwrite newer local e
   });
   jest.useRealTimers();
 });
+
+const selectChapterFile = async file => {
+  fireEvent.click(
+    within(
+      screen.getByRole('region', { name: 'Chapter: Chapter 2' })
+    ).getByRole('button', { name: 'Add media' })
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Add media' });
+  await act(async () => {
+    fireEvent.drop(
+      within(dialog).getByRole('button', {
+        name: /Drag and drop your file here or select one from your device/,
+      }),
+      {
+        dataTransfer: {
+          files: [file],
+          items: [{ kind: 'file', type: file.type, getAsFile: () => file }],
+          types: ['Files'],
+        },
+      }
+    );
+  });
+  await waitFor(() =>
+    expect(
+      within(dialog).getByRole('button', { name: 'Add media' })
+    ).toBeEnabled()
+  );
+  return dialog;
+};
+
+const readFileText = file =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+
+test.each([
+  'while pending',
+  'before snapshot',
+  'before a stale response',
+  'before a failed response',
+  'after cancellation and reselection',
+])(
+  'StoryMapUpdate: retains an unadded upload selected %s and sends it in the next draft',
+  async timing => {
+    jest.useFakeTimers();
+    mockShowChapterEditor = true;
+    const firstSave = createDeferred();
+    const uploadSave = createDeferred();
+    const file = new File(['selected image bytes'], 'selected.png', {
+      type: 'image/png',
+    });
+    terrasoApi.requestGraphQL.mockResolvedValue({
+      storyMaps: { edges: [{ node: API_STORY_MAP }] },
+    });
+    terrasoApi.request
+      .mockImplementationOnce(() => firstSave.promise)
+      .mockImplementationOnce(() => uploadSave.promise);
+    const view = await setup({ id: API_STORY_MAP.createdBy.id });
+
+    try {
+      const titleSection = screen.getByRole('region', {
+        name: 'Title for: Story Map Title',
+      });
+      fireEvent.click(
+        within(titleSection).getByRole('heading', { name: CONFIG.title })
+      );
+      const titleInput = within(titleSection).getByRole('textbox', {
+        name: 'Story map title (Required)',
+      });
+      fireEvent.change(titleInput, { target: { value: 'Draft with upload' } });
+
+      let dialog;
+      if (timing === 'before snapshot') {
+        dialog = await selectChapterFile(file);
+      }
+      await act(async () => jest.advanceTimersByTime(1500));
+      expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+      const firstBody = terrasoApi.request.mock.calls[0][0].body;
+      expect(
+        JSON.parse(firstBody.get('configuration')).chapters[1].mediaItems
+      ).toEqual([]);
+      expect(firstBody.getAll('files')).toHaveLength(0);
+      if (timing === 'before a stale response') {
+        fireEvent.change(titleInput, { target: { value: 'Newer draft' } });
+      }
+      if (timing !== 'before snapshot') {
+        const selected =
+          timing === 'after cancellation and reselection'
+            ? new File(['cancelled'], 'cancelled.png', { type: 'image/png' })
+            : file;
+        dialog = await selectChapterFile(selected);
+        if (timing === 'after cancellation and reselection') {
+          fireEvent.click(
+            within(dialog).getByRole('button', { name: 'Close' })
+          );
+          dialog = await selectChapterFile(file);
+        }
+      }
+      await act(async () => {
+        if (timing === 'before a failed response') {
+          firstSave.reject('Draft save failed');
+        } else {
+          firstSave.resolve(buildSavedStoryMap('Draft with upload'));
+        }
+      });
+      fireEvent.click(
+        within(dialog).getByRole('button', { name: 'Add media' })
+      );
+      await act(async () => jest.advanceTimersByTime(1500));
+      await waitFor(() => expect(terrasoApi.request).toHaveBeenCalledTimes(2));
+
+      const uploadBody = terrasoApi.request.mock.calls[1][0].body;
+      const uploadConfig = JSON.parse(uploadBody.get('configuration'));
+      expect(uploadConfig.title).toBe(
+        timing === 'before a stale response'
+          ? 'Newer draft'
+          : 'Draft with upload'
+      );
+      const media = uploadConfig.chapters[1].mediaItems[0];
+      expect(media).toEqual(
+        expect.objectContaining({
+          filename: file.name,
+          type: file.type,
+          contentId: expect.any(String),
+        })
+      );
+      const uploadedFiles = uploadBody.getAll('files');
+      expect(uploadedFiles).toHaveLength(1);
+      expect(uploadedFiles[0]).toBeInstanceOf(File);
+      expect(uploadedFiles[0].name).toBe(media.contentId);
+      expect(uploadedFiles[0].type).toBe(file.type);
+      expect(await readFileText(uploadedFiles[0])).toBe('selected image bytes');
+
+      const savedMedia = {
+        ...media,
+        signedUrl: 'https://test.com/saved-selected.png',
+      };
+      delete savedMedia.contentId;
+      const savedConfig = {
+        ...uploadConfig,
+        chapters: uploadConfig.chapters.map((chapter, index) =>
+          index === 1 ? { ...chapter, mediaItems: [savedMedia] } : chapter
+        ),
+      };
+      await act(async () => {
+        uploadSave.resolve({
+          ...buildSavedStoryMap('Draft with upload'),
+          configuration: savedConfig,
+        });
+      });
+      expect(
+        within(
+          screen.getByRole('region', { name: 'Chapter: Chapter 2' })
+        ).getByRole('img', { name: 'image media' })
+      ).toHaveAttribute('src', savedMedia.signedUrl);
+
+      terrasoApi.request.mockResolvedValueOnce({
+        ...buildSavedStoryMap('Another edit'),
+        configuration: { ...savedConfig, title: 'Another edit' },
+      });
+      const updatedTitleSection = screen.getByRole('region', {
+        name: `Title for: ${savedConfig.title}`,
+      });
+      fireEvent.click(
+        within(updatedTitleSection).getByRole('heading', {
+          name: savedConfig.title,
+        })
+      );
+      fireEvent.change(
+        within(updatedTitleSection).getByRole('textbox', {
+          name: 'Story map title (Required)',
+        }),
+        { target: { value: 'Another edit' } }
+      );
+      await act(async () => jest.advanceTimersByTime(1500));
+      expect(terrasoApi.request).toHaveBeenCalledTimes(3);
+      const nextBody = terrasoApi.request.mock.calls[2][0].body;
+      expect(nextBody.getAll('files')).toHaveLength(0);
+      expect(
+        JSON.parse(nextBody.get('configuration')).chapters[1].mediaItems[0]
+      ).toEqual(savedMedia);
+
+      view.unmount();
+      terrasoApi.requestGraphQL.mockResolvedValue({
+        storyMaps: {
+          edges: [
+            {
+              node: {
+                ...API_STORY_MAP,
+                configuration: JSON.stringify(savedConfig),
+              },
+            },
+          ],
+        },
+      });
+      await setup({ id: API_STORY_MAP.createdBy.id });
+      expect(
+        within(
+          screen.getByRole('region', { name: 'Chapter: Chapter 2' })
+        ).getByRole('img', { name: 'image media' })
+      ).toHaveAttribute('src', savedMedia.signedUrl);
+    } finally {
+      mockShowChapterEditor = false;
+      jest.useRealTimers();
+    }
+  }
+);
 
 test('StoryMapUpdate: publish responses still complete after local edits while publish is in flight', async () => {
   const trackEvent = jest.fn();

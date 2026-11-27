@@ -129,7 +129,9 @@ const StoryMapUpdate = props => {
 
             const didApplySavedRevisionConfig = applySavedRevisionConfig(
               revision,
-              savedConfig
+              savedConfig,
+              config,
+              mediaFiles
             );
             if (!didApplySavedRevisionConfig) {
               return false;
