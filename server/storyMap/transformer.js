@@ -100,8 +100,11 @@ const getFirstChapterImageUrl = chapters => {
   }
 
   for (const chapter of chapters) {
-    if (isImageMedia(chapter?.media)) {
-      return chapter.media.signedUrl;
+    const media = Array.isArray(chapter?.mediaItems)
+      ? chapter.mediaItems[0]
+      : chapter?.media;
+    if (isImageMedia(media)) {
+      return media.signedUrl;
     }
   }
 

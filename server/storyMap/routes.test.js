@@ -198,6 +198,30 @@ describe('Story Map Routes - Integration Tests', () => {
       expect(text).toContain('https://cdn.example.com/chapter.jpg');
     });
 
+    it('uses a collection chapter image for social previews', async () => {
+      mockFetch(
+        mockStoryMapResponse({
+          title: 'Story With Collection Image',
+          chapters: [
+            {
+              mediaItems: [
+                {
+                  type: 'image/jpeg',
+                  signedUrl: 'https://cdn.example.com/collection.jpg',
+                },
+              ],
+            },
+          ],
+        })
+      );
+
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/collection-image-story')
+        .expect(200);
+
+      expect(text).toContain('https://cdn.example.com/collection.jpg');
+    });
+
     it('falls back to first chapter content when short description is missing', async () => {
       mockFetch(
         mockStoryMapResponse({
