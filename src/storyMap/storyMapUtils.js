@@ -42,13 +42,17 @@ export const generateStoryMapUrl = storyMap => {
   return `/tools/story-maps/${storyMapId}/${slug}`;
 };
 
-export const generateStoryMapEmbedUrl = storyMap => {
-  const { storyMapId, slug } = storyMap;
-  return `${REACT_APP_BASE_URL}/tools/story-maps/${storyMapId}/${slug}/embed`;
+// Empty-slug legacy maps already end in '/', so edit/embed need no extra separator.
+const generateStoryMapSubpath = (storyMap, suffix) => {
+  const url = generateStoryMapUrl(storyMap);
+  return `${url}${storyMap.slug === '' ? '' : '/'}${suffix}`;
 };
 
+export const generateStoryMapEmbedUrl = storyMap =>
+  `${REACT_APP_BASE_URL}${generateStoryMapSubpath(storyMap, 'embed')}`;
+
 export const generateStoryMapEditUrl = storyMap =>
-  `${generateStoryMapUrl(storyMap)}/edit`;
+  generateStoryMapSubpath(storyMap, 'edit');
 
 export const isStoryMapPublished = storyMap => Boolean(storyMap?.publishedAt);
 

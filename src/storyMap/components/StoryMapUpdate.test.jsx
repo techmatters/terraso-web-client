@@ -36,6 +36,10 @@ import StoryMapUpdate from 'terraso-web-client/storyMap/components/StoryMapUpdat
 import { MEMBERSHIP_ROLE_EDITOR } from 'terraso-web-client/storyMap/storyMapConstants';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useParams: () => ({ storyMapId: 'c4411282', slug: 'test-slug' }),
+}));
 
 jest.mock('terraso-web-client/storyMap/components/StoryMap', () => props => {
   const { TitleComponent, config } = props;

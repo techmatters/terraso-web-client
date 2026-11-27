@@ -29,6 +29,7 @@ import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import { approveMembershipToken } from 'terraso-web-client/storyMap/storyMapSlice';
+import { generateStoryMapEditUrl } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const StoryMapInvite = () => {
   const { t } = useTranslation();
@@ -60,7 +61,7 @@ const StoryMapInvite = () => {
     if (!success) {
       return;
     }
-    navigate(`/tools/story-maps/${storyMap.storyMapId}/${storyMap.slug}/edit`);
+    navigate(generateStoryMapEditUrl(storyMap));
     trackEvent('storymap.share.accept', {
       props: {
         map: storyMap.id,

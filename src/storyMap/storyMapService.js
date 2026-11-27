@@ -74,7 +74,13 @@ export const fetchUserStoryMaps = (params, currentUser) => {
     }));
 };
 
-export const fetchStoryMap = ({ slug, storyMapId }) => {
+// django-filter ignores an empty slug, so select the exact identity locally.
+const matchingStoryMap = (response, slug) =>
+  _.getOr([], 'storyMaps.edges', response)
+    .map(_.get('node'))
+    .find(storyMap => storyMap?.slug === slug);
+
+export const fetchStoryMap = ({ slug = '', storyMapId }) => {
   const query = graphql(`
     query fetchStoryMap($slug: String, $storyMapId: String!) {
       storyMaps(slug: $slug, storyMapId: $storyMapId) {
@@ -92,7 +98,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
   `);
   return terrasoApi
     .requestGraphQL(query, { slug, storyMapId })
-    .then(_.get('storyMaps.edges[0].node'))
+    .then(response => matchingStoryMap(response, slug))
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),
@@ -104,7 +110,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
     }));
 };
 
-export const fetchStoryMapForm = ({ slug, storyMapId }) => {
+export const fetchStoryMapForm = ({ slug = '', storyMapId }) => {
   const query = graphql(`
     query fetchStoryMapForm($slug: String, $storyMapId: String!) {
       storyMaps(slug: $slug, storyMapId: $storyMapId) {
@@ -122,7 +128,7 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
   `);
   return terrasoApi
     .requestGraphQL(query, { slug, storyMapId })
-    .then(_.get('storyMaps.edges[0].node'))
+    .then(response => matchingStoryMap(response, slug))
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
       ..._.omit(['membershipList', 'configuration'], storyMap),

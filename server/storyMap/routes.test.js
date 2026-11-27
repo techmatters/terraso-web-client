@@ -77,7 +77,14 @@ const mockStoryMapResponse = config => ({
     data: {
       storyMaps: {
         edges: config
-          ? [{ node: { publishedConfiguration: JSON.stringify(config) } }]
+          ? [
+              {
+                node: {
+                  isPublished: true,
+                  publishedConfiguration: JSON.stringify(config),
+                },
+              },
+            ]
           : [],
       },
     },
@@ -87,6 +94,22 @@ const mockStoryMapResponse = config => ({
 const mockFetch = response => {
   global.fetch = jest.fn().mockResolvedValue(response);
 };
+
+const storyMapLookup = (nodes, pageInfo = { hasNextPage: false }) => ({
+  ok: true,
+  status: 200,
+  json: async () => ({
+    data: {
+      storyMaps: { edges: nodes.map(node => ({ node })), pageInfo },
+    },
+  }),
+});
+
+const publishedMap = (slug = 'my-story') => ({
+  slug,
+  isPublished: true,
+  publishedConfiguration: JSON.stringify({ title: 'Public story' }),
+});
 
 describe('Story Map Routes - Integration Tests', () => {
   let app;
@@ -120,6 +143,31 @@ describe('Story Map Routes - Integration Tests', () => {
   afterEach(() => {
     global.fetch = originalFetch;
     jest.restoreAllMocks();
+  });
+
+  it.each([
+    '/tools/story-maps/abcdefghijk/story',
+    '/tools/story-maps/abcdefghijk/story/embed',
+    '/tools/story-maps/abcdefghijk',
+  ])('returns 404 for a story map ID exceeding the database limit: %s', async url => {
+    global.fetch = jest.fn();
+    const { text } = await request(app).get(url).expect(404);
+    expect(text).toContain(ROOT_SELECTOR);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it.each(['abcdefghij', '😀😀😀😀😀😀😀😀😀😀'])(
+    'does not infer absence from an anonymous empty result for a valid-length ID: %s',
+    async id => {
+      mockFetch(storyMapLookup([]));
+      await request(app).get(`/tools/story-maps/${encodeURIComponent(id)}/story`).expect(200);
+      expect(global.fetch).toHaveBeenCalled();
+    }
+  );
+
+  it('does not turn a backend failure into a 404 for a valid-length ID', async () => {
+    mockFetch({ ok: false, status: 503 });
+    await request(app).get('/tools/story-maps/abcdefghij/story').expect(200);
   });
 
   describe('GET /tools/story-maps/:storyMapId/:slug', () => {
@@ -373,10 +421,105 @@ describe('Story Map Routes - Integration Tests', () => {
       mockFetch(mockStoryMapResponse(null));
 
       const { text } = await request(app)
-        .get('/tools/story-maps/nonexistent/missing/embed')
+        .get('/tools/story-maps/missing/missing/embed')
         .expect(200);
 
       expect(text).toContain(ROOT_SELECTOR);
+    });
+  });
+
+  describe('canonical URLs and redirects', () => {
+    it('uses the configured origin and omits the query for a published viewer and embed', async () => {
+      mockFetch(storyMapLookup([publishedMap()]));
+      for (const path of [
+        '/tools/story-maps/abc123/my-story?utm_source=example',
+        '/tools/story-maps/abc123/my-story/embed?x=1',
+      ]) {
+        const { text } = await request(app)
+          .get(path)
+          .set('Host', 'untrusted.example')
+          .expect(200);
+        expect(text).toContain(
+          '<link rel="canonical" href="https://test.terraso.org/tools/story-maps/abc123/my-story"/>'
+        );
+        expect(text).not.toContain('untrusted.example');
+      }
+    });
+
+    it('redirects a published viewer trailing slash while preserving the raw query', async () => {
+      mockFetch(storyMapLookup([publishedMap()]));
+      await request(app)
+        .get('/tools/story-maps/abc123/my-story/?x=a%2Fb&x=two')
+        .expect(301)
+        .expect('Location', '/tools/story-maps/abc123/my-story?x=a%2Fb&x=two');
+      await request(app)
+        .get('/tools/story-maps/abc123/my-story/embed/')
+        .expect(200);
+    });
+
+    it('uses only an exact empty-slug map for ID-only viewer and embed', async () => {
+      mockFetch(storyMapLookup([publishedMap('other'), publishedMap('')]));
+      await request(app)
+        .get('/tools/story-maps/abc123?a=1&a=2')
+        .expect(301)
+        .expect('Location', '/tools/story-maps/abc123/?a=1&a=2');
+      for (const path of ['/tools/story-maps/abc123/', '/tools/story-maps/abc123/embed']) {
+        const { text } = await request(app).get(path).expect(200);
+        expect(text).toContain('Public story');
+        expect(text).toContain('href="https://test.terraso.org/tools/story-maps/abc123/"');
+      }
+      const body = JSON.parse(global.fetch.mock.calls[0][1].body);
+      expect(body.variables).toEqual({ storyMapId: 'abc123', slug: '' });
+    });
+
+    it('does not redirect or inject metadata for a slugged or unpublished ID match', async () => {
+      for (const nodes of [[publishedMap()], [{ ...publishedMap(''), isPublished: false }]]) {
+        mockFetch(storyMapLookup(nodes));
+        const { text } = await request(app).get('/tools/story-maps/abc123').expect(200);
+        expect(text).toContain(ROOT_SELECTOR);
+        expect(text).not.toContain('Public story');
+        expect(text).not.toContain('rel="canonical"');
+      }
+    });
+
+    it('does not add canonical metadata or redirect an unpublished map', async () => {
+      mockFetch(storyMapLookup([{ ...publishedMap(), isPublished: false }]));
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/my-story/')
+        .expect(200);
+      expect(text).not.toContain('rel="canonical"');
+      expect(text).not.toContain('Public story');
+    });
+
+    it('does not redirect a response whose slug does not match the request', async () => {
+      mockFetch(storyMapLookup([publishedMap('different')]));
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/my-story/')
+        .expect(200);
+      expect(text).not.toContain('rel="canonical"');
+    });
+
+    it('leaves reserved and edit routes alone', async () => {
+      mockFetch(storyMapLookup([publishedMap()]));
+      await request(app).get('/tools/story-maps/new').expect(200);
+      await request(app).get('/tools/story-maps/accept').expect(200);
+      expect(global.fetch).not.toHaveBeenCalled();
+      await request(app)
+        .get('/tools/story-maps/abc123/my-story/edit')
+        .expect(200);
+      await request(app).get('/tools/story-maps/abc123/edit').expect(200);
+      await request(app).get('/tools/story-maps/abc123/embed').expect(200);
+    });
+
+    it('preserves fallback behavior for an unknown map or lookup failure with a trailing slash', async () => {
+      mockFetch(storyMapLookup([]));
+      await request(app)
+        .get('/tools/story-maps/abc123/missing/')
+        .expect(200);
+      global.fetch = jest.fn().mockRejectedValue(new Error('offline'));
+      await request(app)
+        .get('/tools/story-maps/abc123/missing/')
+        .expect(200);
     });
   });
 

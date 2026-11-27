@@ -23,6 +23,8 @@ const STORY_MAP_QUERY = `
     storyMaps(storyMapId: $storyMapId, slug: $slug) {
       edges {
         node {
+          slug
+          isPublished
           publishedConfiguration
         }
       }
@@ -50,7 +52,12 @@ const fetchStoryMap = async (storyMapId, slug) => {
     }
 
     const result = await response.json();
-    const node = result.data?.storyMaps?.edges?.[0]?.node;
+    // Older backends may ignore an empty slug filter; verify the exact identity
+    // rather than allowing an ID-only lookup to identify a different map.
+    const nodes = result.data?.storyMaps?.edges || [];
+    const node = slug === ''
+      ? nodes.find(edge => edge.node?.slug === '')?.node
+      : nodes[0]?.node;
 
     if (!node) {
       throw new Error('Story map not found');

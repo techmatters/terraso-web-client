@@ -88,7 +88,7 @@ const path = (
   ...otherParams,
 });
 
-const paths = [
+export const paths = [
   path('/', Home),
   path('/groups', GroupList, {
     breadcrumbsLabel: 'group.home_title',
@@ -237,7 +237,7 @@ const paths = [
     }),
   ]),
   path('/tools/story-maps/accept', StoryMapInvite),
-  path('*', NotFound),
+  path('*', NotFound, { auth: false }),
 ];
 
 const getPath = to => paths.find(path => matchPath({ path: path.path }, to));

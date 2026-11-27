@@ -15,14 +15,54 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { render, screen } from 'terraso-web-client/tests/utils';
+import { act, render, screen } from 'terraso-web-client/tests/utils';
+// The server route registry lives outside the client import alias.
+// eslint-disable-next-line no-restricted-imports
+import serverPaths from '../../../server/appPaths.cjs';
 
-import RoutesComponent from 'terraso-web-client/navigation/components/Routes';
+import RoutesComponent, {
+  paths,
+} from 'terraso-web-client/navigation/components/Routes';
+
+jest.mock('terraso-web-client/account/components/AccountLogin', () => ({
+  __esModule: true,
+  default: () => <div>Account Login</div>,
+}));
 
 jest.mock('terraso-web-client/storyMap/components/StoryMapsToolHome', () => ({
   __esModule: true,
   default: () => <div>Story Maps Tool Home</div>,
 }));
+
+test('server recognizes every client route and no extra routes', () => {
+  expect([...serverPaths].sort()).toEqual(
+    paths
+      .map(({ path }) => path)
+      .filter(path => path !== '*')
+      .sort()
+  );
+});
+
+test('unmatched routes are public and protected routes still require authentication', async () => {
+  window.history.pushState({}, '', '/not-a-real-route');
+
+  await render(<RoutesComponent />, {
+    account: { hasToken: false, currentUser: { fetching: false, data: null } },
+  });
+
+  expect(await screen.findByText('Page not found')).toBeInTheDocument();
+  expect(window.location.pathname).toBe('/not-a-real-route');
+  await act(async () => {
+    window.history.pushState({}, '', '/groups/new');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  });
+
+  expect(await screen.findByText('Account Login')).toBeInTheDocument();
+  expect(window.location.pathname).toBe('/account');
+  expect(new URLSearchParams(window.location.search).get('referrer')).toBe(
+    '/groups/new'
+  );
+});
 
 test('Routes: /tools redirects to /tools/story-maps', async () => {
   window.history.pushState({}, '', '/tools');

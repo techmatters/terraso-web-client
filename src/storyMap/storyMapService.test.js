@@ -17,7 +17,18 @@
 
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import { updateStoryMap } from 'terraso-web-client/storyMap/storyMapService';
+import {
+  fetchStoryMap,
+  fetchStoryMapForm,
+  updateStoryMap,
+} from 'terraso-web-client/storyMap/storyMapService';
+import {
+  generateStoryMapEditUrl,
+  generateStoryMapEmbedUrl,
+  generateStoryMapUrl,
+} from 'terraso-web-client/storyMap/storyMapUtils';
+
+import { REACT_APP_BASE_URL } from 'terraso-web-client/config';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
@@ -45,6 +56,42 @@ const restResponse = ({ isPublished, publishedAt }) => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+test.each([fetchStoryMap, fetchStoryMapForm])(
+  'ID-only lookup selects only the empty-slug map',
+  async fetchMap => {
+    terrasoApi.requestGraphQL.mockResolvedValue({
+      storyMaps: {
+        edges: [
+          { node: { slug: 'other', storyMapId: 'same-id' } },
+          { node: { slug: '', storyMapId: 'same-id', configuration: '{}' } },
+        ],
+      },
+    });
+    await expect(fetchMap({ storyMapId: 'same-id' })).resolves.toMatchObject({
+      slug: '',
+    });
+    expect(terrasoApi.requestGraphQL.mock.calls[0][1]).toEqual({
+      slug: '',
+      storyMapId: 'same-id',
+    });
+    terrasoApi.requestGraphQL.mockResolvedValue({
+      storyMaps: {
+        edges: [{ node: { slug: 'other', storyMapId: 'same-id' } }],
+      },
+    });
+    await expect(fetchMap({ storyMapId: 'same-id' })).rejects.toBe('not_found');
+  }
+);
+
+test('empty-slug map links keep viewer, editor and embed routes valid', () => {
+  const map = { storyMapId: 'abc123', slug: '' };
+  expect(generateStoryMapUrl(map)).toBe('/tools/story-maps/abc123/');
+  expect(generateStoryMapEditUrl(map)).toBe('/tools/story-maps/abc123/edit');
+  expect(generateStoryMapEmbedUrl(map)).toBe(
+    `${REACT_APP_BASE_URL}/tools/story-maps/abc123/embed`
+  );
 });
 
 test('updateStoryMap maps REST fields without retaining raw field names', async () => {

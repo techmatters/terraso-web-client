@@ -31,6 +31,7 @@ const REGEX = {
   ogImage: /<meta(?=[^>]*\bproperty="og:image")[^>]*>/g,
   description: /<meta(?=[^>]*\bname="description")[^>]*>/g,
   title: /<title>[^<]*<\/title>/,
+  canonical: /<link\b(?=[^>]*\brel=["']canonical["'])[^>]*\/?\s*>/gi,
 };
 
 const createReplacer = (regex, template) => value => html =>
@@ -65,7 +66,7 @@ const replaceOgImage = createReplacer(
 );
 
 const injectMetaTags = (html, metaTags) => {
-  const { title, description, image } = metaTags;
+  const { title, description, image, canonical } = metaTags;
 
   const transformations = [
     replaceOgTitle(title),
@@ -75,7 +76,14 @@ const injectMetaTags = (html, metaTags) => {
     replaceOgImage(image),
   ];
 
-  return transformations.reduce((acc, fn) => fn(acc), html);
+  const updated = transformations.reduce((acc, fn) => fn(acc), html);
+  if (!canonical) {
+    return updated;
+  }
+  const link = `<link rel="canonical" href="${escape(canonical)}"/>`;
+  return updated
+    .replace(REGEX.canonical, '')
+    .replace(/<\/head>/i, `${link}</head>`);
 };
 
 module.exports = { injectMetaTags };

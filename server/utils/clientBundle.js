@@ -38,9 +38,9 @@ const getCachedHtml = () => {
   return cachedHtml;
 };
 
-const serveClientBundle = (res, next) => {
+const serveClientBundle = (res, next, status = 200) => {
   try {
-    res.status(200).send(getCachedHtml());
+    res.status(status).send(getCachedHtml());
   } catch (err) {
     console.error('Error serving client bundle:', err);
     if (next) {

@@ -22,6 +22,10 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import UserStoryMap from 'terraso-web-client/storyMap/components/UserStoryMap';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useParams: () => ({ storyMapId: 'id-1', slug: 'story-1' }),
+}));
 
 jest.mock('terraso-web-client/storyMap/components/StoryMap', () => () => (
   <section aria-label="Story Map"></section>

@@ -18,18 +18,55 @@
 const express = require('express');
 
 const { fetchStoryMap } = require('./service');
+const { baseUrl } = require('../config');
 const { buildMetaTags } = require('./transformer');
 const { injectMetaTags } = require('./metaTags');
-const { getCachedHtml } = require('../utils/clientBundle');
+const { getCachedHtml, serveClientBundle } = require('../utils/clientBundle');
 
 const router = express.Router();
 
+// Slugs are Django SlugFields; restrict both segments before constructing URLs.
+const safeSegment = value => /^[a-zA-Z0-9_-]+$/.test(value);
+const storyMapPath = (id, slug) => `/tools/story-maps/${id}/${slug}`;
+const queryString = req => {
+  const index = req.originalUrl.indexOf('?');
+  return index < 0 ? '' : req.originalUrl.slice(index);
+};
+
 const handleStoryMapRequest = async (req, res, next) => {
   try {
-    const { storyMapId, slug } = req.params;
+    const { storyMapId } = req.params;
+    const slug = req.params.slug ?? '';
+
+    // StoryMap.story_map_id is a CharField(max_length=10). This is independent
+    // of anonymous visibility, which cannot distinguish missing from private.
+    if (Array.from(storyMapId).length > 10) {
+      return serveClientBundle(res, next, 404);
+    }
 
     const storyMapNode = await fetchStoryMap(storyMapId, slug);
+    // Anonymous GraphQL visibility can include ownerless drafts.
+    if (storyMapNode.isPublished !== true) {
+      return next();
+    }
     const metaTags = buildMetaTags(storyMapNode);
+    const isPublicViewer =
+      storyMapNode.slug === slug &&
+      safeSegment(storyMapId) &&
+      (slug === '' || safeSegment(slug)) &&
+      slug !== 'edit' &&
+      slug !== 'embed';
+
+    if (isPublicViewer) {
+      const path = storyMapPath(storyMapId, slug);
+      if (req.route.path === '/:storyMapId' && !req.path.endsWith('/')) {
+        return res.redirect(301, path + queryString(req));
+      }
+      if (req.path.endsWith('/') && req.route.path === '/:storyMapId/:slug') {
+        return res.redirect(301, path + queryString(req));
+      }
+      metaTags.canonical = `${baseUrl.replace(/\/$/, '')}${path}`;
+    }
 
     const updatedHtml = injectMetaTags(getCachedHtml(), metaTags);
 
@@ -40,7 +77,15 @@ const handleStoryMapRequest = async (req, res, next) => {
   }
 };
 
-router.get('/:storyMapId/:slug', handleStoryMapRequest);
+router.get('/:storyMapId', (req, res, next) => {
+  if (['new', 'accept'].includes(req.params.storyMapId)) return next();
+  return handleStoryMapRequest(req, res, next);
+});
+router.get('/:storyMapId/embed', handleStoryMapRequest);
+router.get('/:storyMapId/:slug', (req, res, next) => {
+  if (req.params.slug === 'edit') return next();
+  return handleStoryMapRequest(req, res, next);
+});
 router.get('/:storyMapId/:slug/embed', handleStoryMapRequest);
 
 module.exports = router;
