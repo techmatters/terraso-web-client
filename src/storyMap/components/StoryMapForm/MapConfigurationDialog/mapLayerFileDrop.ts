@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import { useCallback, useEffect, useState } from 'react';
 import type { FileError } from 'react-dropzone';
 
 import {
@@ -89,4 +90,87 @@ export const mapLayerFileRejectionMessage = (
     maxSize: SHARED_DATA_MAX_SIZE / 1000000.0,
     fileExtensions: MAP_LAYER_ACCEPTED_EXTENSIONS,
   });
+};
+
+export type MapLayerWindowDropOptions = {
+  /** Gates the listeners (e.g. the host dialog is open). */
+  enabled: boolean;
+  /**
+   * While true (a create session is in progress) dropped files are ignored
+   * entirely — no file swap mid-form. The drag overlay is still reported so
+   * the host can explain why the drop is ignored.
+   */
+  suspended: boolean;
+  onFile: (file: File) => void;
+  onReject: (file: File) => void;
+};
+
+/**
+ * The window-wide file drop target of the map layer create flow: while the
+ * host is enabled, dropping a file anywhere on the window starts (or is
+ * offered to) the create flow. Returns the drag-active state for the host's
+ * drop affordance.
+ */
+export const useMapLayerWindowDrop = ({
+  enabled,
+  suspended,
+  onFile,
+  onReject,
+}: MapLayerWindowDropOptions) => {
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleFile = useCallback(
+    (file: File) => {
+      if (isMapLayerFileAccepted(file)) {
+        onFile(file);
+      } else {
+        onReject(file);
+      }
+    },
+    [onFile, onReject]
+  );
+
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+    const onDragOver = (event: DragEvent) => {
+      if (event.dataTransfer?.types?.includes('Files')) {
+        event.preventDefault();
+        setDragActive(true);
+      }
+    };
+    const onDragLeave = (event: DragEvent) => {
+      // Inner dragleave events fire for every element crossed; only leaving
+      // the window (no relatedTarget) cancels the affordance.
+      if (!event.relatedTarget) {
+        setDragActive(false);
+      }
+    };
+    const onDrop = (event: DragEvent) => {
+      setDragActive(false);
+      const files = event.dataTransfer?.files;
+      if (!files?.length) {
+        return;
+      }
+      event.preventDefault();
+      if (suspended) {
+        // A layer creation is in progress: ignore the drop entirely (no file
+        // swap mid-form).
+        return;
+      }
+      // Multi-file drop: take the first file and ignore the rest.
+      handleFile(files[0]);
+    };
+    window.addEventListener('dragover', onDragOver);
+    window.addEventListener('dragleave', onDragLeave);
+    window.addEventListener('drop', onDrop);
+    return () => {
+      window.removeEventListener('dragover', onDragOver);
+      window.removeEventListener('dragleave', onDragLeave);
+      window.removeEventListener('drop', onDrop);
+    };
+  }, [enabled, suspended, handleFile]);
+
+  return dragActive;
 };

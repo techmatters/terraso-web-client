@@ -26,6 +26,7 @@ import {
   LayerConfig,
   MapLayerConfig,
   MapLayerTransition,
+  StoryMapConfig,
   Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 
@@ -99,6 +100,55 @@ export const moveMapLayerId = (
   const [moved] = next.splice(sourceIndex, 1);
   next.splice(destinationIndex, 0, moved);
   return next;
+};
+
+/**
+ * COMMIT CONTRACT (product spec): a layer created through the create flow is
+ * committed to the config IMMEDIATELY — its payload goes into `dataLayers`
+ * and its id is prepended onto the target transition's `mapLayers` (the
+ * chapter when `chapterId` is given, otherwise the title transition) — so it
+ * survives a later dialog Cancel. Only `mapLayers` + `dataLayers` are
+ * written; the compat fields (dataLayerConfigId, onChapterEnter/onChapterExit)
+ * are derived from them at the config write boundary
+ * (see `syncTransitionLayerFields`, the ONLY writer).
+ *
+ * Removing the layer from the chapter and saving only DETACHES it: the
+ * created asset is registered as session-created by the host (exempt from
+ * save-time pruning) and appended to the fetched layer list, so it stays
+ * available in the tree and re-toggling it re-adds its payload to
+ * `dataLayers` — it is never destroyed.
+ */
+export const addCreatedMapLayerToConfig = (
+  config: StoryMapConfig,
+  {
+    chapterId,
+    mapLayerConfig,
+  }: { chapterId?: string; mapLayerConfig: MapLayerConfig }
+): StoryMapConfig => {
+  const applyAdd = (transition?: Transition) => ({
+    ...transition,
+    mapLayers: toMapLayers(
+      addMapLayerId(
+        resolveMapLayers(transition).map(({ layerId }) => layerId),
+        mapLayerConfig.id
+      )
+    ),
+  });
+
+  return {
+    ...config,
+    dataLayers: {
+      ...config.dataLayers,
+      [mapLayerConfig.id]: mapLayerConfig,
+    },
+    ...(chapterId
+      ? {
+          chapters: config.chapters.map(chapter =>
+            chapter.id === chapterId ? applyAdd(chapter) : chapter
+          ),
+        }
+      : { titleTransition: applyAdd(config.titleTransition) }),
+  } as StoryMapConfig;
 };
 
 const GENERATED_LAYER_SUFFIXES = Object.values(LAYER_TYPES);
