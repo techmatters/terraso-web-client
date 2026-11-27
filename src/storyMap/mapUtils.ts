@@ -15,12 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import * as geoViewport from '@placemarkio/geo-viewport';
 import _ from 'lodash/fp';
-import type { LngLat } from 'mapbox-gl';
 import logger from 'terraso-client-shared/monitoring/logger';
 
 import { angleDistance, isValidBounds } from 'terraso-web-client/gis/gisUtils';
+import {
+  legacyBoundsTarget,
+  legacyCenterZoomTarget,
+} from 'terraso-web-client/storyMap/legacyMapUtils';
 import {
   NO_PADDING,
   paddingEqual,
@@ -32,18 +34,18 @@ import {
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import {
+  CameraTarget,
+  ChapterAlignment,
   ChapterConfig,
   LayerConfig,
   MapBounds,
   MapPosition,
+  MapViewport,
+  ResolvedCamera,
   StoryMapConfig,
   Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 import { getTransition } from 'terraso-web-client/storyMap/storyMapUtils';
-
-// Assumed viewport size when center/zoom were originally set in the editor
-const DEFAULT_ASSUMED_CLIENT_WIDTH = 1200;
-const DEFAULT_ASSUMED_CLIENT_HEIGHT = 600;
 
 const ROTATION_DURATION = 30000;
 const REFERENCE_MAX_VIEWPORT_PX = 1000;
@@ -53,6 +55,7 @@ const CENTER_EPSILON =
 const ZOOM_EPSILON = 0.9;
 const ANGLE_EPSILON = 0.01;
 const MIN_TRANSITION_DURATION = 500;
+const MAX_SAVED_VIEWPORT_PX = 4096;
 
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
@@ -84,18 +87,6 @@ const setLayerOpacity = (map: mapboxgl.Map, layer: LayerConfig) => {
 };
 
 /**
- * Calculate bounds from center/zoom for legacy chapters without bounds
- */
-const calculateLegacyBounds = (center: LngLat, zoom: number): MapBounds => {
-  return geoViewport.bounds(
-    [center.lng, center.lat],
-    zoom,
-    [DEFAULT_ASSUMED_CLIENT_WIDTH, DEFAULT_ASSUMED_CLIENT_HEIGHT],
-    512
-  );
-};
-
-/**
  * The chapter card overlays the map, so the camera fits the chapter's bounds
  * into the strip the card leaves visible. Padding (applied on the map itself)
  * puts the projection center in the middle of that strip, which is why the fit
@@ -109,11 +100,56 @@ const safeDimensions = (
   height: Math.max(1, mapDimensions.height - padding.top - padding.bottom),
 });
 
-type CameraTarget = {
-  center: [number, number];
-  zoom: number;
-  pitch: number;
-  bearing: number;
+const isValidViewport = (
+  viewport: MapPosition['viewport']
+): viewport is MapViewport =>
+  Boolean(
+    viewport &&
+    Number.isFinite(viewport.width) &&
+    Number.isFinite(viewport.height) &&
+    viewport.width > 0 &&
+    viewport.height > 0 &&
+    viewport.width <= MAX_SAVED_VIEWPORT_PX &&
+    viewport.height <= MAX_SAVED_VIEWPORT_PX
+  );
+
+const hasBounds = (
+  location: MapPosition
+): location is MapPosition & { bounds: MapBounds } =>
+  Boolean(location.bounds && isValidBounds(location.bounds));
+
+/**
+ * New cameras: preserve the saved center/zoom/pitch/bearing and scale the
+ * camera into the target safe area. `min` preserves the full saved framing.
+ */
+const cameraFromViewport = (
+  location: MapPosition,
+  mapDimensions: { width: number; height: number },
+  padding: MapPadding
+): ResolvedCamera | null => {
+  if (
+    !isValidViewport(location.viewport) ||
+    !Number.isFinite(location.zoom) ||
+    !location.center
+  ) {
+    return null;
+  }
+
+  const safe = safeDimensions(mapDimensions, padding);
+  const scale = Math.min(
+    safe.width / location.viewport.width,
+    safe.height / location.viewport.height
+  );
+
+  return {
+    target: {
+      center: [location.center.lng, location.center.lat],
+      zoom: location.zoom + Math.log2(scale),
+      pitch: location.pitch ?? 0,
+      bearing: location.bearing ?? 0,
+    },
+    padding,
+  };
 };
 
 const sameCenterAndZoom = (
@@ -165,41 +201,61 @@ const effectiveTransitionDuration = ({
     : undefined;
 };
 
-const fitBoundsAnimated = (
-  map: mapboxgl.Map,
-  mapDimensions: { height: number; width: number },
-  padding: MapPadding,
-  mapAnimation: 'flyTo' | 'easeTo',
-  { bounds, pitch, bearing, duration }: MapPosition & { duration?: number }
-) => {
-  const safe = safeDimensions(mapDimensions, padding);
-  const viewport = geoViewport.viewport(bounds, [safe.width, safe.height], {
-    allowAntiMeridian: true,
-    allowFloat: true,
-    tileSize: 512,
-  });
+/**
+ * One target resolver:
+ * - saved viewport -> new camera path, measured padding
+ * - old bounds     -> main parity, no padding
+ * - old no-bounds  -> main parity, no padding
+ */
+const targetForLocation = (
+  location: MapPosition,
+  alignment: ChapterAlignment,
+  mapDimensions: { width: number; height: number },
+  measuredPadding: MapPadding
+): ResolvedCamera | null => {
+  const viewportCamera = cameraFromViewport(
+    location,
+    mapDimensions,
+    measuredPadding
+  );
+  if (viewportCamera) {
+    return viewportCamera;
+  }
 
-  const target = {
-    center: viewport.center,
-    zoom: viewport.zoom,
-    pitch: pitch ?? map.getPitch(),
-    bearing: bearing ?? map.getBearing(),
-  };
+  if (hasBounds(location)) {
+    return legacyBoundsTarget(location, alignment, mapDimensions);
+  }
+
+  return legacyCenterZoomTarget(location, mapDimensions);
+};
+
+const flyToTarget = (
+  map: mapboxgl.Map,
+  mapAnimation: 'flyTo' | 'easeTo',
+  target: CameraTarget,
+  padding: MapPadding,
+  duration?: number
+) => {
+  const zoom = Math.max(
+    map.getMinZoom(),
+    Math.min(map.getMaxZoom(), target.zoom)
+  );
+  const clampedTarget = { ...target, zoom };
+
   const effectiveDuration = effectiveTransitionDuration({
     map,
-    target,
+    target: clampedTarget,
     padding,
     duration,
   });
 
   map[mapAnimation]({
-    center: viewport.center,
-    zoom: viewport.zoom,
-    // Let Mapbox interpolate the vanishing point together with center/zoom.
+    center: clampedTarget.center,
+    zoom: clampedTarget.zoom,
+    pitch: clampedTarget.pitch,
+    bearing: clampedTarget.bearing,
     padding,
     linear: false,
-    pitch,
-    bearing,
     essential: true,
     ...(effectiveDuration === undefined ? {} : { duration: effectiveDuration }),
   });
@@ -209,28 +265,26 @@ const startCameraTransition = (
   map: mapboxgl.Map,
   mapDimensions: { height: number; width: number },
   padding: MapPadding,
+  alignment: ChapterAlignment,
   transition: ChapterConfig | Transition
 ) => {
   if (transition.location && !_.isEmpty(transition.location)) {
-    let boundsToUse = transition.location.bounds;
+    const camera = targetForLocation(
+      transition.location,
+      alignment,
+      mapDimensions,
+      padding
+    );
 
-    // If no bounds, backfill from center/zoom for legacy chapters. The legacy
-    // bounds are the area the author framed in the editor, so they are fitted
-    // as-is: cropping for the chapter card would double-count the padding.
-    if (!boundsToUse || !isValidBounds(boundsToUse)) {
-      boundsToUse = calculateLegacyBounds(
-        transition.location.center,
-        transition.location.zoom
+    if (camera) {
+      flyToTarget(
+        map,
+        transition.mapAnimation ?? 'flyTo',
+        camera.target,
+        camera.padding,
+        transition.location.duration
       );
     }
-
-    fitBoundsAnimated(
-      map,
-      mapDimensions,
-      padding,
-      transition.mapAnimation ?? 'flyTo',
-      { ...transition.location, bounds: boundsToUse }
-    );
   }
 
   if (transition.rotateAnimation) {
@@ -337,9 +391,9 @@ export const getDefaultTitleLocation = (
 };
 
 /**
- * Chapters without a location inherit one so that alignment changes still
- * reframe the map: nearest previous chapter, then nearest later chapter, then
- * the title transition's location.
+ * Chapters without a location inherit the nearest previous location. Scrolling
+ * down re-applies the camera already in place, so it is a no-op; scrolling up
+ * intentionally uses the previous location instead of searching forward.
  */
 const resolveTransitionLocation = (
   config: StoryMapConfig,
@@ -368,13 +422,6 @@ const resolveTransitionLocation = (
     }
   }
 
-  for (let index = chapterIndex + 1; index < config.chapters.length; index++) {
-    const location = config.chapters[index].location;
-    if (hasLocation(location)) {
-      return location;
-    }
-  }
-
   return getDefaultTitleLocation(config);
 };
 
@@ -383,6 +430,7 @@ export type StartTransitionOptions = {
   chapterId: string;
   mapDimensions: { height: number; width: number };
   padding?: MapPadding;
+  alignment?: ChapterAlignment;
 };
 export const startTransition = (
   map: mapboxgl.Map,
@@ -391,6 +439,7 @@ export const startTransition = (
     chapterId,
     mapDimensions,
     padding = NO_PADDING,
+    alignment = 'center',
   }: StartTransitionOptions
 ) => {
   const transition = getTransition({
@@ -412,7 +461,13 @@ export const startTransition = (
     ...(location ? { location } : {}),
   } as ChapterConfig | Transition;
 
-  startCameraTransition(map, mapDimensions, padding, cameraTransition);
+  startCameraTransition(
+    map,
+    mapDimensions,
+    padding,
+    alignment,
+    cameraTransition
+  );
   if (transition) {
     startLayerTransition(map, chapterId, config);
   }

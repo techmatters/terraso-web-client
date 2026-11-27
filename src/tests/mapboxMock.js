@@ -33,6 +33,8 @@ export const createMapMock = (overrides = {}) => ({
   getBounds: jest.fn(),
   getStyle: jest.fn(),
   getZoom: jest.fn(() => 5),
+  getMinZoom: jest.fn(() => 0),
+  getMaxZoom: jest.fn(() => 22),
   getCenter: jest.fn(() => ({ lng: 0, lat: 0 })),
   getPitch: jest.fn(() => 0),
   getBearing: jest.fn(() => 0),

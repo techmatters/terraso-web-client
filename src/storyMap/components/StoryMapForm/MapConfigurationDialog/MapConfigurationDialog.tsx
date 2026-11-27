@@ -204,29 +204,37 @@ type MapLocationChangeProps = {
   onPositionChange: (position: MapPosition) => void;
 };
 const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
-  const { map } = useMap();
+  const { map, mapDimensions } = useMap();
 
   useEffect(() => {
     if (!map) {
       return;
     }
     const updatePosition = () => {
+      if (!mapDimensions) {
+        return;
+      }
       onPositionChange({
         center: map.getCenter(),
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
         bounds: _.flatten(map.getBounds().toArray()) as MapBounds,
+        viewport: {
+          width: mapDimensions.width,
+          height: mapDimensions.height,
+        },
       });
     };
     map.on('load', updatePosition);
     map.on('move', updatePosition);
+    updatePosition();
 
     return () => {
       map.off('load', updatePosition);
       map.off('move', updatePosition);
     };
-  }, [map, onPositionChange]);
+  }, [map, mapDimensions, onPositionChange]);
 
   return null;
 };
@@ -253,6 +261,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapBounds, setMapBounds] = useState(location?.bounds);
+  const [mapViewport, setMapViewport] = useState(location?.viewport);
   const [mapStyle, setMapStyle] = useState<string | undefined>();
   const [changeBounds, setChangeBounds] = useState(false);
   const [mapLayerConfig, setMapLayerConfig] = useState(props.mapLayerConfig);
@@ -293,6 +302,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       pitch: mapPitch,
       bearing: mapBearing,
       bounds: mapBounds,
+      viewport: mapViewport,
     });
     onConfirm({
       location,
@@ -306,6 +316,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     mapPitch,
     mapBearing,
     mapBounds,
+    mapViewport,
     mapStyle,
     config.style,
     mapLayerConfig,
@@ -321,6 +332,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     setMapPitch(position.pitch);
     setMapBearing(position.bearing);
     setMapBounds(position.bounds);
+    setMapViewport(position.viewport);
   }, []);
 
   const onStyleChange = useCallback(

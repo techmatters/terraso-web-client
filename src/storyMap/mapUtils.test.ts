@@ -28,6 +28,7 @@ import {
 } from 'terraso-web-client/storyMap/mapUtils';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import type {
+  ChapterAlignment,
   ChapterConfig,
   MapBounds,
   MapPosition,
@@ -59,6 +60,35 @@ const viewport = (bounds: MapBounds, dimensions: [number, number]) =>
     allowFloat: true,
     tileSize: 512,
   });
+
+const viewportLocation = (
+  bounds: MapBounds,
+  dimensions: [number, number] = [WIDTH, HEIGHT]
+): MapPosition => {
+  const fit = viewport(bounds, dimensions);
+  return {
+    center: { lng: fit.center[0], lat: fit.center[1] },
+    zoom: fit.zoom,
+    pitch: 0,
+    bearing: 0,
+    bounds,
+    viewport: { width: dimensions[0], height: dimensions[1] },
+  } as MapPosition;
+};
+
+const expandForDisplay = (
+  bounds: MapBounds,
+  alignment: ChapterAlignment
+): MapBounds => {
+  if (!alignment || alignment === 'center') {
+    return bounds;
+  }
+  const [swLng, swLat, neLng, neLat] = bounds;
+  const expansion = (neLng - swLng) * (2 / 3);
+  return alignment === 'left'
+    ? [swLng - expansion, swLat, neLng, neLat]
+    : [swLng, swLat, neLng + expansion, neLat];
+};
 
 const chapter = (overrides: Partial<ChapterConfig>): ChapterConfig =>
   ({
@@ -132,6 +162,8 @@ const makeMap = ({
     getZoom: jest.fn(() => zoom),
     getPitch: jest.fn(() => pitch),
     getBearing: jest.fn(() => bearing),
+    getMinZoom: jest.fn(() => 0),
+    getMaxZoom: jest.fn(() => 22),
     setPadding: recorder('setPadding'),
     flyTo: recorder('flyTo'),
     easeTo: recorder('easeTo'),
@@ -162,9 +194,13 @@ const cameraOptions = (
   return fn.mock.calls[0][0] as Record<string, unknown>;
 };
 
-test('left padding fits the uncropped bounds into the visible strip', () => {
+test('new viewport cameras fit the saved camera into the visible strip', () => {
   const map = makeMap();
-  transition(map, { padding: LEFT_PADDING });
+  transition(map, {
+    config: configWith({ location: viewportLocation(BOUNDS) }),
+    padding: LEFT_PADDING,
+    alignment: 'left',
+  });
 
   const expected = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
   const options = cameraOptions(map);
@@ -177,9 +213,6 @@ test('left padding fits the uncropped bounds into the visible strip', () => {
     bottom: 0,
     left: PADDING_WIDTH,
   });
-  // Bounds are not expanded anymore: the same zoom-out comes from fitting the
-  // original bounds into the narrower strip, which keeps them inside it
-  // instead of pushing them under the chapter card.
   const centered = viewport(BOUNDS, [WIDTH, HEIGHT]);
   expect(options.zoom as number).toBeCloseTo(
     centered.zoom + Math.log2((WIDTH - PADDING_WIDTH) / WIDTH),
@@ -190,19 +223,36 @@ test('left padding fits the uncropped bounds into the visible strip', () => {
 
 test('right padding mirrors the left padding', () => {
   const left = makeMap();
-  transition(left, { padding: LEFT_PADDING });
+  transition(left, {
+    config: configWith({ location: viewportLocation(BOUNDS) }),
+    padding: LEFT_PADDING,
+    alignment: 'left',
+  });
   const right = makeMap();
-  transition(right, { padding: RIGHT_PADDING });
+  transition(right, {
+    config: configWith({ location: viewportLocation(BOUNDS) }),
+    padding: RIGHT_PADDING,
+    alignment: 'right',
+  });
 
   const leftOptions = cameraOptions(left);
   const rightOptions = cameraOptions(right);
   expect(rightOptions.center).toEqual(leftOptions.center);
   expect(rightOptions.zoom).toBeCloseTo(leftOptions.zoom as number, 10);
+  expect(rightOptions.padding).toEqual({
+    top: 0,
+    right: PADDING_WIDTH,
+    bottom: 0,
+    left: 0,
+  });
 });
 
 test('centered chapters fit the full width and clear the padding', () => {
   const map = makeMap();
-  transition(map, { padding: NO_PADDING });
+  transition(map, {
+    config: configWith({ location: viewportLocation(BOUNDS) }),
+    padding: NO_PADDING,
+  });
 
   const expected = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const options = cameraOptions(map);
@@ -211,7 +261,23 @@ test('centered chapters fit the full width and clear the padding', () => {
   expect(options.padding).toEqual({ top: 0, right: 0, bottom: 0, left: 0 });
 });
 
-test('legacy chapters fit their backfilled bounds without cropping', () => {
+test('legacy bounds chapters keep main expansion and no padding', () => {
+  const map = makeMap();
+  transition(map, {
+    config: configWith({ alignment: 'left', location: location(BOUNDS) }),
+    padding: LEFT_PADDING,
+    alignment: 'left',
+  });
+
+  const expected = viewport(expandForDisplay(BOUNDS, 'left'), [WIDTH, HEIGHT]);
+  const options = cameraOptions(map);
+
+  expect(options.center).toEqual(expected.center);
+  expect(options.zoom).toBeCloseTo(expected.zoom, 10);
+  expect(options.padding).toEqual(NO_PADDING);
+});
+
+test('legacy no-bounds chapters keep main center/zoom behavior', () => {
   const map = makeMap();
   const location: MapPosition = {
     center: { lng: -69, lat: 45 },
@@ -223,19 +289,24 @@ test('legacy chapters fit their backfilled bounds without cropping', () => {
   transition(map, {
     config: configWith({ alignment: 'left', location }),
     padding: LEFT_PADDING,
+    alignment: 'left',
   });
 
   const legacyBounds = geoViewport.bounds([-69, 45], 5, [1200, 600], 512);
-  const expected = viewport(legacyBounds, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const expected = viewport(legacyBounds, [WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
+  expect(options.padding).toEqual(NO_PADDING);
 });
 
 test('padding is interpolated by the camera move', () => {
   const map = makeMap();
-  transition(map, { padding: LEFT_PADDING });
+  transition(map, {
+    config: configWith({ location: viewportLocation(BOUNDS) }),
+    padding: LEFT_PADDING,
+  });
 
   expect(map.calls).toEqual(['flyTo']);
   expect(map.setPadding).not.toHaveBeenCalled();
@@ -244,8 +315,13 @@ test('padding is interpolated by the camera move', () => {
 test('keeps easeTo for chapters that ask for it', () => {
   const map = makeMap();
   transition(map, {
-    config: configWith({ mapAnimation: 'easeTo', alignment: 'right' }),
+    config: configWith({
+      mapAnimation: 'easeTo',
+      alignment: 'right',
+      location: viewportLocation(BOUNDS),
+    }),
     padding: RIGHT_PADDING,
+    alignment: 'right',
   });
 
   expect(map.easeTo).toHaveBeenCalledTimes(1);
@@ -278,22 +354,21 @@ test('inherits the closest previous chapter location', () => {
     chapterId: 'chapter-2',
     mapDimensions: { width: WIDTH, height: HEIGHT },
     padding: RIGHT_PADDING,
+    alignment: 'right',
   });
 
-  const expected = viewport(previousBounds, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const expected = viewport(expandForDisplay(previousBounds, 'right'), [
+    WIDTH,
+    HEIGHT,
+  ]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
-  expect(options.padding).toEqual({
-    top: 0,
-    right: PADDING_WIDTH,
-    bottom: 0,
-    left: 0,
-  });
+  expect(options.padding).toEqual(NO_PADDING);
 });
 
-test('inherits the closest later chapter location when there is no previous', () => {
+test('falls back to the default title location when there is no previous', () => {
   const map = makeMap();
   const closestLaterBounds: MapBounds = [-10, -10, 10, 10];
   const fartherLaterBounds: MapBounds = [20, 20, 40, 40];
@@ -311,14 +386,12 @@ test('inherits the closest later chapter location when there is no previous', ()
     padding: LEFT_PADDING,
   });
 
-  const expected = viewport(closestLaterBounds, [
-    WIDTH - PADDING_WIDTH,
-    HEIGHT,
-  ]);
+  const expected = viewport(closestLaterBounds, [WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
+  expect(options.padding).toEqual(NO_PADDING);
 });
 
 test('falls back to the title transition location', () => {
@@ -336,21 +409,16 @@ test('falls back to the title transition location', () => {
     padding: RIGHT_PADDING,
   });
 
-  const expected = viewport(titleBounds, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const expected = viewport(titleBounds, [WIDTH, HEIGHT]);
   const options = cameraOptions(map);
 
   expect(options.center).toEqual(expected.center);
   expect(options.zoom).toBeCloseTo(expected.zoom, 10);
-  expect(options.padding).toEqual({
-    top: 0,
-    right: PADDING_WIDTH,
-    bottom: 0,
-    left: 0,
-  });
+  expect(options.padding).toEqual(NO_PADDING);
 });
 
 test('enforces a 500ms minimum for short alignment transitions', () => {
-  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
@@ -366,7 +434,7 @@ test('enforces a 500ms minimum for short alignment transitions', () => {
 });
 
 test('respects an explicit duration of zero', () => {
-  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
@@ -384,7 +452,7 @@ test('respects an explicit duration of zero', () => {
 });
 
 test('preserves an explicit duration above the minimum', () => {
-  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
@@ -417,7 +485,7 @@ test('does not override duration when the camera center changes', () => {
 });
 
 test('floors a small zoom change', () => {
-  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
@@ -433,7 +501,7 @@ test('floors a small zoom change', () => {
 });
 
 test('does not override duration for a large zoom change', () => {
-  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
@@ -449,7 +517,7 @@ test('does not override duration for a large zoom change', () => {
 });
 
 test('floors a pitch change during a short center/zoom flight', () => {
-  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },
@@ -466,7 +534,7 @@ test('floors a pitch change during a short center/zoom flight', () => {
 });
 
 test('floors a bearing change during a short center/zoom flight', () => {
-  const target = viewport(BOUNDS, [WIDTH - PADDING_WIDTH, HEIGHT]);
+  const target = viewport(BOUNDS, [WIDTH, HEIGHT]);
   const map = makeMap({
     padding: RIGHT_PADDING,
     center: { lng: target.center[0], lat: target.center[1] },

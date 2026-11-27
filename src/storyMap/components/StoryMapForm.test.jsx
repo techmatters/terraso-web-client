@@ -1416,6 +1416,7 @@ test('StoryMapForm: Change chapter location', async () => {
           lng: -77.6543,
         },
         pitch: 20,
+        viewport: { width: 1200, height: 600 },
         zoom: 13,
       },
     })

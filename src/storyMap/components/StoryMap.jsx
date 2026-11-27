@@ -252,6 +252,7 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
       chapterId: currentChapter,
       mapDimensions,
       padding,
+      alignment: isMobile ? 'center' : alignment,
     });
   }, [
     map,
