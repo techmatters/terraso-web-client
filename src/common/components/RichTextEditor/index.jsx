@@ -67,6 +67,7 @@ import {
 import { withProps } from 'terraso-web-client/react-hoc';
 
 import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
+import { fragmentTextExcluding } from 'terraso-web-client/common/components/RichTextEditor/fragmentText';
 import Toolbar from 'terraso-web-client/common/components/RichTextEditor/Toolbar';
 import { deserialize } from 'terraso-web-client/common/components/RichTextEditor/utils';
 import {
@@ -249,6 +250,50 @@ export const toggleBlock = (editor, format) => {
 export const isContentChangeOperation = operation =>
   operation.type !== 'set_selection';
 
+// Clipboard fragments are untrusted. Extract only text from media-bearing Slate
+// fragments rather than importing collection identities or rendered controls.
+const clipboardFragmentText = data => {
+  const html = data.getData('text/html');
+  const parsed = html
+    ? new DOMParser().parseFromString(html, 'text/html')
+    : null;
+  const encoded =
+    data.getData('application/x-slate-fragment') ||
+    parsed
+      ?.querySelector('[data-slate-fragment]')
+      ?.getAttribute('data-slate-fragment');
+  if (!encoded) {
+    return null;
+  }
+
+  try {
+    const fragment = JSON.parse(decodeURIComponent(window.atob(encoded)));
+    const containsMedia = node =>
+      node &&
+      typeof node === 'object' &&
+      (node.type === 'media-collection' ||
+        (Array.isArray(node.children) && node.children.some(containsMedia)));
+    const validNode = node =>
+      node &&
+      typeof node === 'object' &&
+      (typeof node.text === 'string' ||
+        (Array.isArray(node.children) && node.children.every(validNode)));
+    if (!Array.isArray(fragment) || !fragment.every(validNode)) {
+      return data.getData('text/plain') || '';
+    }
+    if (!fragment.some(containsMedia)) {
+      return null;
+    }
+    return fragmentTextExcluding(
+      fragment,
+      node => node?.type === 'media-collection'
+    );
+  } catch {
+    // Do not hand malformed Slate fragments to Slate's decoder.
+    return data.getData('text/plain') || '';
+  }
+};
+
 const withInlines = editor => {
   const { insertData, insertText, isInline } = editor;
 
@@ -264,10 +309,32 @@ const withInlines = editor => {
   };
 
   editor.insertData = data => {
-    const html = data.getData('text/html');
+    const safeText = clipboardFragmentText(data);
+    if (safeText !== null) {
+      if (safeText) {
+        insertData({
+          getData: type => (type === 'text/plain' ? safeText : ''),
+          files: [],
+          types: ['text/plain'],
+        });
+      }
+      return;
+    }
+    if (data.getData('application/x-slate-fragment')) {
+      insertData(data);
+      return;
+    }
 
+    const html = data.getData('text/html');
     if (html) {
       const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const collections = parsed.querySelectorAll(
+        '[data-story-map-media-collection]'
+      );
+      collections.forEach(node => node.remove());
+      if (collections.length && !parsed.body.textContent.trim()) {
+        return;
+      }
       const fragment = deserialize(parsed.body);
       Transforms.insertFragment(editor, fragment);
       return;
@@ -689,6 +756,12 @@ const RichTextEditor = props => {
     placeholder,
     addContainer,
     containerSx,
+    renderCustomElement,
+    // Slate void elements are atomic nodes, not editable rich text.
+    isCustomVoidElement,
+    customToolbar,
+    onCopy,
+    onCut,
     initialFocused = false,
   } = props;
 
@@ -696,11 +769,16 @@ const RichTextEditor = props => {
   const containerRef = useRef(null);
   const selectionRef = useRef();
   const syncingExternalValueRef = useRef(false);
+  const isCustomVoidElementRef = useRef(isCustomVoidElement);
+  isCustomVoidElementRef.current = isCustomVoidElement;
 
-  const editor = useMemo(
-    () => withInlines(withHistory(withReact(createEditor()))),
-    []
-  );
+  const editor = useMemo(() => {
+    const editor = withInlines(withHistory(withReact(createEditor())));
+    const { isVoid } = editor;
+    editor.isVoid = element =>
+      isCustomVoidElementRef.current?.(element) || isVoid(element);
+    return editor;
+  }, []);
 
   const onChangeWrapper = useCallback(
     nextValue => {
@@ -764,8 +842,11 @@ const RichTextEditor = props => {
   );
 
   const renderElement = useCallback(
-    props => <Element {...props} editable={editable} />,
-    [editable]
+    props =>
+      renderCustomElement?.({ ...props, editable }) ?? (
+        <Element {...props} editable={editable} />
+      ),
+    [editable, renderCustomElement]
   );
 
   const renderPlaceholder = useCallback(
@@ -849,6 +930,7 @@ const RichTextEditor = props => {
                     label={t('common.rich_text_editor_toolbar_bulleted_list')}
                   />
                 </>,
+                ...(customToolbar ? [customToolbar] : []),
               ]}
             />
           )}
@@ -868,6 +950,8 @@ const RichTextEditor = props => {
                 : null
             }
             readOnly={!editable}
+            onCopy={onCopy && (event => onCopy(event, editor))}
+            onCut={onCut && (event => onCut(event, editor))}
             renderElement={renderElement}
             renderLeaf={Leaf}
             placeholder={placeholder}
