@@ -59,6 +59,7 @@
     "use-debounce": "^10.1.1",
     "uuid": "^14.0.0",
     "vite": "^7.3.6",
+    "wavesurfer.js": "^8.0.3",
     "web-vitals": "^5.2.0",
     "world-countries": "5.1.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
