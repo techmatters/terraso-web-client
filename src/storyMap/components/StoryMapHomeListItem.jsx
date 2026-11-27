@@ -96,17 +96,20 @@ const CollaborationIndicator = ({ storyMap }) => {
 const StoryMapHomeListItem = ({ storyMap }) => {
   const { t, i18n } = useTranslation();
   const storyMapConfig = storyMap.config;
-  const [imageSrc, setImageSrc] = useState(() =>
-    getStoryMapImage(storyMapConfig)
-  );
+  const selectedImageSrc = getStoryMapImage(storyMapConfig);
+  const [failedImageSrc, setFailedImageSrc] = useState(null);
+  const imageSrc =
+    failedImageSrc === selectedImageSrc
+      ? STORY_MAP_FALLBACK_IMAGE
+      : selectedImageSrc;
 
   const handleImageError = useCallback(() => {
     if (imageSrc === STORY_MAP_FALLBACK_IMAGE) {
       return;
     }
 
-    setImageSrc(STORY_MAP_FALLBACK_IMAGE);
-  }, [imageSrc]);
+    setFailedImageSrc(selectedImageSrc);
+  }, [imageSrc, selectedImageSrc]);
 
   const accountMembership = useMemo(
     () => storyMap.membershipInfo.accountMembership,

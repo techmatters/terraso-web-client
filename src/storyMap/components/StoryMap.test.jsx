@@ -68,7 +68,7 @@ const testChapter = ({ title, description, image }) => {
 
   if (image) {
     const imageElement = within(chapterSection).getByRole('img', {
-      name: 'Chapter media',
+      name: 'image media',
     });
     expect(imageElement).toHaveAttribute('src', image);
   }
@@ -102,6 +102,86 @@ test('StoryMap: Renders title and chapters correctly', async () => {
     image: 'https://test.com/image.png',
   });
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
+});
+
+test('StoryMap: passes only the theme id needed by custom chapter components', async () => {
+  const ChapterComponent = jest.fn(() => null);
+  await render(
+    <StoryMap
+      config={{ ...CONFIG, themeId: 'theme-3' }}
+      ChapterComponent={ChapterComponent}
+    />
+  );
+
+  const chapterProps = ChapterComponent.mock.calls[0][0];
+  expect(chapterProps.themeId).toBe('theme-3');
+  expect(chapterProps).not.toHaveProperty('config');
+});
+
+test('StoryMap: renders a single-item gallery as a carousel without changing its saved preference', async () => {
+  const chapter = {
+    id: 'chapter-gallery',
+    title: 'Gallery chapter',
+    mediaItems: [
+      {
+        id: 'image-1',
+        type: 'image/png',
+        signedUrl: 'https://test.com/image-1.png',
+      },
+    ],
+    mediaPresentation: 'gallery',
+  };
+  await render(<StoryMap config={{ ...CONFIG, chapters: [chapter] }} />);
+
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Gallery chapter',
+  });
+  expect(
+    within(chapterSection).getByTestId('carousel-viewport')
+  ).toBeInTheDocument();
+  expect(
+    within(chapterSection).queryByTestId('gallery-media-grid')
+  ).not.toBeInTheDocument();
+  expect(chapter.mediaPresentation).toBe('gallery');
+});
+
+test('StoryMap: renders a selected gallery when a chapter has multiple items', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        chapters: [
+          {
+            id: 'chapter-gallery',
+            title: 'Gallery chapter',
+            mediaItems: [
+              {
+                id: 'image-1',
+                type: 'image/png',
+                signedUrl: 'https://test.com/image-1.png',
+              },
+              {
+                id: 'image-2',
+                type: 'image/png',
+                signedUrl: 'https://test.com/image-2.png',
+              },
+            ],
+            mediaPresentation: 'gallery',
+          },
+        ],
+      }}
+    />
+  );
+
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Gallery chapter',
+  });
+  expect(
+    within(chapterSection).getByTestId('gallery-media-grid')
+  ).toBeInTheDocument();
+  expect(
+    within(chapterSection).queryByTestId('carousel-viewport')
+  ).not.toBeInTheDocument();
 });
 
 test('StoryMap: Use config style', async () => {
