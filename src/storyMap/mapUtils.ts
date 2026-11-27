@@ -18,11 +18,8 @@
 import _ from 'lodash/fp';
 import logger from 'terraso-client-shared/monitoring/logger';
 
-import { angleDistance, isValidBounds } from 'terraso-web-client/gis/gisUtils';
-import {
-  legacyBoundsTarget,
-  legacyCenterZoomTarget,
-} from 'terraso-web-client/storyMap/legacyMapUtils';
+import { angleDistance } from 'terraso-web-client/gis/gisUtils';
+import { targetForLocation } from 'terraso-web-client/storyMap/mapCameraMath';
 import {
   NO_PADDING,
   paddingEqual,
@@ -38,10 +35,7 @@ import {
   ChapterAlignment,
   ChapterConfig,
   LayerConfig,
-  MapBounds,
   MapPosition,
-  MapViewport,
-  ResolvedCamera,
   StoryMapConfig,
   Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
@@ -55,7 +49,6 @@ const CENTER_EPSILON =
 const ZOOM_EPSILON = 0.9;
 const ANGLE_EPSILON = 0.01;
 const MIN_TRANSITION_DURATION = 500;
-const MAX_SAVED_VIEWPORT_PX = 4096;
 
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
@@ -84,72 +77,6 @@ const setLayerOpacity = (map: mapboxgl.Map, layer: LayerConfig) => {
     }
     map.setPaintProperty(layer.layer, prop, layer.opacity);
   });
-};
-
-/**
- * The chapter card overlays the map, so the camera fits the chapter's bounds
- * into the strip the card leaves visible. Padding (applied on the map itself)
- * puts the projection center in the middle of that strip, which is why the fit
- * is computed against the safe dimensions instead of expanding the bounds.
- */
-const safeDimensions = (
-  mapDimensions: { height: number; width: number },
-  padding: MapPadding
-) => ({
-  width: Math.max(1, mapDimensions.width - padding.left - padding.right),
-  height: Math.max(1, mapDimensions.height - padding.top - padding.bottom),
-});
-
-const isValidViewport = (
-  viewport: MapPosition['viewport']
-): viewport is MapViewport =>
-  Boolean(
-    viewport &&
-    Number.isFinite(viewport.width) &&
-    Number.isFinite(viewport.height) &&
-    viewport.width > 0 &&
-    viewport.height > 0 &&
-    viewport.width <= MAX_SAVED_VIEWPORT_PX &&
-    viewport.height <= MAX_SAVED_VIEWPORT_PX
-  );
-
-const hasBounds = (
-  location: MapPosition
-): location is MapPosition & { bounds: MapBounds } =>
-  Boolean(location.bounds && isValidBounds(location.bounds));
-
-/**
- * New cameras: preserve the saved center/zoom/pitch/bearing and scale the
- * camera into the target safe area. `min` preserves the full saved framing.
- */
-const cameraFromViewport = (
-  location: MapPosition,
-  mapDimensions: { width: number; height: number },
-  padding: MapPadding
-): ResolvedCamera | null => {
-  if (
-    !isValidViewport(location.viewport) ||
-    !Number.isFinite(location.zoom) ||
-    !location.center
-  ) {
-    return null;
-  }
-
-  const safe = safeDimensions(mapDimensions, padding);
-  const scale = Math.min(
-    safe.width / location.viewport.width,
-    safe.height / location.viewport.height
-  );
-
-  return {
-    target: {
-      center: [location.center.lng, location.center.lat],
-      zoom: location.zoom + Math.log2(scale),
-      pitch: location.pitch ?? 0,
-      bearing: location.bearing ?? 0,
-    },
-    padding,
-  };
 };
 
 const sameCenterAndZoom = (
@@ -199,34 +126,6 @@ const effectiveTransitionDuration = ({
   return paddingChanged || bearingChanged || pitchChanged
     ? MIN_TRANSITION_DURATION
     : undefined;
-};
-
-/**
- * One target resolver:
- * - saved viewport -> new camera path, measured padding
- * - old bounds     -> main parity, no padding
- * - old no-bounds  -> main parity, no padding
- */
-const targetForLocation = (
-  location: MapPosition,
-  alignment: ChapterAlignment,
-  mapDimensions: { width: number; height: number },
-  measuredPadding: MapPadding
-): ResolvedCamera | null => {
-  const viewportCamera = cameraFromViewport(
-    location,
-    mapDimensions,
-    measuredPadding
-  );
-  if (viewportCamera) {
-    return viewportCamera;
-  }
-
-  if (hasBounds(location)) {
-    return legacyBoundsTarget(location, alignment, mapDimensions);
-  }
-
-  return legacyCenterZoomTarget(location, mapDimensions);
 };
 
 const flyToTarget = (
@@ -395,7 +294,7 @@ export const getDefaultTitleLocation = (
  * down re-applies the camera already in place, so it is a no-op; scrolling up
  * intentionally uses the previous location instead of searching forward.
  */
-const resolveTransitionLocation = (
+export const resolveTransitionLocation = (
   config: StoryMapConfig,
   chapterId: string
 ): TransitionLocation | undefined => {
@@ -410,9 +309,9 @@ const resolveTransitionLocation = (
     return undefined;
   }
 
-  const ownLocation = config.chapters[chapterIndex].location;
-  if (hasLocation(ownLocation)) {
-    return ownLocation;
+  const chapterLocation = config.chapters[chapterIndex].location;
+  if (hasLocation(chapterLocation)) {
+    return chapterLocation;
   }
 
   for (let index = chapterIndex - 1; index >= 0; index--) {

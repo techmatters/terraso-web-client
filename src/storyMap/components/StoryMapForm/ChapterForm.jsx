@@ -46,6 +46,7 @@ import {
   useStoryMapConfigActionsContext,
   useStoryMapConfigDataContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { resolveTransitionLocation } from 'terraso-web-client/storyMap/mapUtils';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -111,12 +112,17 @@ const ChapterConfig = props => {
 
   const hasVisualMedia = chapterHasVisualMedia(chapter);
 
+  const resolvedLocation = useMemo(
+    () => resolveTransitionLocation(config, chapter.id),
+    [config, chapter.id]
+  );
+
   return (
     <>
       {locationOpen && (
         <MapConfigurationDialog
           open={locationOpen}
-          location={chapter.location}
+          location={resolvedLocation}
           mapLayerConfig={_.get(
             `dataLayers.${chapter.dataLayerConfigId}`,
             config
