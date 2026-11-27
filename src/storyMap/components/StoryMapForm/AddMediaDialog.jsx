@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -89,12 +89,14 @@ const AddMediaDialog = memo(props => {
   const [embeddedError, setEmbeddedError] = useState();
 
   const [selected, setSelected] = useState(0);
+  const fileReadId = useRef(0);
 
   useEffect(() => {
     if (open) {
       return;
     }
 
+    fileReadId.current += 1;
     setCurrentFile();
     setDropErrors();
     setDroppedMedia();
@@ -128,29 +130,29 @@ const AddMediaDialog = memo(props => {
     [t, setDropErrors]
   );
 
-  const onDrop = useCallback(
-    acceptedFiles => {
-      if (_.isEmpty(acceptedFiles)) {
+  const onDrop = useCallback(acceptedFiles => {
+    if (_.isEmpty(acceptedFiles)) {
+      return;
+    }
+    setDropErrors(null);
+    setSelected(0);
+    setCurrentFile();
+    setDroppedMedia();
+
+    const selectedFile = acceptedFiles[0];
+    const readId = ++fileReadId.current;
+    openFile(selectedFile).then(content => {
+      if (readId !== fileReadId.current) {
         return;
       }
-      setDropErrors(null);
-      setSelected(0);
-
-      const selectedFile = acceptedFiles[0];
-      openFile(selectedFile).then(content => {
-        setCurrentFile(selectedFile);
-
-        const id = addMediaFile(content, selectedFile);
-
-        setDroppedMedia({
-          filename: selectedFile.name,
-          type: selectedFile.type,
-          contentId: id,
-        });
+      setCurrentFile(selectedFile);
+      setDroppedMedia({
+        filename: selectedFile.name,
+        type: selectedFile.type,
+        content,
       });
-    },
-    [addMediaFile]
-  );
+    });
+  }, []);
 
   const validateEmbedded = useCallback(
     value => {
@@ -190,9 +192,13 @@ const AddMediaDialog = memo(props => {
   }, [validateEmbedded, embeddedInputValue]);
 
   const onAddWrapper = useCallback(() => {
-    const media = selected === 0 ? droppedMedia : embeddedMedia;
-    onAdd(media);
-  }, [selected, droppedMedia, embeddedMedia, onAdd]);
+    if (selected === 0) {
+      const { content, ...media } = droppedMedia;
+      onAdd({ ...media, contentId: addMediaFile(content, currentFile) });
+      return;
+    }
+    onAdd(embeddedMedia);
+  }, [selected, droppedMedia, embeddedMedia, currentFile, addMediaFile, onAdd]);
 
   const addDisabled = useMemo(() => {
     if (selected === 0) {
