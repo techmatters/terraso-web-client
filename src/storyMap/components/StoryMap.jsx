@@ -23,7 +23,16 @@ import { Box, useMediaQuery } from '@mui/material';
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import useActiveStep from 'terraso-web-client/storyMap/components/useActiveStep';
-import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
+import {
+  getChapterCard,
+  measureMapPadding,
+  NO_PADDING,
+  paddingEqual,
+} from 'terraso-web-client/storyMap/mapPaddingMath';
+import {
+  getDefaultTitleLocation,
+  startTransition,
+} from 'terraso-web-client/storyMap/mapUtils';
 import {
   ALIGNMENTS,
   STORY_MAP_TITLE_ID,
@@ -182,18 +191,80 @@ const Title = props => {
 const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
+  const mapContainer = map?.getContainer();
+
+  const alignment = useMemo(
+    () =>
+      config.chapters.find(chapter => chapter.id === currentChapter)?.alignment,
+    [config.chapters, currentChapter]
+  );
+
+  // Bumped only when the measured padding actually changes, so a card that
+  // grows vertically does not restart the camera transition.
+  const [paddingRevision, setPaddingRevision] = useState(0);
+  const lastPadding = useRef(NO_PADDING);
 
   useEffect(() => {
-    if (!mapDimensions) {
+    if (!mapContainer) {
       return;
     }
+
+    const measure = () => {
+      const next = measureMapPadding({
+        mapContainer,
+        chapterId: currentChapter,
+        alignment,
+        isMobile,
+      });
+      if (paddingEqual(lastPadding.current, next)) {
+        return;
+      }
+      lastPadding.current = next;
+      setPaddingRevision(revision => revision + 1);
+    };
+
+    const card = getChapterCard(currentChapter, alignment, isMobile);
+    if (!card || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(card);
+
+    return () => observer.disconnect();
+  }, [mapContainer, currentChapter, alignment, isMobile]);
+
+  useEffect(() => {
+    if (!mapDimensions || !mapContainer) {
+      return;
+    }
+    // Measured inline so the first transition for a chapter already uses the
+    // right padding instead of replaying it with the previous chapter's value.
+    const padding = measureMapPadding({
+      mapContainer,
+      chapterId: currentChapter,
+      alignment,
+      isMobile,
+    });
+    lastPadding.current = padding;
     startTransition(map, {
       config,
       chapterId: currentChapter,
       mapDimensions,
-      isMobile,
+      padding,
+      alignment: isMobile ? 'center' : alignment,
     });
-  }, [map, config, mapDimensions, currentChapter, isMobile, layerRevision]);
+  }, [
+    map,
+    mapContainer,
+    config,
+    mapDimensions,
+    currentChapter,
+    alignment,
+    isMobile,
+    paddingRevision,
+    layerRevision,
+  ]);
 
   return null;
 };
@@ -204,7 +275,8 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
 // it's called in a useEffect, which depends on:
 //   - the story map's config, to pick up chapter alignment changes
 //   - the current chapter, which is a piece of state updated by an IntersectionObserver hook
-//   - whether we're in a mobile viewport (which forces a centered chapter)
+//   - the map padding (the strip of the map covered by the active chapter card),
+//     which is zero on mobile and when the chapter is centered
 //   - the map dimensions, so we readjust when the map's size changes
 const StoryMap = props => {
   const { t } = useTranslation();
@@ -235,15 +307,10 @@ const StoryMap = props => {
 
   const currentChapter = activeId ?? STORY_MAP_TITLE_ID;
 
-  const initialLocation = useMemo(() => {
-    if (config.titleTransition?.location) {
-      return config.titleTransition?.location;
-    }
-    const firstChapterWithLocation = config.chapters.find(
-      chapter => chapter.location
-    );
-    return firstChapterWithLocation?.location;
-  }, [config.chapters, config.titleTransition?.location]);
+  const initialLocation = useMemo(
+    () => getDefaultTitleLocation(config),
+    [config]
+  );
 
   const filteredChapters = useMemo(() => {
     if (!chaptersFilter) {

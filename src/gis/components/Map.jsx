@@ -327,7 +327,6 @@ const Map = forwardRef((props, ref) => {
     sx,
     onBoundsChange,
     disableElevation = false,
-    padding,
     children,
   } = props;
   const { i18n } = useTranslation();
@@ -354,10 +353,6 @@ const Map = forwardRef((props, ref) => {
 
     if (ref) {
       ref.current = map;
-    }
-
-    if (padding) {
-      map.setPadding(padding);
     }
 
     map.on('load', function () {
@@ -401,7 +396,6 @@ const Map = forwardRef((props, ref) => {
     setMap,
     bounds,
     disableElevation,
-    padding,
     ref,
   ]);
 

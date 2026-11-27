@@ -29,6 +29,7 @@ import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/Ed
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
+import { getDefaultTitleLocation } from 'terraso-web-client/storyMap/mapUtils';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 const TitleForm = props => {
@@ -36,6 +37,11 @@ const TitleForm = props => {
   const { setConfig } = useStoryMapConfigActionsContext();
   const [locationOpen, setLocationOpen] = useState(false);
   const { config } = props;
+
+  const resolvedLocation = useMemo(
+    () => getDefaultTitleLocation(config),
+    [config]
+  );
 
   const inputProps = useMemo(
     () => ({
@@ -129,7 +135,7 @@ const TitleForm = props => {
       {locationOpen && (
         <MapConfigurationDialog
           open={locationOpen}
-          location={config.titleTransition?.location}
+          location={resolvedLocation}
           mapLayerConfig={_.get(
             `dataLayers.${_.get('titleTransition.dataLayerConfigId', config)}`,
             config

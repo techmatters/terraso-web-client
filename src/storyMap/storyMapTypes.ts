@@ -23,6 +23,8 @@ import type {
   VisualizationConfigNode,
 } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 
+import type { MapPadding } from 'terraso-web-client/storyMap/mapPaddingMath';
+
 export type VisualizeConfig = {
   shape: 'circle' | 'square' | 'hexagon' | 'triangle';
   opacity: number;
@@ -34,12 +36,28 @@ export type MapLayerConfig = VisualizationConfigNode & {
   ownerType: 'StoryMapNode' | 'GroupNode' | 'LandscapeNode';
 };
 
+export type MapViewport = { width: number; height: number };
+
 export type MapPosition = {
   center: LngLat;
   bearing: number;
   pitch: number;
   zoom: number;
-  bounds: MapBounds;
+  bounds?: MapBounds;
+  /** CSS-pixel size of the editor map when this camera was saved. */
+  viewport?: MapViewport;
+};
+
+export type CameraTarget = {
+  center: [number, number];
+  zoom: number;
+  pitch: number;
+  bearing: number;
+};
+
+export type ResolvedCamera = {
+  target: CameraTarget;
+  padding: MapPadding;
 };
 
 export type LayerConfig = {

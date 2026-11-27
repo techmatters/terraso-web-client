@@ -46,10 +46,13 @@ import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher
 import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerDialog';
 import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
+import { targetForLocation } from 'terraso-web-client/storyMap/mapCameraMath';
+import { NO_PADDING } from 'terraso-web-client/storyMap/mapPaddingMath';
 import {
   MapBounds,
   MapLayerConfig,
   MapPosition,
+  MapViewport,
   StoryMapConfig,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 
@@ -204,29 +207,37 @@ type MapLocationChangeProps = {
   onPositionChange: (position: MapPosition) => void;
 };
 const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
-  const { map } = useMap();
+  const { map, mapDimensions } = useMap();
 
   useEffect(() => {
     if (!map) {
       return;
     }
     const updatePosition = () => {
+      if (!mapDimensions) {
+        return;
+      }
       onPositionChange({
         center: map.getCenter(),
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
         bounds: _.flatten(map.getBounds().toArray()) as MapBounds,
+        viewport: {
+          width: mapDimensions.width,
+          height: mapDimensions.height,
+        },
       });
     };
     map.on('load', updatePosition);
     map.on('move', updatePosition);
+    updatePosition();
 
     return () => {
       map.off('load', updatePosition);
       map.off('move', updatePosition);
     };
-  }, [map, onPositionChange]);
+  }, [map, mapDimensions, onPositionChange]);
 
   return null;
 };
@@ -253,38 +264,58 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapBounds, setMapBounds] = useState(location?.bounds);
+  const [mapViewport, setMapViewport] = useState(location?.viewport);
   const [mapStyle, setMapStyle] = useState<string | undefined>();
   const [changeBounds, setChangeBounds] = useState(false);
   const [mapLayerConfig, setMapLayerConfig] = useState(props.mapLayerConfig);
+  const [mapSlotDimensions, setMapSlotDimensions] =
+    useState<MapViewport | null>(null);
 
   const mapRef = useRef(null);
+  const [mapSlotElement, setMapSlotElement] = useState<HTMLDivElement | null>(
+    null
+  );
 
-  const initialLocation = useMemo(() => {
-    if (location) {
+  const mapSlotRef = useCallback((node: HTMLDivElement | null) => {
+    setMapSlotElement(node);
+  }, []);
+
+  const resolvedInitialLocation = useMemo(() => {
+    if (!location || !mapSlotDimensions) {
       return location;
     }
 
-    if (chapterId) {
-      const currentIndex = config.chapters.findIndex(c => c.id === chapterId);
-      const chapterWithLocation = config.chapters
-        .slice(0, currentIndex + 1)
-        .reverse()
-        .find(c => c.location);
-
-      if (chapterWithLocation) {
-        return chapterWithLocation?.location;
-      }
-    }
-
-    if (config.titleTransition?.location) {
-      return config.titleTransition?.location;
-    }
-
-    const firstChapterWithLocation = config.chapters.find(
-      chapter => chapter.location
+    const camera = targetForLocation(
+      location,
+      'center',
+      mapSlotDimensions,
+      NO_PADDING
     );
-    return firstChapterWithLocation?.location;
-  }, [location, config.chapters, config.titleTransition?.location, chapterId]);
+
+    return camera?.target ?? location;
+  }, [location, mapSlotDimensions]);
+
+  useEffect(() => {
+    if (!mapSlotElement || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new ResizeObserver(([entry]) => {
+      const size = entry.contentBoxSize?.[0];
+      const width = size?.inlineSize ?? entry.contentRect.width;
+      const height = size?.blockSize ?? entry.contentRect.height;
+
+      if (width <= 0 || height <= 0) {
+        return;
+      }
+
+      setMapSlotDimensions({ width, height });
+    });
+
+    observer.observe(mapSlotElement);
+
+    return () => observer.disconnect();
+  }, [mapSlotElement]);
 
   const handleConfirm = useCallback(() => {
     const location = _.omitBy(_.isNil, {
@@ -293,6 +324,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       pitch: mapPitch,
       bearing: mapBearing,
       bounds: mapBounds,
+      viewport: mapViewport,
     });
     onConfirm({
       location,
@@ -306,6 +338,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     mapPitch,
     mapBearing,
     mapBounds,
+    mapViewport,
     mapStyle,
     config.style,
     mapLayerConfig,
@@ -321,6 +354,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     setMapPitch(position.pitch);
     setMapBearing(position.bearing);
     setMapBounds(position.bounds);
+    setMapViewport(position.viewport);
   }, []);
 
   const onStyleChange = useCallback(
@@ -392,28 +426,39 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
             mapLayerConfig={mapLayerConfig}
             onConfirm={onAddMapLayer}
           />
-          <Map
-            ref={mapRef}
-            use3dTerrain
-            initialLocation={initialLocation}
-            projection={config.projection}
-            mapStyle={config.style}
+          <Box
+            ref={mapSlotRef}
+            sx={{
+              width: '100%',
+              height: 400,
+            }}
           >
-            <MapControls showCompass visualizePitch />
-            <MapGeocoder position="top-right" />
-            <MapStyleSwitcher
-              position="top-right"
-              onStyleChange={onStyleChange}
-            />
-            <MapLocationChange onPositionChange={handlePositionChange} />
-            {mapLayerConfig && (
-              <StoryMapLayer
-                config={mapLayerConfig}
-                useConfigBounds={true}
-                changeBounds={changeBounds}
-              />
-            )}
-          </Map>
+            {mapSlotDimensions ? (
+              <Map
+                ref={mapRef}
+                height="100%"
+                use3dTerrain
+                initialLocation={resolvedInitialLocation}
+                projection={config.projection}
+                mapStyle={config.style}
+              >
+                <MapControls showCompass visualizePitch />
+                <MapGeocoder position="top-right" />
+                <MapStyleSwitcher
+                  position="top-right"
+                  onStyleChange={onStyleChange}
+                />
+                <MapLocationChange onPositionChange={handlePositionChange} />
+                {mapLayerConfig && (
+                  <StoryMapLayer
+                    config={mapLayerConfig}
+                    useConfigBounds={true}
+                    changeBounds={changeBounds}
+                  />
+                )}
+              </Map>
+            ) : null}
+          </Box>
         </DialogContent>
       </Dialog>
     </CollaborationContextProvider>
