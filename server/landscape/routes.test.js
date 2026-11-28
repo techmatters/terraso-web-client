@@ -42,7 +42,7 @@ afterEach(() => { global.fetch = originalFetch; });
 
 test('uses anonymous exact-slug data for escaped metadata and a canonical profile URL', async () => {
   global.fetch = jest.fn().mockResolvedValue(response([landscape]));
-  const { text } = await request(app).get('/landscapes/river/profile?tracking=1').expect(200);
+  const { text } = await request(app).get('/landscapes/river/profile?tracking=1').set('Cookie', 'session=private').expect(200);
   expect(text).toContain('<title>River &amp; Valley Profile | Terraso</title>');
   expect(text).toContain('Public description');
   expect(text).toContain('https://example.org/a?x=1&amp;y=2');
@@ -65,10 +65,20 @@ test('normalizes the trailing slash only for a verified landscape', async () => 
 });
 
 test('does not inject metadata for missing, mismatched, ambiguous or partial results', async () => {
-  for (const result of [response([]), response([{ ...landscape, slug: 'other' }]), response([landscape, landscape]), { ok: true, json: async () => ({ errors: [{}], data: { landscapes: { edges: [{ node: landscape }] } } }) }]) {
+  for (const result of [response([]), response([{ ...landscape, slug: 'other' }]), response([{ ...landscape, name: '' }]), response([landscape, landscape]), { ok: false }, { ok: true, json: async () => ({ errors: [{}], data: { landscapes: { edges: [{ node: landscape }] } } }) }]) {
     global.fetch = jest.fn().mockResolvedValue(result);
     const { text } = await request(app).get('/landscapes/river/profile').expect(200);
     expect(text).toBe('fallback');
+  }
+});
+
+test('falls back when the API request fails', async () => {
+  global.fetch = jest.fn().mockRejectedValue(new Error('unavailable'));
+  const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await request(app).get('/landscapes/river/profile').expect(200, 'fallback');
+  } finally {
+    log.mockRestore();
   }
 });
 

@@ -17,7 +17,7 @@
 
 const express = require('express');
 const config = require('../config');
-const { fetchWithTimeout } = require('../utils/fetch');
+const { fetchPublicMetadata } = require('../utils/publicMetadata');
 const { getCachedHtml } = require('../utils/clientBundle');
 const { injectMetaTags } = require('../utils/metaTags');
 
@@ -34,21 +34,8 @@ router.get('/:slug', async (req, res, next) => {
   if (!safeSlug(slug) || slug.toLowerCase() === 'new') return next();
 
   try {
-    const response = await fetchWithTimeout(
-      `${config.apiUrl}/graphql/`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, variables: { slug } }),
-      },
-      config.apiTimeout
-    );
-    if (!response.ok) return next();
-    const result = await response.json();
-    const edges = result.data?.groups?.edges;
-    if (result.errors || !Array.isArray(edges) || edges.length !== 1) return next();
-    const group = edges[0]?.node;
-    if (!group || group.slug !== slug || !group.name) return next();
+    const group = await fetchPublicMetadata(query, 'groups', slug);
+    if (!group) return next();
 
     const canonical = `${config.baseUrl.replace(/\/$/, '')}/groups/${slug}`;
     if (req.path.endsWith('/')) {

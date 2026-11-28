@@ -17,7 +17,7 @@
 
 const express = require('express');
 const config = require('../config');
-const { fetchWithTimeout } = require('../utils/fetch');
+const { fetchPublicMetadata } = require('../utils/publicMetadata');
 const { getCachedHtml } = require('../utils/clientBundle');
 const { injectMetaTags } = require('../utils/metaTags');
 
@@ -34,21 +34,8 @@ router.get('/:slug/profile', async (req, res, next) => {
   if (!safeSlug(slug)) return next();
 
   try {
-    const response = await fetchWithTimeout(
-      `${config.apiUrl}/graphql/`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, variables: { slug } }),
-      },
-      config.apiTimeout
-    );
-    if (!response.ok) return next();
-    const result = await response.json();
-    const edges = result.data?.landscapes?.edges;
-    if (result.errors || !Array.isArray(edges) || edges.length !== 1) return next();
-    const landscape = edges[0]?.node;
-    if (!landscape || landscape.slug !== slug || !landscape.name) return next();
+    const landscape = await fetchPublicMetadata(query, 'landscapes', slug);
+    if (!landscape) return next();
 
     const canonical = `${config.baseUrl.replace(/\/$/, '')}/landscapes/${slug}/profile`;
     if (req.path.endsWith('/')) {
