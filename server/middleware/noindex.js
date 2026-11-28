@@ -19,7 +19,6 @@ const { matchRoutes } = require('react-router');
 const appRoutes = require('../appPaths.cjs');
 
 const noindex = (req, res, next) => {
-  // Use the same ranked route match for indexing and the client fallback status.
   req.clientRouteMatch = matchRoutes(appRoutes, req.path);
   const match = req.clientRouteMatch?.at(-1);
   const policy = match?.route.noindex;

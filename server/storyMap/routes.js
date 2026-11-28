@@ -38,14 +38,12 @@ const handleStoryMapRequest = async (req, res, next) => {
     const { storyMapId } = req.params;
     const slug = req.params.slug ?? '';
 
-    // StoryMap.story_map_id is a CharField(max_length=10). This is independent
-    // of anonymous visibility, which cannot distinguish missing from private.
+    // Match the backend StoryMap.story_map_id max length.
     if (Array.from(storyMapId).length > 10) {
       return serveClientBundle(res, next, 404);
     }
 
     const storyMapNode = await fetchStoryMap(storyMapId, slug);
-    // Anonymous GraphQL visibility can include ownerless drafts.
     if (storyMapNode.isPublished !== true) {
       return next();
     }
