@@ -17,10 +17,7 @@
 
 const express = require('express');
 const path = require('path');
-const { matchRoutes } = require('react-router');
-
 const config = require('./server/config');
-const appPaths = require('./server/appPaths.cjs');
 const { requestLogger } = require('./server/middleware/logger');
 const { noindex } = require('./server/middleware/noindex');
 const { rateLimiter } = require('./server/middleware/rateLimiter');
@@ -52,10 +49,8 @@ app.use('/tools/story-maps', storyMapRoutes);
 app.use('/landscapes', landscapeRoutes);
 app.use('/groups', groupRoutes);
 
-const clientRoutes = appPaths.map(path => ({ path }));
-
 const handleCatchAllRoute = (req, res, next) => {
-  const status = matchRoutes(clientRoutes, req.path) ? 200 : 404;
+  const status = req.clientRouteMatch ? 200 : 404;
   serveClientBundle(res, next, status);
 };
 

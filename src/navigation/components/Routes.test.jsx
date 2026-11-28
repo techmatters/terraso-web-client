@@ -35,7 +35,7 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapsToolHome', () => ({
 }));
 
 test('server recognizes every client route and no extra routes', () => {
-  expect([...serverPaths].sort()).toEqual(
+  expect(serverPaths.map(({ path }) => path).sort()).toEqual(
     paths
       .map(({ path }) => path)
       .filter(path => path !== '*')

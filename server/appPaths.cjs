@@ -45,21 +45,25 @@ module.exports = [
   '/landscapes/:landscapeSlug/download/:shareUuid',
   '/notifications/unsubscribe',
   '/tools',
-  '/account',
-  '/account/auth-callback',
-  '/account/profile/:completeProfile',
-  '/account/profile',
+  { path: '/account', noindex: true },
+  { path: '/account/auth-callback', noindex: true },
+  {
+    path: '/account/profile/:completeProfile',
+    // Preserve the existing exclusion for asset-like profile paths.
+    noindex: params => !params.completeProfile.includes('.'),
+  },
+  { path: '/account/profile', noindex: true },
   '/contact',
   '/tools/story-maps',
-  '/tools/story-maps/new',
+  { path: '/tools/story-maps/new', noindex: true },
   ...[
     '/tools/story-maps/:storyMapId',
     '/tools/story-maps/:storyMapId/',
     '/tools/story-maps/:storyMapId/:slug',
   ].flatMap(basePath => [
-    `${basePath}/edit`,
+    { path: `${basePath}/edit`, noindex: true },
     `${basePath}/`,
     `${basePath}/embed`,
   ]),
-  '/tools/story-maps/accept',
-];
+  { path: '/tools/story-maps/accept', noindex: true },
+].map(route => (typeof route === 'string' ? { path: route } : route));

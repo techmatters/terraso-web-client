@@ -97,9 +97,29 @@ describe('Server indexing headers', () => {
     '/tools/story-maps/accept?token=example',
     '/tools/story-maps/123/edit',
     '/tools/story-maps/123/a-story/edit/',
+    '/%61ccount/%70rofile?source=search',
+    '/ACCOUNT/Auth-Callback/',
+    '/tools/story-maps/%6eew',
+    '/tools/story-maps/%61ccept',
+    '/tools/story-maps/123/%65dit',
+    '/TOOLS/STORY-MAPS/123/story/%65dit/?source=search',
   ])('sends noindex for %s', async url => {
     const response = await request(app).get(url).expect(200);
     expect(response.headers['x-robots-tag']).toBe('noindex');
+  });
+
+  it.each([
+    ['/account/%E0%A4%A', 404, undefined],
+    ['/account/profile/%ZZ', 200, 'noindex'],
+    ['/%61ccount/profile/%ZZ', 404, undefined],
+  ])('handles malformed encoding in %s safely', async (url, status, robots) => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const response = await request(app).get(url).expect(status);
+      expect(response.headers['x-robots-tag']).toBe(robots);
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it('sets noindex before an early rate-limit response', async () => {
@@ -111,6 +131,9 @@ describe('Server indexing headers', () => {
     '/tools/story-maps',
     '/tools/story-maps/123/a-story',
     '/tools/story-maps/123/a-story/embed',
+    '/tools/story-maps/123/a-story?source=search',
+    '/groups/new',
+    '/landscapes/example/edit',
     '/account/profile/app.js',
     '/assets/app.js',
   ])('does not set noindex for %s', async url => {
@@ -127,7 +150,7 @@ describe('Server indexing headers', () => {
     expect(response.text).toBe('<html>client</html>');
   });
 
-  it.each(appPaths.map(path => path.replace(/:[^/]+/g, 'example')))(
+  it.each(appPaths.map(({ path }) => path.replace(/:[^/]+/g, 'example')))(
     'serves the client for defined route %s',
     async url => {
       await request(app).get(url).expect(200);

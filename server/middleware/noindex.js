@@ -15,11 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-const accountPath = /^\/account(?:\/(?:auth-callback|profile(?:\/[^/.]+)?))?\/?$/i;
-const storyMapAuthoringPath = /^\/tools\/story-maps\/(?:new|accept|[^/]+(?:\/[^/]+)?\/edit)\/?$/i;
+const { matchRoutes } = require('react-router');
+const appRoutes = require('../appPaths.cjs');
 
 const noindex = (req, res, next) => {
-  if (accountPath.test(req.path) || storyMapAuthoringPath.test(req.path)) {
+  // Use the same ranked route match for indexing and the client fallback status.
+  req.clientRouteMatch = matchRoutes(appRoutes, req.path);
+  const match = req.clientRouteMatch?.at(-1);
+  const policy = match?.route.noindex;
+  if (typeof policy === 'function' ? policy(match.params) : policy) {
     res.set('X-Robots-Tag', 'noindex');
   }
   next();
